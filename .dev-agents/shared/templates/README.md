@@ -20,12 +20,13 @@
 | BUG | Bug报告 | `bug.md` |
 | MEETING | 会议纪要 | `meeting.md` |
 | GENERIC | 通用文档 | `generic.md` |
+| CODEX-SUBTASK | Codex 子任务派发表 | `codex-subtask.md` |
 
 ## 使用方式
 
 1. 选择对应模板
 2. 按模板格式填写/转换内容
-3. 交给贾维斯或凯尔处理
+3. 交给对应的 Codex 子代理处理
 
 ## Token节省预估
 

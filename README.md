@@ -1,78 +1,69 @@
-# aiGroup - AI 团队协作框架
+# agentGroup - 面向 Codex 的多 Agent 协作框架
 
-> 单入口 AI 团队：一个命令启动，按需自动派遣设计、开发、测试专家
+> 一个主协调器，按需派生多个 Codex 子代理，在同一仓库内完成设计、实现、测试和审查。
 
-## 快速开始
+## 核心变化
 
-```bash
-git clone https://github.com/yezannnnn/agentGroup.git
-cd agentGroup
-claude
-```
+这个仓库原本偏向 Claude 单入口调度。现在的主入口改为根级 `AGENTS.md`，并把多 agent 协作方式调整为更适合 Codex 的模式：
 
-就这样。麦克斯 (Max) 会自动就位，根据你的需求派遣对应的团队成员。
+- 主线程负责拆解、集成、对用户沟通
+- 子代理只做边界清晰的并行任务
+- 通过 `spawn_agent`、`send_input`、`wait_agent` 协调，而不是让代理彼此直接通信
+- 用 `.dev-agents/shared/` 传递设计稿、任务单、审查结果等中间产物
+- 只在写入范围互不重叠时并行实现
 
-## 团队成员
+## 架构角色
 
-| 成员 | 角色 | 负责什么 | 不负责什么 |
-|------|------|----------|-----------|
-| 麦克斯 (Max) | 项目经理 | 需求分析、任务拆解、进度协调 | 写代码、做设计、做测试 |
-| 艾拉 (Ella) | UI/UX 设计师 | 界面设计、交互原型、设计规范 | 写代码、做测试 |
-| 贾维斯 (Jarvis) | 全栈开发 | 前后端编码、API、技术方案 | 做设计、做测试验收 |
-| 凯尔 (Kyle) | 质量保障 | 代码审查、功能验收、安全审计 | 写代码、做设计 |
+| 协作层 | Codex 实际形态 | 负责内容 | 典型产物 |
+|------|---------------|---------|---------|
+| 主协调器 | 主线程 | 需求分析、分解、集成、汇总 | 执行计划、最终回复 |
+| 设计探索 | `explorer` 子代理 | 设计分析、信息提炼、方案草稿 | `.dev-agents/shared/designs/*.md` |
+| 实现执行 | `worker` 子代理 | 限定文件范围内的实现与测试 | 代码改动、测试结果 |
+| 审查验证 | `explorer` 或 `worker` 子代理 | 代码审查、测试复现、验收报告 | `.dev-agents/shared/reviews/*.md` |
 
-## 工作流程
+## 目录结构
 
-```
-你的需求 → Max 分析 → 自动派遣对应 AI → 执行 → Max 汇总
-```
-
-- 设计类需求 → 派遣艾拉
-- 开发类需求 → 派遣贾维斯
-- 测试/审查需求 → 派遣凯尔
-- 简单问题 → Max 直接回答
-
-## 使用示例
-
-```
-你: 帮我设计一个登录页面
-Max: [分析需求，派遣艾拉] → 艾拉输出设计稿
-
-你: 根据设计稿开发登录功能
-Max: [派遣贾维斯] → 贾维斯实现代码
-
-你: 验收一下登录功能
-Max: [派遣凯尔] → 凯尔输出审查报告
-```
-
-## 项目结构
-
-```
+```text
 agentGroup/
-├── CLAUDE.md              # Max 配置 + 调度规则（唯一入口）
-├── .dev-agents/           # 角色定义
-│   ├── ella/PERSONA.md    # 艾拉
-│   ├── jarvis/PERSONA.md  # 贾维斯
-│   ├── kyle/PERSONA.md    # 凯尔
-│   └── shared/            # 协作产物（设计稿、审查报告、任务）
-├── skills/                # 技能资源
-│   ├── ella/              # UI/UX Pro Max、前端参考
-│   ├── jarvis/            # Claude Simone、工程团队技能集
-│   ├── kyle/              # QA 技能包、TDD 指南
-│   └── max/               # CCPM 项目管理、PM 技能集
+├── AGENTS.md                     # Codex 主入口，定义多 agent 协议
+├── .dev-agents/
+│   ├── ella/PERSONA.md           # 设计探索子代理规范
+│   ├── jarvis/PERSONA.md         # 实现执行子代理规范
+│   ├── kyle/PERSONA.md           # 审查验证子代理规范
+│   └── shared/
+│       ├── designs/              # 设计输出
+│       ├── reviews/              # 审查报告
+│       ├── tasks/                # 任务单
+│       └── templates/            # 结构化模板
+├── .claude/settings.local.json   # 历史兼容配置
+├── skills/                       # 参考技能与外部资料
 └── README.md
 ```
 
-## 技能来源
+## Codex 协作原则
 
-| 技能 | 来源 | 许可证 |
-|------|------|--------|
-| CCPM 项目管理 | [automazeio/ccpm](https://github.com/automazeio/ccpm) | MIT |
-| PM Claude Skills | [mohitagw15856/pm-claude-skills](https://github.com/mohitagw15856/pm-claude-skills) | MIT |
-| Claude Simone | [Helmi/claude-simone](https://github.com/Helmi/claude-simone) | 见原仓库 |
-| Engineering Team | [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | 见原仓库 |
-| UI/UX Pro Max | SkillsMP 技能市场 | MIT |
-| Senior QA / TDD | SkillsMP 技能市场 | MIT |
+1. 主线程先判断当前阻塞点，阻塞路径上的工作优先本地处理。
+2. 只把可独立完成、可明确交付物的任务派给子代理。
+3. 子代理不能互相假设上下文，所有依赖由主线程注入。
+4. 并行实现必须先声明写入范围，避免冲突。
+5. 测试和验证要跟随改动走，不能把所有验证堆到最后。
+
+## 推荐用法
+
+1. 在 Codex 中打开仓库。
+2. 让主线程读取根级 `AGENTS.md`。
+3. 用自然语言提出需求，例如：
+
+```text
+把登录流程拆成 UI、接口、测试三个并行子任务来做
+```
+
+4. 主线程会按 `AGENTS.md` 中的规则判断是否需要派生 `explorer` 或 `worker`。
+
+## 兼容说明
+
+- `skills/` 下的大量资料依然可复用，只是其中部分内容保留了 Claude 术语，现阶段作为参考资产使用。
+- 如果后续要继续 Codex 化，可再逐步把 `skills/max`、`skills/jarvis` 里的 Claude 专属命令体系抽离成模型无关的模板。
 
 ## 许可证
 
