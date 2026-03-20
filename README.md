@@ -43,6 +43,24 @@ agentGroup/
 3. 子 agent 之间不直接通信，统一由 Max 传递上下文。
 4. 并行开发前必须声明 `WRITE_SCOPE`，避免冲突。
 5. 设计、开发、验收尽量形成闭环，不跳过 Kyle 验收。
+6. 需求不清时，Max 必须先澄清再派发，不能跳过澄清门禁。
+
+## 角色与技能映射
+
+| 角色 | 默认技能来源 | 用途 |
+|------|-------------|------|
+| Ella | `skills/ella/ui-ux-pro-max/`, `skills/ella/senior-frontend/` | 设计规范、交互方案、前端实现参考 |
+| Jarvis | `skills/jarvis/engineering-team/senior-backend/`, `skills/jarvis/engineering-team/senior-fullstack/` | 功能实现、架构与工程实践 |
+| Kyle | `skills/kyle/senior-qa/`, `skills/kyle/tdd-guide/` | 测试策略、验收与质量分析 |
+| Max | `skills/max/pm-claude-skills/` | 需求整理、任务拆解、协作节奏管理 |
+
+## 任务命名规范
+
+统一使用任务 ID 串联设计、开发、验收：
+
+- 任务：`.dev-agents/shared/tasks/T-001-<slug>.md`
+- 设计：`.dev-agents/shared/designs/T-001-<slug>.md`
+- 审查：`.dev-agents/shared/reviews/T-001-review.md`
 
 ## 推荐用法
 
@@ -54,7 +72,7 @@ agentGroup/
 把登录流程拆成 UI、接口、测试三个并行子任务来做
 ```
 
-3. 主线程会按 `AGENTS.md` 中的规则判断是否需要派生 Ella、Jarvis、Kyle 对应的子 agent。
+4. 主线程会按 `AGENTS.md` 中的规则判断是否需要派生 Ella、Jarvis、Kyle 对应的子 agent。
 
 ## 兼容说明
 
