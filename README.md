@@ -22,26 +22,204 @@
 
 ## 工作流程
 
-```
-你的需求 → Max 分析 → 自动派遣对应 Agent → 执行 → Max 汇总
+### 总体协作流程
+
+```mermaid
+flowchart TD
+    User([用户提出需求]) --> Max{Max 分析需求类型}
+    Max -->|设计类| Ella[艾拉 Ella<br/>UI/UX 设计师]
+    Max -->|开发类| Jarvis[贾维斯 Jarvis<br/>全栈开发]
+    Max -->|测试/审查| Kyle[凯尔 Kyle<br/>质量保障]
+    Max -->|简单问题| Direct[Max 直接回答]
+
+    Ella -->|设计稿| Shared1[(shared/designs/)]
+    Jarvis -->|代码实现| Codebase[(项目代码)]
+    Kyle -->|审查报告| Shared2[(shared/reviews/)]
+
+    Shared1 --> Summary[Max 汇总结果]
+    Codebase --> Summary
+    Shared2 --> Summary
+    Direct --> Summary
+    Summary --> User2([反馈给用户])
 ```
 
-- 设计类需求 → 派遣艾拉
-- 开发类需求 → 派遣贾维斯
-- 测试/审查需求 → 派遣凯尔
-- 简单问题 → Max 直接回答
+### 任务派遣决策流程
+
+```mermaid
+flowchart TD
+    Input([用户输入需求]) --> Parse[Max 解析需求]
+    Parse --> Classify{需求分类}
+
+    Classify -->|界面/交互/视觉/原型| Design[设计需求]
+    Classify -->|编码/功能/API/修复| Dev[开发需求]
+    Classify -->|审查/验收/测试/安全| QA[质量需求]
+    Classify -->|咨询/解释/简单问答| Simple[简单问题]
+
+    Design --> NeedClarify1{需求是否清晰?}
+    NeedClarify1 -->|否| Ask1[追问用户澄清]
+    Ask1 --> NeedClarify1
+    NeedClarify1 -->|是| DispatchElla["派遣艾拉<br/>注入: 需求描述 + 项目上下文"]
+
+    Dev --> NeedClarify2{需求是否清晰?}
+    NeedClarify2 -->|否| Ask2[追问用户澄清]
+    Ask2 --> NeedClarify2
+    NeedClarify2 -->|是| HasDesign{有设计稿?}
+    HasDesign -->|是| DispatchJarvisWithDesign["派遣贾维斯<br/>注入: 需求 + 设计稿路径"]
+    HasDesign -->|否| DispatchJarvis["派遣贾维斯<br/>注入: 需求 + 技术上下文"]
+
+    QA --> HasCode{有待审查代码?}
+    HasCode -->|是| DispatchKyle["派遣凯尔<br/>注入: 代码路径 + 需求说明"]
+    HasCode -->|否| AskCode[提示用户指定审查范围]
+
+    Simple --> MaxAnswer[Max 直接回答]
+```
+
+### 完整流水线（设计 → 开发 → 验收）
+
+```mermaid
+sequenceDiagram
+    participant User as User
+    participant Max as Max
+    participant Ella as Ella
+    participant Jarvis as Jarvis
+    participant Kyle as Kyle
+    participant Shared as Shared
+
+    User->>Max: 提出需求
+    Max->>Max: 分析并拆解任务
+
+    Note over Max,Ella: 阶段一 设计
+    Max->>Ella: 派遣设计任务
+    Ella->>Shared: 输出设计稿
+    Ella-->>Max: 设计完成
+    Max-->>User: 需要开发吗
+
+    User->>Max: 确认开发
+
+    Note over Max,Jarvis: 阶段二 开发
+    Max->>Jarvis: 派遣开发任务+设计稿路径
+    Jarvis->>Shared: 读取设计稿
+    Jarvis->>Jarvis: 实现代码
+    Jarvis-->>Max: 开发完成
+    Max-->>User: 需要验收吗
+
+    User->>Max: 确认验收
+
+    Note over Max,Kyle: 阶段三 验收
+    Max->>Kyle: 派遣验收任务+代码路径
+    Kyle->>Kyle: 代码审查+功能验收
+    Kyle->>Shared: 输出审查报告
+    Kyle-->>Max: 验收完成
+
+    Max-->>User: 汇总全流程结果
+```
+
+### 上下文传递机制
+
+```mermaid
+flowchart LR
+    subgraph CTX["独立上下文窗口"]
+        MaxCtx["Max 上下文\nRules 自动注入"]
+        EllaCtx["Ella 上下文\n独立窗口"]
+        JarvisCtx["Jarvis 上下文\n独立窗口"]
+        KyleCtx["Kyle 上下文\n独立窗口"]
+    end
+
+    subgraph SHARED["共享产物目录"]
+        Tasks[("tasks/")]
+        Designs[("designs/")]
+        Reviews[("reviews/")]
+    end
+
+    MaxCtx -->|"派遣时注入\n需求+产物路径"| EllaCtx
+    MaxCtx -->|"派遣时注入\n需求+设计稿路径"| JarvisCtx
+    MaxCtx -->|"派遣时注入\n代码路径+需求"| KyleCtx
+
+    EllaCtx -->|写入设计稿| Designs
+    JarvisCtx -->|读取设计稿| Designs
+    KyleCtx -->|写入审查报告| Reviews
+    MaxCtx -->|写入任务文档| Tasks
+
+    style MaxCtx fill:#4A90D9,color:#fff
+    style EllaCtx fill:#E91E63,color:#fff
+    style JarvisCtx fill:#4CAF50,color:#fff
+    style KyleCtx fill:#FF9800,color:#fff
+```
+
+> **关键规则**：子 Agent 之间不能直接通信，所有上下文由 Max 在派遣时注入，跨 Agent 协作通过 `.dev-agents/shared/` 目录下的文件实现。
+
+### 并行执行场景
+
+```mermaid
+flowchart TD
+    User([用户: 设计登录页 + 开发后端 API]) --> Max[Max 分析]
+    Max --> Check{任务间有依赖?}
+
+    Check -->|无依赖| Parallel["并行派遣<br/>(各自注入完整独立上下文)"]
+    Parallel --> Ella2[艾拉: 设计登录页]
+    Parallel --> Jarvis2[贾维斯: 开发后端 API]
+    Ella2 --> Done1[设计完成]
+    Jarvis2 --> Done2[开发完成]
+    Done1 --> Merge[Max 汇总两个任务结果]
+    Done2 --> Merge
+
+    Check -->|有依赖| Sequential[顺序执行]
+    Sequential --> First[先完成前置任务]
+    First --> Then[再派遣依赖任务<br/>注入前置产物路径]
+    Then --> Merge2[Max 汇总]
+```
+
+### Cursor 三层架构与 Agent 关系
+
+```mermaid
+flowchart TB
+    subgraph Layer1["Rules 层"]
+        R1["project-core.mdc\n核心约定"]
+        R2["max-coordinator.mdc\n调度规则"]
+        R3["git-conventions.mdc\nGit 安全"]
+        R4["shared-artifacts.mdc\n产物规范"]
+    end
+
+    subgraph Layer2["Subagents 层"]
+        A1["ella.md\nUI/UX 设计师"]
+        A2["jarvis.md\n全栈开发"]
+        A3["kyle.md\n质量保障 只读"]
+    end
+
+    subgraph Layer3["Skills 层"]
+        S1["ccpm\n项目管理"]
+        S2["ui-ux-pro-max\n设计工具"]
+        S3["claude-simone\n开发技能"]
+        S4["senior-qa\n测试技能"]
+    end
+
+    Layer1 -->|注入上下文| Max(("Max\n主 Agent"))
+    Max -->|委派| A1
+    Max -->|委派| A2
+    Max -->|委派| A3
+
+    S1 -.->|按需加载| Max
+    S2 -.->|按需加载| A1
+    S3 -.->|按需加载| A2
+    S4 -.->|按需加载| A3
+
+    style Max fill:#4A90D9,color:#fff,stroke-width:3px
+    style Layer1 fill:#f0f4ff,stroke:#4A90D9
+    style Layer2 fill:#fff0f0,stroke:#E91E63
+    style Layer3 fill:#f0fff0,stroke:#4CAF50
+```
 
 ## 使用示例
 
 ```
 你: 帮我设计一个登录页面
-Max: [分析需求，派遣艾拉] → 艾拉输出设计稿
+Max: [分析需求，派遣艾拉] → 艾拉输出设计稿 → shared/designs/
 
 你: 根据设计稿开发登录功能
-Max: [派遣贾维斯] → 贾维斯实现代码
+Max: [派遣贾维斯，注入设计稿路径] → 贾维斯实现代码
 
 你: 验收一下登录功能
-Max: [派遣凯尔] → 凯尔输出审查报告
+Max: [派遣凯尔，注入代码路径 + 需求] → 凯尔输出审查报告 → shared/reviews/
 ```
 
 ## 项目结构
