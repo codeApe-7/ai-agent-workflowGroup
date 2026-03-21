@@ -1,0 +1,89 @@
+{
+  "_description": "Skills 来源清单 — 用于追踪版本和自动更新",
+  "_updated": "2026-03-21",
+  "sources": {
+    "github": {
+      "ccpm": {
+        "repo": "automazeio/ccpm",
+        "description": "CCPM 项目管理",
+        "license": "MIT",
+        "agent": "max"
+      },
+      "pm-claude-skills": {
+        "repo": "mohitagw15856/pm-claude-skills",
+        "description": "PM Claude Skills",
+        "license": "MIT",
+        "agent": "max"
+      },
+      "claude-simone": {
+        "repo": "Helmi/claude-simone",
+        "description": "Claude Simone 开发框架",
+        "license": "见原仓库",
+        "agent": "jarvis"
+      },
+      "engineering-team": {
+        "repo": "alirezarezvani/claude-skills",
+        "description": "Engineering Team 技能集（18 个子 skill）",
+        "license": "见原仓库",
+        "agent": "jarvis",
+        "skills": [
+          "aws-solution-architect",
+          "code-reviewer",
+          "ms365-tenant-manager",
+          "senior-architect",
+          "senior-backend",
+          "senior-computer-vision",
+          "senior-data-engineer",
+          "senior-data-scientist",
+          "senior-devops",
+          "senior-frontend",
+          "senior-fullstack",
+          "senior-ml-engineer",
+          "senior-prompt-engineer",
+          "senior-qa",
+          "senior-secops",
+          "senior-security",
+          "tdd-guide",
+          "tech-stack-evaluator"
+        ]
+      }
+    },
+    "skillsmp": {
+      "ui-ux-pro-max": {
+        "description": "UI/UX Pro Max 设计工具",
+        "license": "MIT",
+        "version": "v1.0",
+        "agent": "ella",
+        "update": "手动从 SkillsMP 技能市场下载"
+      },
+      "senior-qa": {
+        "description": "高级 QA 工程师技能包",
+        "license": "MIT",
+        "version": "v1.0",
+        "agent": "kyle",
+        "update": "手动从 SkillsMP 技能市场下载"
+      },
+      "tdd-guide": {
+        "description": "TDD 测试驱动开发指南",
+        "license": "MIT",
+        "version": "v1.0",
+        "agent": "kyle",
+        "update": "手动从 SkillsMP 技能市场下载"
+      },
+      "senior-frontend": {
+        "description": "前端开发专家技能包",
+        "license": "MIT",
+        "version": "v1.0",
+        "agent": "ella",
+        "update": "手动从 SkillsMP 技能市场下载"
+      }
+    },
+    "custom": {
+      "ella-commands": {
+        "description": "Ella 设计师专用命令集",
+        "agent": "ella",
+        "update": "项目内自维护"
+      }
+    }
+  }
+}
