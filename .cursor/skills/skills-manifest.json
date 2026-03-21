@@ -1,11 +1,11 @@
 {
-  "_description": "Skills 来源清单 — 用于追踪版本和自动更新",
+  "_description": "Skills source manifest for version tracking and updates",
   "_updated": "2026-03-21",
   "sources": {
     "github": {
       "ccpm": {
         "repo": "automazeio/ccpm",
-        "description": "CCPM 项目管理",
+        "description": "CCPM Project Management",
         "license": "MIT",
         "agent": "max"
       },
@@ -17,14 +17,14 @@
       },
       "claude-simone": {
         "repo": "Helmi/claude-simone",
-        "description": "Claude Simone 开发框架",
-        "license": "见原仓库",
+        "description": "Claude Simone Dev Framework",
+        "license": "See original repo",
         "agent": "jarvis"
       },
       "engineering-team": {
         "repo": "alirezarezvani/claude-skills",
-        "description": "Engineering Team 技能集（18 个子 skill）",
-        "license": "见原仓库",
+        "description": "Engineering Team Skills (18 sub-skills)",
+        "license": "See original repo",
         "agent": "jarvis",
         "skills": [
           "aws-solution-architect",
@@ -50,39 +50,39 @@
     },
     "skillsmp": {
       "ui-ux-pro-max": {
-        "description": "UI/UX Pro Max 设计工具",
+        "description": "UI/UX Pro Max Design Tool",
         "license": "MIT",
         "version": "v1.0",
         "agent": "ella",
-        "update": "手动从 SkillsMP 技能市场下载"
+        "update": "manual download from SkillsMP"
       },
       "senior-qa": {
-        "description": "高级 QA 工程师技能包",
+        "description": "Senior QA Engineer Skill Pack",
         "license": "MIT",
         "version": "v1.0",
         "agent": "kyle",
-        "update": "手动从 SkillsMP 技能市场下载"
+        "update": "manual download from SkillsMP"
       },
       "tdd-guide": {
-        "description": "TDD 测试驱动开发指南",
+        "description": "TDD Guide",
         "license": "MIT",
         "version": "v1.0",
         "agent": "kyle",
-        "update": "手动从 SkillsMP 技能市场下载"
+        "update": "manual download from SkillsMP"
       },
       "senior-frontend": {
-        "description": "前端开发专家技能包",
+        "description": "Senior Frontend Skill Pack",
         "license": "MIT",
         "version": "v1.0",
         "agent": "ella",
-        "update": "手动从 SkillsMP 技能市场下载"
+        "update": "manual download from SkillsMP"
       }
     },
     "custom": {
       "ella-commands": {
-        "description": "Ella 设计师专用命令集",
+        "description": "Ella Designer Commands",
         "agent": "ella",
-        "update": "项目内自维护"
+        "update": "self-maintained"
       }
     }
   }

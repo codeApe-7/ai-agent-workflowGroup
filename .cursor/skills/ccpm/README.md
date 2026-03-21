@@ -1,54 +1,67 @@
-# Claude Code PM
+# CCPM – The Project Manager Agent
 
-[![Automaze](https://img.shields.io/badge/By-automaze.io-4b3baf)](https://automaze.io)
+[![Agent Skills](https://img.shields.io/badge/Agent_Skills-compatible-4b3baf)](https://agentskills.io)
 &nbsp;
-[![Claude Code](https://img.shields.io/badge/+-Claude%20Code-d97757)](https://github.com/automazeio/ccpm/blob/main/README.md)
+[![Eval Score](https://img.shields.io/badge/eval_score-100%25-brightgreen)](#proven-results)
+&nbsp;
 [![GitHub Issues](https://img.shields.io/badge/+-GitHub%20Issues-1f2328)](https://github.com/automazeio/ccpm)
 &nbsp;
-[![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge.svg)](https://github.com/hesreallyhim/awesome-claude-code?tab=readme-ov-file#general-)
-&nbsp;
-[![MIT License](https://img.shields.io/badge/License-MIT-28a745)](https://github.com/automazeio/ccpm/blob/main/LICENSE)
+[![MIT License](https://img.shields.io/badge/License-MIT-28a745)](LICENSE)
 &nbsp;
 [![Follow on 𝕏](https://img.shields.io/badge/𝕏-@aroussi-1c9bf0)](http://x.com/intent/follow?screen_name=aroussi)
 &nbsp;
 [![Star this repo](https://img.shields.io/github/stars/automazeio/ccpm.svg?style=social&label=Star%20this%20repo&maxAge=60)](https://github.com/automazeio/ccpm)
 
-### Claude Code workflow to ship ~~faster~~ _better_ using spec-driven development, GitHub issues, Git worktrees, and multiple AI agents running in parallel.
+### Spec-driven development for AI agents – ship ~~faster~~ _better_ using PRDs, GitHub issues, and multiple agents running in parallel.
 
-**[中文文档 (Chinese Documentation)](zh-docs/README_ZH.md)**
+Stop losing context. Stop blocking on tasks. Stop shipping bugs. CCPM gives your AI agent a structured PM brain: turn ideas into PRDs, PRDs into epics, epics into GitHub issues, and issues into production code — with full traceability at every step.
 
-Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tested system turns PRDs into epics, epics into GitHub issues, and issues into production code – with full traceability at every step.
+---
 
-![Claude Code PM](screenshot.webp)
+> [!IMPORTANT]
+> 📢 **CCPM is now an AGENT SKILL!** It works with any [Agent Skills–compatible](https://agentskills.io) harness that supports skills: **Claude Code, Codex, OpenCode, Factory, Amp, Cursor, and more.**
+
+---
+
+![CCPM](screenshot.webp)
 
 ## Table of Contents
 
 - [Background](#background)
 - [The Workflow](#the-workflow)
-- [What Makes This Different?](#what-makes-this-different)
-- [Why GitHub Issues?](#why-github-issues)
+- [What Makes This Different](#what-makes-this-different)
+- [Why GitHub Issues](#why-github-issues)
 - [Core Principle: No Vibe Coding](#core-principle-no-vibe-coding)
-- [System Architecture](#system-architecture)
-- [Workflow Phases](#workflow-phases)
-- [Command Reference](#command-reference)
 - [The Parallel Execution System](#the-parallel-execution-system)
 - [Key Features & Benefits](#key-features--benefits)
-- [Proven Results](#proven-results)
+- [Install](#install)
+- [Usage](#usage)
+- [Workflow Phases](#workflow-phases)
+- [Skill Structure](#skill-structure)
 - [Example Flow](#example-flow)
-- [Get Started Now](#get-started-now)
+- [Proven Results](#proven-results)
 - [Local vs Remote](#local-vs-remote)
 - [Technical Notes](#technical-notes)
-- [Support This Project](#support-this-project)
+- [Who's Behind this Project](#whos-behind-this-project)
+
+---
+
+> [!NOTE]
+> Check out **[proof](https://github.com/automazeio/proof)** to get your agents capture visual proof of work of terminal output, browser interactions, and mobile simulator recordings.
+
+---
 
 ## Background
 
 Every team struggles with the same problems:
 - **Context evaporates** between sessions, forcing constant re-discovery
-- **Parallel work creates conflicts** when multiple developers touch the same code
+- **Parallel work creates conflicts** when multiple agents touch the same code
 - **Requirements drift** as verbal decisions override written specs
 - **Progress becomes invisible** until the very end
 
-This system solves all of that.
+CCPM solves all of that.
+
+---
 
 ## The Workflow
 
@@ -60,203 +73,76 @@ graph LR
     D --> E[Parallel Execution]
 ```
 
-### See It In Action (60 seconds)
+### See It In Action
 
-```bash
-# Create a comprehensive PRD through guided brainstorming
-/pm:prd-new memory-system
+```
+"I want to build a notification system — where do we start?"
+→ Guided brainstorming + PRD creation
 
-# Transform PRD into a technical epic with task breakdown
-/pm:prd-parse memory-system
+"break down the notification-system epic"
+→ Parallelizable task files with dependencies
 
-# Push to GitHub and start parallel execution
-/pm:epic-oneshot memory-system
-/pm:issue-start 1235
+"sync the notification-system epic to GitHub"
+→ Epic issue + sub-issues + worktree
+
+"start working on issue 42"
+→ Parallel stream analysis + multiple agents launched
+
+"what's our standup for today?"
+→ Instant report from project files
 ```
 
-## What Makes This Different?
+---
 
-| Traditional Development | Claude Code PM System |
-|------------------------|----------------------|
+## What Makes This Different
+
+| Traditional AI Development | CCPM |
+|---|---|
 | Context lost between sessions | **Persistent context** across all work |
-| Serial task execution | **Parallel agents** on independent tasks |
-| "Vibe coding" from memory | **Spec-driven** with full traceability |
-| Progress hidden in branches | **Transparent audit trail** in GitHub |
-| Manual task coordination | **Intelligent prioritization** with `/pm:next` |
+| One agent, one task | **Parallel agents** on independent streams |
+| Vibe coding from memory | **Spec-driven** with full traceability |
+| Progress hidden in chat logs | **Transparent audit trail** in GitHub |
+| Scattered status updates | **Structured standup, blocked, next** |
 
-## Why GitHub Issues?
+---
 
-Most Claude Code workflows operate in isolation – a single developer working with AI in their local environment. This creates a fundamental problem: **AI-assisted development becomes a silo**.
+## Why GitHub Issues
 
-By using GitHub Issues as our database, we unlock something powerful:
+Most AI coding workflows operate in isolation — a single session with no shared state. CCPM uses GitHub Issues as the source of truth, which unlocks something fundamentally different:
 
-### 🤝 **True Team Collaboration**
-- Multiple Claude instances can work on the same project simultaneously
-- Human developers see AI progress in real-time through issue comments
-- Team members can jump in anywhere – the context is always visible
-- Managers get transparency without interrupting flow
+**Team collaboration** — multiple agents (or humans) work on the same project simultaneously. Progress is visible in real-time through issue comments.
 
-### 🔄 **Seamless Human-AI Handoffs**
-- AI can start a task, human can finish it (or vice versa)
-- Progress updates are visible to everyone, not trapped in chat logs
-- Code reviews happen naturally through PR comments
-- No "what did the AI do?" meetings
+**Seamless handoffs** — an agent can start a task, a human can finish it, or vice versa. No "what did the AI do?" meetings.
 
-### 📈 **Scalable Beyond Solo Work**
-- Add team members without onboarding friction
-- Multiple AI agents working in parallel on different issues
-- Distributed teams stay synchronized automatically
-- Works with existing GitHub workflows and tools
+**Single source of truth** — no separate databases or project management tools. Issue state is project state. Comments are the audit trail.
 
-### 🎯 **Single Source of Truth**
-- No separate databases or project management tools
-- Issue state is the project state
-- Comments are the audit trail
-- Labels provide organization
+**Works with what you have** — no dependency on GitHub Projects. Integrates with existing labels, milestones, and PR workflows.
 
-This isn't just a project management system – it's a **collaboration protocol** that lets humans and AI agents work together at scale, using infrastructure your team already trusts.
+---
 
 ## Core Principle: No Vibe Coding
 
 > **Every line of code must trace back to a specification.**
 
-We follow a strict 5-phase discipline:
+CCPM enforces a strict 5-phase discipline:
 
-1. **🧠 Brainstorm** - Think deeper than comfortable
-2. **📝 Document** - Write specs that leave nothing to interpretation
-3. **📐 Plan** - Architect with explicit technical decisions
-4. **⚡ Execute** - Build exactly what was specified
-5. **📊 Track** - Maintain transparent progress at every step
+1. **🧠 Brainstorm** — think deeper than comfortable
+2. **📝 Document** — write specs that leave nothing to interpretation
+3. **📐 Plan** — architect with explicit technical decisions
+4. **⚡ Execute** — build exactly what was specified
+5. **📊 Track** — maintain transparent progress at every step
 
 No shortcuts. No assumptions. No regrets.
 
-## System Architecture
-
-```
-.claude/
-├── CLAUDE.md          # Always-on instructions (copy content to your project's CLAUDE.md file)
-├── agents/            # Task-oriented agents (for context preservation)
-├── commands/          # Command definitions
-│   ├── context/       # Create, update, and prime context
-│   ├── pm/            # ← Project management commands (this system)
-│   └── testing/       # Prime and execute tests (edit this)
-├── context/           # Project-wide context files
-├── epics/             # ← PM's local workspace (place in .gitignore)
-│   └── [epic-name]/   # Epic and related tasks
-│       ├── epic.md    # Implementation plan
-│       ├── [#].md     # Individual task files
-│       └── updates/   # Work-in-progress updates
-├── prds/              # ← PM's PRD files
-├── rules/             # Place any rule files you'd like to reference here
-└── scripts/           # Place any script files you'd like to use here
-```
-
-## Workflow Phases
-
-### 1. Product Planning Phase
-
-```bash
-/pm:prd-new feature-name
-```
-Launches comprehensive brainstorming to create a Product Requirements Document capturing vision, user stories, success criteria, and constraints.
-
-**Output:** `.claude/prds/feature-name.md`
-
-### 2. Implementation Planning Phase
-
-```bash
-/pm:prd-parse feature-name
-```
-Transforms PRD into a technical implementation plan with architectural decisions, technical approach, and dependency mapping.
-
-**Output:** `.claude/epics/feature-name/epic.md`
-
-### 3. Task Decomposition Phase
-
-```bash
-/pm:epic-decompose feature-name
-```
-Breaks epic into concrete, actionable tasks with acceptance criteria, effort estimates, and parallelization flags.
-
-**Output:** `.claude/epics/feature-name/[task].md`
-
-### 4. GitHub Synchronization
-
-```bash
-/pm:epic-sync feature-name
-# Or for confident workflows:
-/pm:epic-oneshot feature-name
-```
-Pushes epic and tasks to GitHub as issues with appropriate labels and relationships.
-
-### 5. Execution Phase
-
-```bash
-/pm:issue-start 1234  # Launch specialized agent
-/pm:issue-sync 1234   # Push progress updates
-/pm:next             # Get next priority task
-```
-Specialized agents implement tasks while maintaining progress updates and an audit trail.
-
-## Command Reference
-
-> [!TIP]
-> Type `/pm:help` for a concise command summary
-
-### Initial Setup
-- `/pm:init` - Install dependencies and configure GitHub
-
-### PRD Commands
-- `/pm:prd-new` - Launch brainstorming for new product requirement
-- `/pm:prd-parse` - Convert PRD to implementation epic
-- `/pm:prd-list` - List all PRDs
-- `/pm:prd-edit` - Edit existing PRD
-- `/pm:prd-status` - Show PRD implementation status
-
-### Epic Commands
-- `/pm:epic-decompose` - Break epic into task files
-- `/pm:epic-sync` - Push epic and tasks to GitHub
-- `/pm:epic-oneshot` - Decompose and sync in one command
-- `/pm:epic-list` - List all epics
-- `/pm:epic-show` - Display epic and its tasks
-- `/pm:epic-close` - Mark epic as complete
-- `/pm:epic-edit` - Edit epic details
-- `/pm:epic-refresh` - Update epic progress from tasks
-
-### Issue Commands
-- `/pm:issue-show` - Display issue and sub-issues
-- `/pm:issue-status` - Check issue status
-- `/pm:issue-start` - Begin work with specialized agent
-- `/pm:issue-sync` - Push updates to GitHub
-- `/pm:issue-close` - Mark issue as complete
-- `/pm:issue-reopen` - Reopen closed issue
-- `/pm:issue-edit` - Edit issue details
-
-### Workflow Commands
-- `/pm:next` - Show next priority issue with epic context
-- `/pm:status` - Overall project dashboard
-- `/pm:standup` - Daily standup report
-- `/pm:blocked` - Show blocked tasks
-- `/pm:in-progress` - List work in progress
-
-### Sync Commands
-- `/pm:sync` - Full bidirectional sync with GitHub
-- `/pm:import` - Import existing GitHub issues
-
-### Maintenance Commands
-- `/pm:validate` - Check system integrity
-- `/pm:clean` - Archive completed work
-- `/pm:search` - Search across all content
+---
 
 ## The Parallel Execution System
 
 ### Issues Aren't Atomic
 
-Traditional thinking: One issue = One developer = One task
+Traditional thinking: **one issue = one agent = one task**
 
-**Reality: One issue = Multiple parallel work streams**
-
-A single "Implement user authentication" issue isn't one task. It's...
+Reality: a single "Implement user authentication" issue is actually:
 
 - **Agent 1**: Database tables and migrations
 - **Agent 2**: Service layer and business logic
@@ -268,227 +154,280 @@ All running **simultaneously** in the same worktree.
 
 ### The Math of Velocity
 
-**Traditional Approach:**
-- Epic with 3 issues
-- Sequential execution
+| Approach | Agents working | Wall time |
+|---|---|---|
+| Traditional (serial) | 1 | 5x |
+| CCPM (parallel streams) | 5 | 1x |
 
-**This System:**
-- Same epic with 3 issues
-- Each issue splits into ~4 parallel streams
-- **12 agents working simultaneously**
+### Context Stays Clean
 
-We're not assigning agents to issues. We're **leveraging multiple agents** to ship faster.
+Each agent handles its own context in isolation. Your main conversation becomes the conductor — it never drowns in implementation details. Agents read from `.claude/epics/` and commit progress back through Git.
 
-### Context Optimization
-
-**Traditional single-thread approach:**
-- Main conversation carries ALL the implementation details
-- Context window fills with database schemas, API code, UI components
-- Eventually hits context limits and loses coherence
-
-**Parallel agent approach:**
-- Main thread stays clean and strategic
-- Each agent handles its own context in isolation
-- Implementation details never pollute the main conversation
-- Main thread maintains oversight without drowning in code
-
-Your main conversation becomes the conductor, not the orchestra.
-
-### GitHub vs Local: Perfect Separation
-
-**What GitHub Sees:**
-- Clean, simple issues
-- Progress updates
-- Completion status
-
-**What Actually Happens Locally:**
-- Issue #1234 explodes into 5 parallel agents
-- Agents coordinate through Git commits
-- Complex orchestration hidden from view
-
-GitHub doesn't need to know HOW the work got done – just that it IS done.
-
-### The Command Flow
-
-```bash
-# Analyze what can be parallelized
-/pm:issue-analyze 1234
-
-# Launch the swarm
-/pm:epic-start memory-system
-
-# Watch the magic
-# 12 agents working across 3 issues
-# All in: ../epic-memory-system/
-
-# One clean merge when done
-/pm:epic-merge memory-system
-```
+---
 
 ## Key Features & Benefits
 
-### 🧠 **Context Preservation**
-Never lose project state again. Each epic maintains its own context, agents read from `.claude/context/`, and updates locally before syncing.
+**🧠 Context preservation** — project state lives in files, not in your head or chat history. Start a session anywhere, any time.
 
-### ⚡ **Parallel Execution**
-Ship faster with multiple agents working simultaneously. Tasks marked `parallel: true` enable conflict-free concurrent development.
+**⚡ Parallel execution** — tasks marked `parallel: true` run concurrently across multiple agents without conflicts.
 
-### 🔗 **GitHub Native**
-Works with tools your team already uses. Issues are the source of truth, comments provide history, and there is no dependency on the Projects API.
+**🔗 GitHub native** — works with tools your team already uses. No dependency on the Projects API.
 
-### 🤖 **Agent Specialization**
-Right tool for every job. Different agents for UI, API, and database work. Each reads requirements and posts updates automatically.
+**📊 Full traceability** — every decision documented. PRD → Epic → Task → Issue → Code → Commit.
 
-### 📊 **Full Traceability**
-Every decision is documented. PRD → Epic → Task → Issue → Code → Commit. Complete audit trail from idea to production.
+**🤖 Deterministic ops run as scripts** — status, standup, search, validate all run as bash scripts: fast, consistent, no LLM token cost.
 
-### 🚀 **Developer Productivity**
-Focus on building, not managing. Intelligent prioritization, automatic context loading, and incremental sync when ready.
+**🌐 Harness-agnostic** — follows the [agentskills.io](https://agentskills.io) open standard. Works with Factory, Claude Code, Amp, OpenCode, Codex, Cursor, and more.
+
+---
+
+## Install
+
+CCPM is a standard [Agent Skill](https://agentskills.io). Point your harness at `skill/ccpm/` — that's it.
+
+### Clone the repo
+
+```bash
+git clone https://github.com/automazeio/ccpm.git
+```
+
+### Factory / Droid
+
+```bash
+# Symlink into your skills directory
+ln -s /path/to/ccpm/skill/ccpm ~/.factory/skills/ccpm
+```
+
+### Claude Code
+
+In your project root, add a `skills/` directory and symlink or copy the skill:
+
+```bash
+ln -s /path/to/ccpm/skill/ccpm .claude/skills/ccpm
+```
+
+### Any other Agent Skills–compatible harness
+
+Point it at `skill/ccpm/`. It follows the [agentskills.io](https://agentskills.io) standard and works out of the box.
+
+### Prerequisites
+
+- `git` and `gh` CLI (authenticated: `gh auth login`)
+- A GitHub repository for your project
+
+---
+
+## Usage
+
+CCPM activates automatically when your agent detects PM intent. Just talk naturally — no special syntax needed.
+
+### Natural language triggers
+
+| What you say | What happens |
+|---|---|
+| "I want to build X" / "let's plan X" | Brainstorming + PRD creation |
+| "parse the X PRD" / "create an epic for X" | PRD → technical epic |
+| "break down the X epic" | Epic decomposition into tasks |
+| "sync the X epic to GitHub" | Issues created, worktree set up |
+| "start working on issue N" | Analysis + parallel agents launched |
+| "standup" / "what's our status" | Bash script runs instantly |
+| "what's next" / "what's blocked" | Priority queue from project files |
+| "close issue N" | Local + GitHub updated |
+| "merge the X epic" | Tests, merge, cleanup |
+
+---
+
+## Workflow Phases
+
+### 1. Plan — Capture requirements
+
+```
+"I want to build a notification system — push, email, and in-app"
+```
+
+CCPM conducts guided brainstorming before writing anything. It asks about the problem, users, success criteria, constraints, and what's out of scope — then creates a structured PRD at `.claude/prds/<name>.md`.
+
+When ready: "parse the notification-system PRD" → produces a technical epic at `.claude/epics/notification-system/epic.md` with architecture decisions, technical approach, and task preview.
+
+### 2. Structure — Break it down
+
+```
+"break down the notification-system epic into tasks"
+```
+
+Each task gets a file with acceptance criteria, effort estimate, `depends_on`, `parallel`, and `conflicts_with` metadata. Tasks are intelligently batched for parallel creation. ≤10 tasks per epic by default.
+
+### 3. Sync — Push to GitHub
+
+```
+"sync the notification-system epic to GitHub"
+```
+
+Creates an epic issue, creates sub-issues for each task, renames local files to match GitHub issue numbers, sets up a dedicated worktree (`../epic-notification-system/`), and creates a mapping file for reference.
+
+### 4. Execute — Start building
+
+```
+"start working on issue 42"
+```
+
+Analyzes the issue for independent work streams, launches parallel agents scoped to their own files, and sets up progress tracking. Each agent commits with `Issue #N: description` and coordinates through Git.
+
+### 5. Track — Know where things stand
+
+```
+"standup" / "what's blocked" / "what's next"
+```
+
+All tracking operations run as bash scripts — instant output, no LLM overhead. The scripts scan `.claude/epics/` and report what's in progress, what's next, and what's blocked.
+
+---
+
+## Skill Structure
+
+```
+skill/ccpm/
+├── SKILL.md                  # Entry point — detects intent, routes to reference
+└── references/
+    ├── plan.md               # PRD writing + parsing to epic
+    ├── structure.md          # Epic decomposition into tasks
+    ├── sync.md               # GitHub sync, progress comments, close, merge
+    ├── execute.md            # Issue analysis + parallel agent launch
+    ├── track.md              # Status, standup, search, next, blocked
+    ├── conventions.md        # File formats, frontmatter schemas, git rules
+    └── scripts/              # Bash scripts for deterministic operations
+        ├── status.sh
+        ├── standup.sh
+        ├── epic-list.sh
+        ├── search.sh
+        └── ...               # 14 scripts total
+```
+
+Your project files live in `.claude/` in your project root:
+
+```
+.claude/
+├── prds/                     # Product requirement documents
+├── epics/
+│   └── <feature>/
+│       ├── epic.md           # Technical epic
+│       ├── <N>.md            # Task files (named by GitHub issue number after sync)
+│       ├── <N>-analysis.md   # Parallel work stream analysis
+│       └── updates/          # Agent progress tracking
+└── (archived epics)
+```
+
+Files are the source of truth — plain markdown that lives in your repo, no external services.
+
+---
+
+## Example Flow
+
+```
+You: "I want to build a payment integration with Stripe — subscriptions and one-time charges"
+
+CCPM: Asks 5 clarifying questions about scope, users, success criteria...
+
+You: [answers]
+
+CCPM: ✅ PRD created: .claude/prds/payment-integration.md
+      Ready to create the technical epic?
+
+You: "yes, parse it"
+
+CCPM: ✅ Epic created: .claude/epics/payment-integration/epic.md
+      8 task categories identified. Ready to decompose?
+
+You: "break it down"
+
+CCPM: ✅ Created 7 tasks — 5 parallel, 2 sequential
+      Ready to push to GitHub?
+
+You: "sync it"
+
+CCPM: ✅ Epic #1234 created
+      ✅ 7 sub-issues created (#1235–#1241)
+      ✅ Worktree: ../epic-payment-integration/
+
+You: "start working on issue 1235"
+
+CCPM: Analyzed 3 parallel streams:
+      Stream A: Stripe client setup ✓ Started
+      Stream B: Webhook handler ✓ Started
+      Stream C: Database models ⏸ Waiting on A
+
+You: "what's our standup?"
+
+CCPM: [runs standup.sh instantly]
+      📅 Daily Standup — 2026-03-18
+      🔄 In Progress: Issue #1235 (payment-integration) — 60%
+      ⏭️ Next: Issue #1236 — Subscription billing logic
+      📊 Tasks: 2 in progress, 5 open, 0 closed
+```
+
+---
 
 ## Proven Results
 
 Teams using this system report:
-- **89% less time** lost to context switching – you'll use `/compact` and `/clear` a LOT less
-- **5-8 parallel tasks** vs 1 previously – editing/testing multiple files at the same time
-- **75% reduction** in bug rates – due to the breaking down features into detailed tasks
-- **Up to 3x faster** feature delivery – based on feature size and complexity
+- **89% less time** lost to context switching
+- **5–8 parallel tasks** vs 1 previously
+- **75% reduction** in bug rates — due to detailed task breakdown before coding
+- **Up to 3× faster** feature delivery
 
-## Example Flow
+### Benchmark
 
-```bash
-# Start a new feature
-/pm:prd-new memory-system
+In structured evals comparing CCPM-equipped agents vs baseline (no skill):
 
-# Review and refine the PRD...
+| Scenario | With CCPM | Without |
+|---|---|---|
+| PRD creation (brainstorm-first, correct paths) | ✅ 4/4 | ❌ 2/4 |
+| Issue execution (analysis + worktree checks) | ✅ 4/4 | ❌ 0/4 |
+| Standup (runs script, real data) | ✅ 3/3 | ❌ 1/3 |
+| **Overall** | **100%** | **27.7%** |
 
-# Create implementation plan
-/pm:prd-parse memory-system
-
-# Review the epic...
-
-# Break into tasks and push to GitHub
-/pm:epic-oneshot memory-system
-# Creates issues: #1234 (epic), #1235, #1236 (tasks)
-
-# Start development on a task
-/pm:issue-start 1235
-# Agent begins work, maintains local progress
-
-# Sync progress to GitHub
-/pm:issue-sync 1235
-# Updates posted as issue comments
-
-# Check overall status
-/pm:epic-show memory-system
-```
-
-## Get Started Now
-
-### Quick Setup (2 minutes)
-
-1. **Install this repository into your project**:
-
-   #### Unix/Linux/macOS
-
-   ```bash
-   cd path/to/your/project/
-   curl -sSL https://automaze.io/ccpm/install | bash
-   # or: wget -qO- https://automaze.io/ccpm/install | bash
-   ```
-
-   #### Windows (PowerShell)
-   ```bash
-   cd path/to/your/project/
-   iwr -useb https://automaze.io/ccpm/install | iex
-   ```
-   > ⚠️ **IMPORTANT**: If you already have a `.claude` directory, clone this repository to a different directory and copy the contents of the cloned `.claude` directory to your project's `.claude` directory.
-
-   See full/other installation options in the [installation guide ›](https://github.com/automazeio/ccpm/tree/main/install)
-
-
-2. **Initialize the PM system**:
-   ```bash
-   /pm:init
-   ```
-   This command will:
-   - Install GitHub CLI (if needed)
-   - Authenticate with GitHub
-   - Install [gh-sub-issue extension](https://github.com/yahsan2/gh-sub-issue) for proper parent-child relationships
-   - Create required directories
-   - Update .gitignore
-
-3. **Create `CLAUDE.md`** with your repository information
-   ```bash
-   /init include rules from .claude/CLAUDE.md
-   ```
-   > If you already have a `CLAUDE.md` file, run: `/re-init` to update it with important rules from `.claude/CLAUDE.md`.
-
-4. **Prime the system**:
-   ```bash
-   /context:create
-   ```
-
-
-
-### Start Your First Feature
-
-```bash
-/pm:prd-new your-feature-name
-```
-
-Watch as structured planning transforms into shipped code.
+---
 
 ## Local vs Remote
 
 | Operation | Local | GitHub |
-|-----------|-------|--------|
-| PRD Creation | ✅ | — |
-| Implementation Planning | ✅ | — |
-| Task Breakdown | ✅ | ✅ (sync) |
+|---|---|---|
+| PRD creation | ✅ | — |
+| Implementation planning | ✅ | — |
+| Task breakdown | ✅ | ✅ (on sync) |
 | Execution | ✅ | — |
-| Status Updates | ✅ | ✅ (sync) |
-| Final Deliverables | — | ✅ |
-
-## Technical Notes
-
-### GitHub Integration
-- Uses **gh-sub-issue extension** for proper parent-child relationships
-- Falls back to task lists if extension not installed
-- Epic issues track sub-task completion automatically
-- Labels provide additional organization (`epic:feature`, `task:feature`)
-
-### File Naming Convention
-- Tasks start as `001.md`, `002.md` during decomposition
-- After GitHub sync, renamed to `{issue-id}.md` (e.g., `1234.md`)
-- Makes it easy to navigate: issue #1234 = file `1234.md`
-
-### Design Decisions
-- Intentionally avoids GitHub Projects API complexity
-- All commands operate on local files first for speed
-- Synchronization with GitHub is explicit and controlled
-- Worktrees provide clean git isolation for parallel work
-- GitHub Projects can be added separately for visualization
+| Progress updates | ✅ | ✅ (on sync) |
+| Final deliverables | — | ✅ |
 
 ---
 
-## Support This Project
+## Technical Notes
 
-Claude Code PM was developed at [Automaze](https://automaze.io) **for developers who ship, by developers who ship**.
+**GitHub integration** — uses `gh-sub-issue` extension for proper parent-child relationships. Falls back to task lists if not installed. Install with: `gh extension install yahsan2/gh-sub-issue`
 
-If Claude Code PM helps your team ship better software:
+**File naming** — tasks start as `001.md`, `002.md` during decomposition. After GitHub sync, renamed to `{issue-id}.md` (e.g. `1234.md`). Issue #1234 = file `1234.md`.
+
+**Design decisions** — intentionally avoids GitHub Projects API complexity. All operations work on local files first for speed. GitHub sync is explicit and controlled. Worktrees provide clean git isolation for parallel work.
+
+**Looking for v1?** — The original `/pm:*` Claude Code slash command system is preserved on the [`v1` branch](https://github.com/automazeio/ccpm/tree/v1).
+
+---
+
+## Who's behind this project
+
+CCPM was developed at [Automaze](https://automaze.io) **for developers who ship, by developers who ship**.
+
+If CCPM helps your team ship better software:
 
 - ⭐ **[Star this repository](https://github.com/automazeio/ccpm)** to show your support
 - 🐦 **[Follow @aroussi on X](https://x.com/aroussi)** for updates and tips
-
 
 ---
 
 > [!TIP]
 > **Ship faster with Automaze.** We partner with founders to bring their vision to life, scale their business, and optimize for success.
-> **[Visit Automaze to book a call with me ›](https://automaze.io)**
+> **[Visit Automaze to book a call ›](https://automaze.io)**
 
 ---
-
-## Star History
 
 ![Star History Chart](https://api.star-history.com/svg?repos=automazeio/ccpm)
