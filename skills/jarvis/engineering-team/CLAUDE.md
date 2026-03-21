@@ -1,292 +1,206 @@
-# Engineering Team Skills - Claude Code Guidance
+# CLAUDE.md
 
-This guide covers the 18 production-ready engineering skills and their Python automation tools.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Engineering Skills Overview
+## Project Purpose
 
-**Core Engineering (13 skills):**
-- senior-architect, senior-frontend, senior-backend, senior-fullstack
-- senior-qa, senior-devops, senior-secops
-- code-reviewer, senior-security
-- aws-solution-architect, ms365-tenant-manager, tdd-guide, tech-stack-evaluator
+This is a **comprehensive skills library** for Claude AI and Claude Code - reusable, production-ready skill packages that bundle domain expertise, best practices, analysis tools, and strategic frameworks. The repository provides modular skills that teams can download and use directly in their workflows.
 
-**AI/ML/Data (5 skills):**
-- senior-data-scientist, senior-data-engineer, senior-ml-engineer
-- senior-prompt-engineer, senior-computer-vision
+**Current Scope:** 205 production-ready skills across 9 domains with 268 Python automation tools, 384 reference guides, 16 agents, and 19 slash commands.
 
-**Total Tools:** 30+ Python automation tools
+**Key Distinction**: This is NOT a traditional application. It's a library of skill packages meant to be extracted and deployed by users into their own Claude workflows.
 
-## Core Engineering Tools
+## Navigation Map
 
-### 1. Project Scaffolder (`senior-fullstack/scripts/project_scaffolder.py`)
+This repository uses **modular documentation**. For domain-specific guidance, see:
 
-**Purpose:** Production-ready project scaffolding for modern stacks
+| Domain | CLAUDE.md Location | Focus |
+|--------|-------------------|-------|
+| **Agent Development** | [agents/CLAUDE.md](agents/CLAUDE.md) | cs-* agent creation, YAML frontmatter, relative paths |
+| **Marketing Skills** | [marketing-skill/CLAUDE.md](marketing-skill/CLAUDE.md) | Content creation, SEO, ASO, demand gen, campaign analytics |
+| **Product Team** | [product-team/CLAUDE.md](product-team/CLAUDE.md) | RICE, OKRs, user stories, UX research, SaaS scaffolding |
+| **Engineering (Core)** | [engineering-team/CLAUDE.md](engineering-team/CLAUDE.md) | Fullstack, AI/ML, DevOps, security, data, QA tools |
+| **Engineering (POWERFUL)** | [engineering/](engineering/) | Agent design, RAG, MCP, CI/CD, database, observability |
+| **C-Level Advisory** | [c-level-advisor/CLAUDE.md](c-level-advisor/CLAUDE.md) | CEO/CTO strategic decision-making |
+| **Project Management** | [project-management/CLAUDE.md](project-management/CLAUDE.md) | Atlassian MCP, Jira/Confluence integration |
+| **RA/QM Compliance** | [ra-qm-team/CLAUDE.md](ra-qm-team/CLAUDE.md) | ISO 13485, MDR, FDA, GDPR, ISO 27001 compliance |
+| **Business & Growth** | [business-growth/CLAUDE.md](business-growth/CLAUDE.md) | Customer success, sales engineering, revenue operations |
+| **Finance** | [finance/CLAUDE.md](finance/CLAUDE.md) | Financial analysis, DCF valuation, budgeting, forecasting, SaaS metrics |
+| **Standards Library** | [standards/CLAUDE.md](standards/CLAUDE.md) | Communication, quality, git, security standards |
+| **Templates** | [templates/CLAUDE.md](templates/CLAUDE.md) | Template system usage |
 
-**Supported Stacks:**
-- Next.js + GraphQL + PostgreSQL
-- React + REST + MongoDB
-- Vue + GraphQL + MySQL
-- Express + TypeScript + PostgreSQL
+## Architecture Overview
 
-**Features:**
-- Docker Compose configuration
-- CI/CD pipeline (GitHub Actions)
-- Testing infrastructure (Jest, Cypress)
-- TypeScript + ESLint + Prettier
-- Database migrations
+### Repository Structure
 
-**Usage:**
-```bash
-# Create new project
-python senior-fullstack/scripts/project_scaffolder.py my-project --type nextjs-graphql
-
-# Start services
-cd my-project && docker-compose up -d
+```
+claude-code-skills/
+├── .claude-plugin/            # Plugin registry (marketplace.json)
+├── agents/                    # 16 cs-* prefixed agents across all domains
+├── commands/                  # 19 slash commands (changelog, tdd, saas-health, prd, code-to-prd, plugin-audit, sprint-plan, etc.)
+├── engineering-team/          # 26 core engineering skills + Playwright Pro + Self-Improving Agent + A11y Audit
+├── engineering/               # 30 POWERFUL-tier advanced skills (incl. AgentHub)
+├── product-team/              # 13 product skills + Python tools
+├── marketing-skill/           # 43 marketing skills (7 pods) + Python tools
+├── c-level-advisor/           # 28 C-level advisory skills (10 roles + orchestration)
+├── project-management/        # 6 PM skills + Atlassian MCP
+├── ra-qm-team/                # 12 RA/QM compliance skills
+├── business-growth/           # 4 business & growth skills + Python tools
+├── finance/                   # 2 finance skills + Python tools
+├── eval-workspace/            # Skill evaluation results (Tessl)
+├── standards/                 # 5 standards library files
+├── templates/                 # Reusable templates
+├── docs/                      # MkDocs Material documentation site
+├── scripts/                   # Build scripts (docs generation)
+└── documentation/             # Implementation plans, sprints, delivery
 ```
 
-### 2. Code Quality Analyzer (`senior-fullstack/scripts/code_quality_analyzer.py`)
+### Skill Package Pattern
 
-**Purpose:** Comprehensive code quality analysis and metrics
-
-**Features:**
-- Security vulnerability scanning
-- Performance issue detection
-- Test coverage assessment
-- Documentation quality
-- Dependency analysis
-- Actionable recommendations
-
-**Usage:**
-```bash
-# Analyze project
-python senior-fullstack/scripts/code_quality_analyzer.py /path/to/project
-
-# JSON output
-python senior-fullstack/scripts/code_quality_analyzer.py /path/to/project --json
+Each skill follows this structure:
+```
+skill-name/
+├── SKILL.md              # Master documentation
+├── scripts/              # Python CLI tools (no ML/LLM calls)
+├── references/           # Expert knowledge bases
+└── assets/               # User templates
 ```
 
-**Output:**
-```
-Code Quality Report:
-- Overall Score: 85/100
-- Security: 90/100 (2 medium issues)
-- Performance: 80/100 (3 optimization opportunities)
-- Test Coverage: 75% (target: 80%)
-- Documentation: 88/100
+**Design Philosophy**: Skills are self-contained packages. Each includes executable tools (Python scripts), knowledge bases (markdown references), and user-facing templates. Teams can extract a skill folder and use it immediately.
 
-Recommendations:
-1. Update lodash to 4.17.21 (CVE-2020-8203)
-2. Optimize database queries in UserService
-3. Add integration tests for payment flow
-```
+**Key Pattern**: Knowledge flows from `references/` → into `SKILL.md` workflows → executed via `scripts/` → applied using `assets/` templates.
 
-### 3. Fullstack Scaffolder (`senior-fullstack/scripts/fullstack_scaffolder.py`)
+## Git Workflow
 
-**Purpose:** Rapid fullstack application generation
+**Branch Strategy:** feature → dev → main (PR only)
 
-**Usage:**
-```bash
-python senior-fullstack/scripts/fullstack_scaffolder.py my-app --stack nextjs-graphql
-```
+**Branch Protection Active:** Main branch requires PR approval. Direct pushes blocked.
 
-## AI/ML/Data Tools
-
-### Data Science Tools
-
-**Experiment Designer** (`senior-data-scientist/scripts/experiment_designer.py`)
-- A/B test design
-- Statistical power analysis
-- Sample size calculation
-
-**Feature Engineering Pipeline** (`senior-data-scientist/scripts/feature_engineering_pipeline.py`)
-- Automated feature generation
-- Correlation analysis
-- Feature selection
-
-**Statistical Analyzer** (`senior-data-scientist/scripts/statistical_analyzer.py`)
-- Hypothesis testing
-- Causal inference
-- Regression analysis
-
-### Data Engineering Tools
-
-**Pipeline Orchestrator** (`senior-data-engineer/scripts/pipeline_orchestrator.py`)
-- Airflow DAG generation
-- Spark job templates
-- Data quality checks
-
-**Data Quality Validator** (`senior-data-engineer/scripts/data_quality_validator.py`)
-- Schema validation
-- Null check enforcement
-- Anomaly detection
-
-**ETL Generator** (`senior-data-engineer/scripts/etl_generator.py`)
-- Extract-Transform-Load workflows
-- CDC (Change Data Capture) patterns
-- Incremental loading
-
-### ML Engineering Tools
-
-**Model Deployment Pipeline** (`senior-ml-engineer/scripts/model_deployment_pipeline.py`)
-- Containerized model serving
-- REST API generation
-- Load balancing config
-
-**MLOps Setup Tool** (`senior-ml-engineer/scripts/mlops_setup_tool.py`)
-- MLflow configuration
-- Model versioning
-- Drift monitoring
-
-**LLM Integration Builder** (`senior-ml-engineer/scripts/llm_integration_builder.py`)
-- OpenAI API integration
-- Prompt templates
-- Response parsing
-
-### Prompt Engineering Tools
-
-**Prompt Optimizer** (`senior-prompt-engineer/scripts/prompt_optimizer.py`)
-- Prompt A/B testing
-- Token optimization
-- Few-shot example generation
-
-**RAG System Builder** (`senior-prompt-engineer/scripts/rag_system_builder.py`)
-- Vector database setup
-- Embedding generation
-- Retrieval strategies
-
-**Agent Orchestrator** (`senior-prompt-engineer/scripts/agent_orchestrator.py`)
-- Multi-agent workflows
-- Tool calling patterns
-- State management
-
-### Computer Vision Tools
-
-**Vision Model Trainer** (`senior-computer-vision/scripts/vision_model_trainer.py`)
-- Object detection (YOLO, Faster R-CNN)
-- Semantic segmentation
-- Transfer learning
-
-**Inference Optimizer** (`senior-computer-vision/scripts/inference_optimizer.py`)
-- Model quantization
-- TensorRT optimization
-- ONNX export
-
-**Video Processor** (`senior-computer-vision/scripts/video_processor.py`)
-- Frame extraction
-- Object tracking
-- Scene detection
-
-## Tech Stack Patterns
-
-### Frontend (React/Next.js)
-- TypeScript strict mode
-- Component-driven architecture
-- Atomic design patterns
-- State management (Zustand/Jotai)
-- Testing (Jest + React Testing Library)
-
-### Backend (Node.js/Express)
-- Clean architecture
-- Dependency injection
-- Repository pattern
-- Domain-driven design
-- Testing (Jest + Supertest)
-
-### Fullstack Integration
-- GraphQL for API layer
-- REST for external services
-- WebSocket for real-time
-- Redis for caching
-- PostgreSQL for persistence
-
-## Development Workflows
-
-### Workflow 1: New Project Setup
+### Quick Start
 
 ```bash
-# 1. Scaffold project
-python senior-fullstack/scripts/project_scaffolder.py my-app --type nextjs-graphql
+# 1. Always start from dev
+git checkout dev
+git pull origin dev
 
-# 2. Start services
-cd my-app && docker-compose up -d
+# 2. Create feature branch
+git checkout -b feature/agents-{name}
 
-# 3. Run migrations
-npm run migrate
+# 3. Work and commit (conventional commits)
+feat(agents): implement cs-{agent-name}
+fix(tool): correct calculation logic
+docs(workflow): update branch strategy
 
-# 4. Start development
-npm run dev
+# 4. Push and create PR to dev
+git push origin feature/agents-{name}
+gh pr create --base dev --head feature/agents-{name}
+
+# 5. After approval, PR merges to dev
+# 6. Periodically, dev merges to main via PR
 ```
 
-### Workflow 2: Code Quality Check
+**Branch Protection Rules:**
+- ✅ Main: Requires PR approval, no direct push
+- ✅ Dev: Unprotected, but PRs recommended
+- ✅ All: Conventional commits enforced
 
-```bash
-# 1. Analyze codebase
-python senior-fullstack/scripts/code_quality_analyzer.py ./
+See [documentation/WORKFLOW.md](documentation/WORKFLOW.md) for complete workflow guide.
+See [standards/git/git-workflow-standards.md](standards/git/git-workflow-standards.md) for commit standards.
 
-# 2. Fix security issues
-npm audit fix
+## Development Environment
 
-# 3. Run tests
-npm test
+**No build system or test frameworks** - intentional design choice for portability.
 
-# 4. Build production
-npm run build
-```
+**Python Scripts:**
+- Use standard library only (minimal dependencies)
+- CLI-first design for easy automation
+- Support both JSON and human-readable output
+- No ML/LLM calls (keeps skills portable and fast)
 
-### Workflow 3: ML Model Deployment
+**If adding dependencies:**
+- Keep scripts runnable with minimal setup (`pip install package` at most)
+- Document all dependencies in SKILL.md
+- Prefer standard library implementations
 
-```bash
-# 1. Setup MLOps infrastructure
-python senior-ml-engineer/scripts/mlops_setup_tool.py
+## Current Version
 
-# 2. Deploy model
-python senior-ml-engineer/scripts/model_deployment_pipeline.py model.pkl
+**Version:** v2.1.2 (latest)
 
-# 3. Monitor performance
-# Check MLflow dashboard
-```
+**v2.1.2 Highlights:**
+- Landing page generator now outputs **Next.js TSX + Tailwind CSS** by default (4 design styles, 7 section generators)
+- **Brand voice integration** — landing page workflow uses marketing brand voice analyzer to match copy tone to design style
+- 25 Python scripts fixed across all domains (syntax, dependencies, argparse)
+- 237/237 scripts verified passing `--help`
+- Competitive teardown SKILL.md fixed (6 broken file references)
+- Cross-domain workflows documented (product + marketing skill integration)
 
-## Quality Standards
+**v2.1.1 (2026-03-07):**
+- 18 skills optimized from 66-83% to 85-100% via Tessl quality review
+- YAML frontmatter (name + description) added to all SKILL.md files
+- 6 new agents + 5 slash commands, Gemini CLI support, MkDocs docs site
 
-**All engineering tools must:**
-- Support modern tech stacks (Next.js, React, Vue, Express)
-- Generate production-ready code
-- Include testing infrastructure
-- Provide Docker configurations
-- Support CI/CD integration
+**v2.0.0 (2026-02-16):**
+- 25 POWERFUL-tier engineering skills added (engineering/ folder)
+- Plugin marketplace infrastructure (.claude-plugin/marketplace.json)
+- Multi-platform support: Claude Code, OpenAI Codex, OpenClaw
 
-## Integration Patterns
+**Past Sprints:** See [documentation/delivery/](documentation/delivery/) and [CHANGELOG.md](CHANGELOG.md) for history.
 
-### GitHub Actions CI/CD
+## Roadmap
 
-All scaffolders generate GitHub Actions workflows:
-```yaml
-.github/workflows/
-├── test.yml          # Run tests on PR
-├── build.yml         # Build and lint
-└── deploy.yml        # Deploy to production
-```
+**Phase 1-2 Complete:** 204 production-ready skills deployed across 9 domains
+- Engineering Core (26), Engineering POWERFUL (30), Product (14), Marketing (43), PM (6), C-Level (28), RA/QM (12), Business & Growth (4), Finance (2)
+- 268 Python automation tools, 384 reference guides, 16 agents, 19 commands
+- Complete enterprise coverage from engineering through regulatory compliance, sales, customer success, and finance
+- MkDocs Material docs site with 210+ indexed pages for SEO
 
-### Docker Compose
+See domain-specific roadmaps in each skill folder's README.md or roadmap files.
 
-Multi-service development environment:
-```yaml
-services:
-  - app (Next.js)
-  - api (GraphQL)
-  - db (PostgreSQL)
-  - redis (Cache)
-```
+## Key Principles
+
+1. **Skills are products** - Each skill deployable as standalone package
+2. **Documentation-driven** - Success depends on clear, actionable docs
+3. **Algorithm over AI** - Use deterministic analysis (code) vs LLM calls
+4. **Template-heavy** - Provide ready-to-use templates users customize
+5. **Platform-specific** - Specific best practices > generic advice
+
+## ClawHub Publishing Constraints
+
+This repository publishes skills to **ClawHub** (clawhub.com) as the distribution registry. The following rules are **non-negotiable**:
+
+1. **cs- prefix for slug conflicts only.** When a skill slug is already taken on ClawHub by another publisher, publish with the `cs-` prefix (e.g., `cs-copywriting`, `cs-seo-audit`). The `cs-` prefix applies **only on the ClawHub registry** — repo folder names, local skill names, and all other tools (Claude Code, Codex, Gemini CLI) remain unchanged.
+2. **Never rename repo folders or local skill names** to match ClawHub slugs. The repo is the source of truth.
+3. **No paid/commercial service dependencies.** Skills must not require paid third-party API keys or commercial services unless provided by the project itself. Free-tier APIs and BYOK (bring-your-own-key) patterns are acceptable.
+4. **Rate limit: 5 new skills per hour** on ClawHub. Batch publishes must respect this. Use the drip timer (`clawhub-drip.timer`) for bulk operations.
+5. **plugin.json schema** — ONLY these fields: `name`, `description`, `version`, `author`, `homepage`, `repository`, `license`, `skills: "./"`. No extra fields.
+6. **Version follows repo versioning.** ClawHub package versions must match the repo release version (currently v2.1.2+).
+
+## Anti-Patterns to Avoid
+
+- Creating dependencies between skills (keep each self-contained)
+- Adding complex build systems or test frameworks (maintain simplicity)
+- Generic advice (focus on specific, actionable frameworks)
+- LLM calls in scripts (defeats portability and speed)
+- Over-documenting file structure (skills are simple by design)
+
+## Working with This Repository
+
+**Creating New Skills:** Follow the appropriate domain's roadmap and CLAUDE.md guide (see Navigation Map above).
+
+**Editing Existing Skills:** Maintain consistency across markdown files. Use the same voice, formatting, and structure patterns.
+
+**Quality Standard:** Each skill should save users 40%+ time while improving consistency/quality by 30%+.
 
 ## Additional Resources
 
-- **Quick Start:** `START_HERE.md`
-- **Team Structure:** `TEAM_STRUCTURE_GUIDE.md`
-- **Engineering Roadmap:** `engineering_skills_roadmap.md` (if exists)
-- **Main Documentation:** `../CLAUDE.md`
+- **.gitignore:** Excludes .vscode/, .DS_Store, AGENTS.md, PROMPTS.md, .env*
+- **Plugin Registry:** [.claude-plugin/marketplace.json](.claude-plugin/marketplace.json) - Marketplace distribution
+- **Standards Library:** [standards/](standards/) - Communication, quality, git, documentation, security
+- **Implementation Plans:** [documentation/implementation/](documentation/implementation/)
+- **Sprint Delivery:** [documentation/delivery/](documentation/delivery/)
 
 ---
 
-**Last Updated:** November 5, 2025
-**Skills Deployed:** 18/18 engineering skills production-ready
-**Total Tools:** 30+ Python automation tools across core + AI/ML/Data
+**Last Updated:** March 11, 2026
+**Version:** v2.1.2
+**Status:** 205 skills deployed across 9 domains, 28 marketplace plugins, docs site live
