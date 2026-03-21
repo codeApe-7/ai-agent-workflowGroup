@@ -49,33 +49,38 @@ Max: [派遣凯尔] → 凯尔输出审查报告
 ```
 ai-agent-workflowGroup/
 ├── .cursor/
-│   ├── rules/                 # Rules — 主 Agent (Max) 的行为规则
-│   │   ├── project-core.mdc   #   始终生效：核心约定（中文注释、编码规范）
-│   │   ├── max-coordinator.mdc#   始终生效：Max 角色 + 团队调度
-│   │   ├── git-conventions.mdc#   始终生效：Git 安全与提交格式
-│   │   └── shared-artifacts.mdc#  共享目录触发：产物规范
-│   ├── agents/                # Subagents — 可委派的子 Agent
-│   │   ├── ella.md            #   艾拉：UI/UX 设计师
-│   │   ├── jarvis.md          #   贾维斯：全栈开发工程师
-│   │   └── kyle.md            #   凯尔：质量保证工程师（只读模式）
-│   └── skills/                # Skills — 技能资源（Cursor 自动发现）
-│       ├── ui-ux-pro-max/     #   UI/UX 设计工具（艾拉）
-│       ├── senior-frontend/   #   前端开发（艾拉/贾维斯）
-│       ├── claude-simone/     #   开发框架（贾维斯）
-│       ├── senior-backend/    #   后端开发（贾维斯）
-│       ├── senior-fullstack/  #   全栈开发（贾维斯）
-│       ├── senior-architect/  #   架构设计（贾维斯）
-│       ├── senior-qa/         #   QA 测试（凯尔）
-│       ├── tdd-guide/         #   TDD 指南（凯尔）
-│       ├── ccpm/              #   项目管理（麦克斯）
-│       ├── pm-claude-skills/  #   PM 技能（麦克斯）
-│       └── ...                #   更多专业技能（共 23 个）
+│   ├── rules/                     # Rules — 主 Agent (Max) 的行为规则
+│   │   ├── project-core.mdc       #   始终生效：核心约定（中文注释、编码规范）
+│   │   ├── max-coordinator.mdc    #   始终生效：Max 角色 + 团队调度
+│   │   ├── git-conventions.mdc    #   始终生效：Git 安全与提交格式
+│   │   └── shared-artifacts.mdc   #   共享目录触发：产物规范
+│   ├── agents/                    # Subagents — 可委派的子 Agent
+│   │   ├── ella.md                #   艾拉：UI/UX 设计师
+│   │   ├── jarvis.md              #   贾维斯：全栈开发工程师
+│   │   └── kyle.md                #   凯尔：质量保证工程师（只读模式）
+│   └── skills/                    # Skills — 技能资源（Cursor 自动发现）
+│       ├── ui-ux-pro-max/         #   UI/UX 设计工具（艾拉）
+│       ├── senior-frontend/       #   前端开发（艾拉/贾维斯）
+│       ├── claude-simone/         #   开发框架（贾维斯）
+│       ├── senior-backend/        #   后端开发（贾维斯）
+│       ├── senior-fullstack/      #   全栈开发（贾维斯）
+│       ├── senior-architect/      #   架构设计（贾维斯）
+│       ├── senior-qa/             #   QA 测试（凯尔）
+│       ├── tdd-guide/             #   TDD 指南（凯尔）
+│       ├── ccpm/                  #   项目管理（麦克斯）
+│       ├── pm-claude-skills/      #   PM 技能（麦克斯）
+│       ├── skills-manifest.json   #   技能来源清单（版本追踪）
+│       └── ...                    #   更多专业技能（共 23 个）
 ├── .dev-agents/
-│   └── shared/                # Agent 协作产物
-│       ├── tasks/             #   任务文档
-│       ├── designs/           #   设计稿
-│       ├── reviews/           #   审查报告
-│       └── templates/         #   文档模板
+│   └── shared/                    # Agent 协作产物
+│       ├── tasks/                 #   任务文档
+│       ├── designs/               #   设计稿
+│       ├── reviews/               #   审查报告
+│       └── templates/             #   文档模板
+├── scripts/
+│   ├── update-skills.ps1          # Skills 更新脚本（Windows）
+│   ├── update-skills.sh           # Skills 更新脚本（Linux/Mac）
+│   └── check-gitignore.sh         # .gitignore 检查脚本
 └── README.md
 ```
 
@@ -97,16 +102,39 @@ ai-agent-workflowGroup/
 | 贾维斯 (Jarvis) | `/jarvis` | 涉及开发需求时 Max 自动委派 | 默认（可读写） |
 | 凯尔 (Kyle) | `/kyle` | 涉及审查/测试需求时 Max 自动委派 | 只读（readonly） |
 
-## 技能来源
+## 技能来源与更新
 
-| 技能 | 来源 | 许可证 |
-|------|------|--------|
-| CCPM 项目管理 | [automazeio/ccpm](https://github.com/automazeio/ccpm) | MIT |
-| PM Claude Skills | [mohitagw15856/pm-claude-skills](https://github.com/mohitagw15856/pm-claude-skills) | MIT |
-| Claude Simone | [Helmi/claude-simone](https://github.com/Helmi/claude-simone) | 见原仓库 |
-| Engineering Team | [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | 见原仓库 |
-| UI/UX Pro Max | SkillsMP 技能市场 | MIT |
-| Senior QA / TDD | SkillsMP 技能市场 | MIT |
+| 技能 | 来源 | 许可证 | 更新方式 |
+|------|------|--------|---------|
+| CCPM 项目管理 | [automazeio/ccpm](https://github.com/automazeio/ccpm) | MIT | 脚本自动 |
+| PM Claude Skills | [mohitagw15856/pm-claude-skills](https://github.com/mohitagw15856/pm-claude-skills) | MIT | 脚本自动 |
+| Claude Simone | [Helmi/claude-simone](https://github.com/Helmi/claude-simone) | 见原仓库 | 脚本自动 |
+| Engineering Team (15个) | [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | 见原仓库 | 脚本自动 |
+| UI/UX Pro Max | SkillsMP 技能市场 | MIT | 手动下载 |
+| Senior Frontend | SkillsMP 技能市场 | MIT | 手动下载 |
+| Senior QA / TDD | SkillsMP 技能市场 | MIT | 手动下载 |
+
+### 更新 Skills
+
+```powershell
+# Windows — 更新所有 GitHub 来源的 skill
+.\scripts\update-skills.ps1 -Target all
+
+# 只更新某个来源
+.\scripts\update-skills.ps1 -Target ccpm
+.\scripts\update-skills.ps1 -Target simone
+.\scripts\update-skills.ps1 -Target engineering
+
+# 查看需要手动更新的 skill
+.\scripts\update-skills.ps1 -Target manual
+```
+
+```bash
+# Linux/Mac
+bash scripts/update-skills.sh all
+```
+
+技能来源和版本信息记录在 `.cursor/skills/skills-manifest.json` 中。
 
 ## 许可证
 
