@@ -9,7 +9,7 @@
 
 就这样。麦克斯 (Max) 会自动就位，根据你的需求派遣对应的团队成员。
 
-> 本分支为 **Cursor IDE 专用**，通过 `.cursor/rules/` 驱动多 Agent 协作。如需 Claude Code（CLI）版本，请切换到 `master` 分支。
+> 本分支为 **Cursor IDE 专用**，通过 `.cursor/rules/`（规则）+ `.cursor/agents/`（子 Agent）+ `.cursor/skills/`（技能）驱动多 Agent 协作。如需 Claude Code（CLI）版本，请切换到 `master` 分支。
 
 ## 团队成员
 
@@ -48,38 +48,54 @@ Max: [派遣凯尔] → 凯尔输出审查报告
 
 ```
 ai-agent-workflowGroup/
-├── .cursor/rules/             # Cursor 规则（多 Agent 调度入口）
-│   ├── project-core.mdc       #   始终生效：核心约定（中文注释、编码规范）
-│   ├── max-coordinator.mdc    #   始终生效：Max 角色 + 派遣规则
-│   ├── git-conventions.mdc    #   始终生效：Git 安全与提交格式
-│   ├── ella-designer.mdc      #   设计文件触发：艾拉角色
-│   ├── jarvis-developer.mdc   #   代码文件触发：贾维斯角色
-│   ├── kyle-qa.mdc            #   测试/审查触发：凯尔角色
-│   └── shared-artifacts.mdc   #   共享目录触发：产物规范
-├── .dev-agents/               # Agent 运行时数据
-│   ├── ella/PERSONA.md        #   艾拉角色定义（派遣时读取）
-│   ├── jarvis/PERSONA.md      #   贾维斯角色定义（派遣时读取）
-│   ├── kyle/PERSONA.md        #   凯尔角色定义（派遣时读取）
-│   └── shared/                #   协作产物（设计稿、审查报告、任务）
-├── skills/                    # 技能资源
-│   ├── ella/                  #   UI/UX Pro Max、前端参考
-│   ├── jarvis/                #   Claude Simone、工程团队技能集
-│   ├── kyle/                  #   QA 技能包、TDD 指南
-│   └── max/                   #   CCPM 项目管理、PM 技能集
+├── .cursor/
+│   ├── rules/                 # Rules — 主 Agent (Max) 的行为规则
+│   │   ├── project-core.mdc   #   始终生效：核心约定（中文注释、编码规范）
+│   │   ├── max-coordinator.mdc#   始终生效：Max 角色 + 团队调度
+│   │   ├── git-conventions.mdc#   始终生效：Git 安全与提交格式
+│   │   └── shared-artifacts.mdc#  共享目录触发：产物规范
+│   ├── agents/                # Subagents — 可委派的子 Agent
+│   │   ├── ella.md            #   艾拉：UI/UX 设计师
+│   │   ├── jarvis.md          #   贾维斯：全栈开发工程师
+│   │   └── kyle.md            #   凯尔：质量保证工程师（只读模式）
+│   └── skills/                # Skills — 技能资源（Cursor 自动发现）
+│       ├── ui-ux-pro-max/     #   UI/UX 设计工具（艾拉）
+│       ├── senior-frontend/   #   前端开发（艾拉/贾维斯）
+│       ├── claude-simone/     #   开发框架（贾维斯）
+│       ├── senior-backend/    #   后端开发（贾维斯）
+│       ├── senior-fullstack/  #   全栈开发（贾维斯）
+│       ├── senior-architect/  #   架构设计（贾维斯）
+│       ├── senior-qa/         #   QA 测试（凯尔）
+│       ├── tdd-guide/         #   TDD 指南（凯尔）
+│       ├── ccpm/              #   项目管理（麦克斯）
+│       ├── pm-claude-skills/  #   PM 技能（麦克斯）
+│       └── ...                #   更多专业技能（共 23 个）
+├── .dev-agents/
+│   └── shared/                # Agent 协作产物
+│       ├── tasks/             #   任务文档
+│       ├── designs/           #   设计稿
+│       ├── reviews/           #   审查报告
+│       └── templates/         #   文档模板
 └── README.md
 ```
 
-### 规则生效机制
+### Cursor 三层架构
 
-| 规则文件 | 生效方式 | 说明 |
-|---------|---------|------|
-| `project-core.mdc` | 始终生效 | 中文注释、编码规范等基础约定 |
-| `max-coordinator.mdc` | 始终生效 | Max 角色定义、Agent 派遣与上下文传递 |
-| `git-conventions.mdc` | 始终生效 | Git 安全红线、提交格式 `<type>: <中文描述>` |
-| `ella-designer.mdc` | `.dev-agents/ella/**`, `shared/designs/**` | 编辑设计文件时激活艾拉角色 |
-| `jarvis-developer.mdc` | `src/**`, `app/**`, `components/**` 等 | 编辑代码文件时激活贾维斯角色 |
-| `kyle-qa.mdc` | `*.test.*`, `*.spec.*`, `shared/reviews/**` 等 | 编辑测试/审查文件时激活凯尔角色 |
-| `shared-artifacts.mdc` | `.dev-agents/shared/**` | 编辑共享产物时应用命名和格式规范 |
+本项目完全遵循 [Cursor 官方规范](https://cursor.com/docs)，利用三层原生机制实现多 Agent 协作：
+
+| 层级 | 位置 | 作用 | 详情 |
+|------|------|------|------|
+| **Rules** | `.cursor/rules/` | 注入主 Agent 上下文 | Max 角色、项目约定、Git 规范始终生效 |
+| **Subagents** | `.cursor/agents/` | 独立子 Agent，被 Max 委派 | 艾拉/贾维斯/凯尔各自有独立上下文窗口 |
+| **Skills** | `.cursor/skills/` | 可复用的专业知识包 | 23 个技能包，Cursor 自动发现并按需加载 |
+
+### 子 Agent 调用方式
+
+| 子 Agent | 显式调用 | 自动委派 | 模式 |
+|----------|---------|---------|------|
+| 艾拉 (Ella) | `/ella` | 涉及设计需求时 Max 自动委派 | 默认（可读写） |
+| 贾维斯 (Jarvis) | `/jarvis` | 涉及开发需求时 Max 自动委派 | 默认（可读写） |
+| 凯尔 (Kyle) | `/kyle` | 涉及审查/测试需求时 Max 自动委派 | 只读（readonly） |
 
 ## 技能来源
 
