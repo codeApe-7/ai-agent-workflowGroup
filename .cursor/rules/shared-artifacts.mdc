@@ -1,0 +1,33 @@
+---
+description: 共享产物目录规范 — 编辑 .dev-agents/shared/ 下的文件时自动生效
+globs: .dev-agents/shared/**
+alwaysApply: false
+---
+
+# 共享产物目录规范
+
+## 目录结构
+
+```
+.dev-agents/shared/
+├── tasks/       # Max 拆解的任务文档
+├── designs/     # 艾拉的设计稿
+├── reviews/     # 凯尔的审查报告
+└── templates/   # 文档模板
+```
+
+## 写入规则
+
+- 每个 Agent 完成任务后，**必须**将产出写入对应子目录
+- 文件命名使用有意义的短名，如 `login-page-design.md`、`order-api-review.md`
+- 所有产出使用 Markdown 格式
+- 产出开头注明：日期、作者角色、关联任务
+
+## 引用规则
+
+- 后续 Agent 引用前序产物时，必须先读取对应文件再开始工作
+- Max 派遣时负责在 prompt 中指明前序产物路径
+
+## 模板使用
+
+`templates/` 目录下存放标准文档模板，创建新文档时优先参考对应模板。

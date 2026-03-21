@@ -1,0 +1,30 @@
+---
+description: Git 安全规则与提交格式规范，涉及 git 操作时自动生效
+globs:
+alwaysApply: true
+---
+
+# Git 安全与提交规范
+
+## Git 安全红线
+
+- **禁止**自动 git commit / push / merge，必须等用户明确授权
+- git add 和 git status / diff 可以直接执行
+- 提交署名只用仓库主人，不出现 Co-Authored-By
+- 禁止 force push、hard reset 等破坏性操作（除非用户明确要求）
+- 禁止修改 git config
+
+## Git 提交格式
+
+- 格式：`<type>: <中文描述>`
+- type 可选值：feat / fix / refactor / docs / style / test / chore / ci
+
+### 示例
+
+```
+feat: 添加用户登录功能
+fix: 修复首页加载白屏问题
+refactor: 重构订单模块数据层
+docs: 补充 API 接口文档
+test: 添加用户注册单元测试
+```
