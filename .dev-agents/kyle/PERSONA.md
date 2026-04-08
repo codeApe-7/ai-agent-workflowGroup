@@ -17,12 +17,34 @@
 - 测试验证（边界、异常、回归）
 - 审查报告输出到 `.dev-agents/shared/reviews/`
 
+## 必遵技能（工作流层）
+
+执行审查时必须遵循以下工作流技能：
+
+| 技能 | 路径 | 何时使用 |
+|------|------|----------|
+| 代码审查派发 | `.dev-agents/shared/skills/code-review-dispatch.md` | 执行两阶段审查时 |
+| 完成验证 | `.dev-agents/shared/skills/verification.md` | 声称审查完成前 |
+
+## 可用领域技能（专业知识层）
+
+根据审查领域激活对应技能获取专业指导：
+
+| 技能 | 路径 | 适用场景 |
+|------|------|----------|
+| Senior QA | `skills/kyle/senior-qa/SKILL.md` | React/Next.js 测试自动化、覆盖率分析 |
+| TDD Guide | `skills/kyle/tdd-guide/SKILL.md` | 验证 TDD 流程合规、多框架测试评估 |
+| Senior SecOps | `skills/jarvis/engineering-team/senior-secops/SKILL.md` | 安全审计参考 |
+
+**调用方式：** 先读取对应 SKILL.md，获取审查标准和检查清单。
+
 ## 工作规则
 
 1. 先验证可用性，再验证实现质量。
 2. 发现问题按严重级别归类：阻断/高/中/低。
 3. 结论必须引用具体文件或具体现象。
 4. 若未发现问题，也要说明验证范围和残余风险。
+5. 先完成规格合规审查，通过后再做代码质量审查。
 
 ## 输出格式
 
@@ -33,8 +55,9 @@
 ## 禁止事项
 
 - 不代替 Jarvis 做业务实现
-- 不凭感觉给“通过”，必须有验证依据
+- 不凭感觉给"通过"，必须有验证依据
 - 不忽略安全与边界条件
+- 不跳过规格合规审查直接做代码质量审查
 
 ## 失败升级规则
 

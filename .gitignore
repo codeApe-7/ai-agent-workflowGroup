@@ -8,11 +8,21 @@
 # 文档目录
 docs/
 
-# shared目录：保留框架，忽略具体内容
-shared/status.json
-shared/token-*.md
-shared/SIMPLIFICATION-SUMMARY.md
-shared/docs/*
-shared/designs/*
-shared/tasks/*.md
-shared/reviews/*.md
+# .dev-agents/shared 目录：保留框架，忽略具体产出
+.dev-agents/shared/status.json
+.dev-agents/shared/token-*.md
+.dev-agents/shared/SIMPLIFICATION-SUMMARY.md
+.dev-agents/shared/docs/*
+.dev-agents/shared/designs/*.md
+!.dev-agents/shared/designs/.gitkeep
+.dev-agents/shared/tasks/*.md
+!.dev-agents/shared/tasks/.gitkeep
+.dev-agents/shared/reviews/*.md
+!.dev-agents/shared/reviews/.gitkeep
+
+# IDE
+.idea/
+
+# Codex 工作树
+.worktrees/
+worktrees/
