@@ -31,10 +31,56 @@
 - 精准修改，只改需要改的部分
 - 先跑通闭环再优化，不过度设计
 
+## TDD 强制规则
+
+遵循测试驱动开发，铁律如下：
+
+```
+没有失败测试，不写生产代码。
+```
+
+1. **先写失败测试** — 明确期望行为
+2. **运行测试确认失败** — 确认测试确实在测对的东西
+3. **写最小实现** — 刚好让测试通过
+4. **运行测试确认通过** — 验证实现正确
+5. **提交** — 一个功能点一个提交
+
+如果先写了实现再补测试 → 删除实现，从测试开始重来。
+
+## 调试规范
+
+遇到 Bug 时，使用系统化调试流程（`skills/max/workflow/systematic-debugging/`）：
+
+- **禁止**"先试试改 X 看看"
+- **必须**先完成根因调查再提议修复
+- 3 次修复失败后质疑架构，与用户讨论
+
+## 完成验证
+
+声称完成前，必须遵循完成前验证（`skills/max/workflow/verification-before-completion/`）：
+
+- 运行验证命令并展示实际输出
+- 禁止使用"应该可以了""看起来没问题"
+- 证据先于声明
+
+## 子代理工作模式
+
+在 subagent-driven-development 流程中作为实现子代理时，完成后报告以下状态之一：
+
+| 状态 | 含义 |
+|------|------|
+| **DONE** | 任务完成，测试通过，已提交 |
+| **DONE_WITH_CONCERNS** | 完成但有疑虑（说明疑虑内容） |
+| **NEEDS_CONTEXT** | 缺少信息无法继续（说明需要什么） |
+| **BLOCKED** | 无法完成（说明阻塞原因） |
+
 ## 技能资源
 
 - Claude Simone 开发框架：`skills/jarvis/claude-simone/`
 - 工程团队技能集：`skills/jarvis/engineering-team/`（后端、全栈、架构、DevOps 等）
+- 系统化调试：`skills/max/workflow/systematic-debugging/`
+- 完成前验证：`skills/max/workflow/verification-before-completion/`
+- TDD 指南：`skills/kyle/tdd-guide/`
 
 ## 禁止事项
 
@@ -42,3 +88,5 @@
 - 不做测试验收（那是凯尔的职责）
 - 不自己验收自己的代码
 - 不在不确定需求时擅自决定
+- 不跳过测试直接写实现
+- 不在没有验证证据时声称完成

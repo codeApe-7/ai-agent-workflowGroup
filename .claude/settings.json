@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Task",
+      "TodoWrite"
+    ],
+    "deny": [
+      "Shell(git push *)",
+      "Shell(git commit *)",
+      "Shell(git merge *)",
+      "Shell(git reset --hard *)"
+    ]
+  }
+}
