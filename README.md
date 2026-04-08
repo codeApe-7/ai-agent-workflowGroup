@@ -22,26 +22,45 @@
 
 ## 工作流程
 
-### 总体协作流程
+### 强制工作流管道
+
+非简单需求必须经过完整管道，不可跳过或合并环节：
+
+```
+需求澄清 → 方案设计 → 用户批准 → 实现计划 → 开发(TDD) → 两阶段审查 → 完成
+```
 
 ```mermaid
 flowchart TD
-    User([用户提出需求]) --> Max{Max 分析需求类型}
-    Max -->|设计类| Ella[艾拉 Ella<br/>UI/UX 设计师]
-    Max -->|开发类| Jarvis[贾维斯 Jarvis<br/>全栈开发]
-    Max -->|测试/审查| Kyle[凯尔 Kyle<br/>质量保障]
-    Max -->|简单问题| Direct[Max 直接回答]
-
-    Ella -->|设计稿| Shared1[(shared/designs/)]
-    Jarvis -->|代码实现| Codebase[(项目代码)]
-    Kyle -->|审查报告| Shared2[(shared/reviews/)]
-
-    Shared1 --> Summary[Max 汇总结果]
-    Codebase --> Summary
-    Shared2 --> Summary
-    Direct --> Summary
-    Summary --> User2([反馈给用户])
+    UserReq["用户需求"] --> MaxAnalyze["Max 分析需求"]
+    MaxAnalyze --> Simple{"简单问题?"}
+    Simple -->|"是"| MaxDirect["Max 直接回答"]
+    Simple -->|"否"| Brainstorm["需求澄清 + 方案设计\n(brainstorming skill)"]
+    Brainstorm --> SpecApproval{"用户批准设计?"}
+    SpecApproval -->|"否"| Brainstorm
+    SpecApproval -->|"是"| WritePlan["写实现计划\n(writing-plans skill)"]
+    WritePlan --> NeedDesign{"需要 UI 设计?"}
+    NeedDesign -->|"是"| Ella["/ella 设计"]
+    NeedDesign -->|"否"| Jarvis["/jarvis 开发 (TDD)"]
+    Ella --> Jarvis
+    Jarvis --> SpecReview["/kyle Stage 1: 规格符合性"]
+    SpecReview --> SpecPass{"符合计划?"}
+    SpecPass -->|"否"| JarvisFix["Jarvis 修复"]
+    JarvisFix --> SpecReview
+    SpecPass -->|"是"| QualityReview["/kyle Stage 2: 代码质量"]
+    QualityReview --> QualityPass{"质量达标?"}
+    QualityPass -->|"否"| JarvisFix2["Jarvis 修复"]
+    JarvisFix2 --> QualityReview
+    QualityPass -->|"是"| Done["完成"]
 ```
+
+### 三条铁律
+
+| 铁律 | 说明 |
+|------|------|
+| 证据优于断言 | 任何完成声明必须附带验证证据，禁止"应该没问题" |
+| 流程不可跳过 | 工作流管道的每个环节必须走完 |
+| 不确定时先问 | 宁可多问一句，不要假设 |
 
 ### 任务派遣决策流程
 
@@ -237,18 +256,18 @@ ai-agent-workflowGroup/
 │   │   ├── jarvis.md              #   贾维斯：全栈开发工程师
 │   │   └── kyle.md                #   凯尔：质量保证工程师（只读模式）
 │   └── skills/                    # Skills — 技能资源（Cursor 自动发现）
+│       ├── brainstorming/         #   工作流：需求澄清与方案设计
+│       ├── writing-plans/         #   工作流：实现计划编写
+│       ├── systematic-debugging/  #   工作流：系统化调试
+│       ├── verification-before-completion/ # 工作流：完成前验证
 │       ├── ui-ux-pro-max/         #   UI/UX 设计工具（艾拉）
 │       ├── senior-frontend/       #   前端开发（艾拉/贾维斯）
 │       ├── claude-simone/         #   开发框架（贾维斯）
 │       ├── senior-backend/        #   后端开发（贾维斯）
-│       ├── senior-fullstack/      #   全栈开发（贾维斯）
-│       ├── senior-architect/      #   架构设计（贾维斯）
 │       ├── senior-qa/             #   QA 测试（凯尔）
-│       ├── tdd-guide/             #   TDD 指南（凯尔）
 │       ├── ccpm/                  #   项目管理（麦克斯）
-│       ├── pm-claude-skills/      #   PM 技能（麦克斯）
 │       ├── skills-manifest.json   #   技能来源清单（版本追踪）
-│       └── ...                    #   更多专业技能（共 23 个）
+│       └── ...                    #   更多专业技能（共 27 个）
 ├── .dev-agents/
 │   └── shared/                    # Agent 协作产物
 │       ├── tasks/                 #   任务文档
@@ -313,6 +332,10 @@ bash scripts/update-skills.sh all
 ```
 
 技能来源和版本信息记录在 `.cursor/skills/skills-manifest.json` 中。
+
+## 致谢
+
+本项目的工作流驱动理念、铁律机制和质量门禁设计受到 [Superpowers](https://github.com/obra/superpowers) 项目的启发。Superpowers 是一个优秀的 agentic 开发方法论框架，aiGroup 在保留自身角色体系的基础上融合了其核心思想。
 
 ## 许可证
 
