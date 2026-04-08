@@ -6,7 +6,7 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/yezannnnn/agentGroup.git
+git clone https://github.com/codeApe-7/ai-agent-workflowGroup.git
 cd agentGroup
 claude
 ```
