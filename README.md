@@ -23,26 +23,45 @@ claude
 
 ## 工作流程
 
-### 总体协作流程
+### 强制工作流管道
+
+非简单需求必须经过完整管道，不可跳过或合并环节：
+
+```
+需求澄清 → 方案设计 → 用户批准 → 实现计划 → 开发(TDD) → 两阶段审查 → 完成
+```
 
 ```mermaid
 flowchart TD
-    User(["用户提出需求"]) --> Max{"Max 分析需求类型"}
-    Max -->|设计类| Ella["Ella 设计师"]
-    Max -->|开发类| Jarvis["Jarvis 开发"]
-    Max -->|测试/审查| Kyle["Kyle 质量保障"]
-    Max -->|简单问题| Direct["Max 直接回答"]
-
-    Ella -->|设计稿| D1["shared/designs/"]
-    Jarvis -->|代码实现| D2["项目代码"]
-    Kyle -->|审查报告| D3["shared/reviews/"]
-
-    D1 --> Summary["Max 汇总结果"]
-    D2 --> Summary
-    D3 --> Summary
-    Direct --> Summary
-    Summary --> Done(["反馈给用户"])
+    UserReq["用户需求"] --> MaxAnalyze["Max 分析需求"]
+    MaxAnalyze --> Simple{"简单问题?"}
+    Simple -->|"是"| MaxDirect["Max 直接回答"]
+    Simple -->|"否"| Brainstorm["需求澄清 + 方案设计\n(brainstorming skill)"]
+    Brainstorm --> SpecApproval{"用户批准设计?"}
+    SpecApproval -->|"否"| Brainstorm
+    SpecApproval -->|"是"| WritePlan["写实现计划\n(writing-plans skill)"]
+    WritePlan --> NeedDesign{"需要 UI 设计?"}
+    NeedDesign -->|"是"| Ella["Ella 设计"]
+    NeedDesign -->|"否"| Jarvis["Jarvis 开发 (TDD)"]
+    Ella --> Jarvis
+    Jarvis --> SpecReview["Kyle Stage 1: 规格符合性"]
+    SpecReview --> SpecPass{"符合计划?"}
+    SpecPass -->|"否"| JarvisFix["Jarvis 修复"]
+    JarvisFix --> SpecReview
+    SpecPass -->|"是"| QualityReview["Kyle Stage 2: 代码质量"]
+    QualityReview --> QualityPass{"质量达标?"}
+    QualityPass -->|"否"| JarvisFix2["Jarvis 修复"]
+    JarvisFix2 --> QualityReview
+    QualityPass -->|"是"| Done["完成"]
 ```
+
+### 三条铁律
+
+| 铁律 | 说明 |
+|------|------|
+| 证据优于断言 | 任何完成声明必须附带验证证据，禁止"应该没问题" |
+| 流程不可跳过 | 工作流管道的每个环节必须走完 |
+| 不确定时先问 | 宁可多问一句，不要假设 |
 
 ### 任务派遣决策流程
 
@@ -191,6 +210,11 @@ agentGroup/
 │       ├── reviews/           #   审查报告
 │       └── templates/         #   文档模板（PRD/API/Bug 等）
 ├── skills/                    # 技能资源（按角色分组）
+│   ├── workflow/              # 工作流 Skills（全角色共享）
+│   │   ├── brainstorming/     #   需求澄清与方案设计
+│   │   ├── writing-plans/     #   实现计划编写
+│   │   ├── systematic-debugging/ # 系统化调试
+│   │   └── verification-before-completion/ # 完成前验证
 │   ├── ella/                  # 设计技能
 │   │   ├── ui-ux-pro-max/     #   50+ 设计风格、97 色彩方案
 │   │   ├── senior-frontend/   #   前端最佳实践
@@ -285,6 +309,10 @@ bash scripts/update-skills.sh manual       # 显示需手动更新的技能
 ```
 
 > 直连 GitHub 失败时脚本自动切换镜像加速（ghfast.top / ghproxy）。
+
+## 致谢
+
+本项目的工作流驱动理念、铁律机制和质量门禁设计受到 [Superpowers](https://github.com/obra/superpowers) 项目的启发。Superpowers 是一个优秀的 agentic 开发方法论框架，aiGroup 在保留自身角色体系的基础上融合了其核心思想。
 
 ## 许可证
 
