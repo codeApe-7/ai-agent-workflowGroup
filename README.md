@@ -4,12 +4,30 @@
 
 ## 快速开始
 
-1. 用 Cursor 打开本项目
-2. 直接在 Cursor 的 Agent 模式中输入需求
+### 方式一：在本仓库中直接使用
+
+1. 克隆本仓库
+2. 用 Cursor 打开项目
+3. 在 Agent 模式（`Cmd/Ctrl + I`）中输入需求
 
 就这样。麦克斯 (Max) 会自动就位，根据你的需求派遣对应的团队成员。
 
-> 本分支为 **Cursor IDE 专用**，通过 `.cursor/rules/`（规则）+ `.cursor/agents/`（子 Agent）+ `.cursor/skills/`（技能）驱动多 Agent 协作。如需 Claude Code（CLI）版本，请切换到 `master` 分支。
+### 方式二：集成到你的现有项目
+
+将本仓库的 `.cursor/` 和 `.dev-agents/` 目录复制到你的项目根目录：
+
+```bash
+# 克隆框架
+git clone https://github.com/codeApe-7/ai-agent-workflowGroup.git /tmp/aigroup
+
+# 复制核心文件到你的项目
+cp -r /tmp/aigroup/.cursor/ your-project/.cursor/
+cp -r /tmp/aigroup/.dev-agents/ your-project/.dev-agents/
+```
+
+然后用 Cursor 打开你的项目，框架即刻生效。
+
+> 本分支为 **Cursor IDE 专用**，通过 `.cursor/rules/`（规则）+ `.cursor/agents/`（子 Agent）+ `.cursor/hooks/`（硬约束）+ `.cursor/commands/`（命令）+ `.cursor/skills/`（技能）驱动多 Agent 协作。如需 Claude Code（CLI）版本，请切换到 `master` 分支。
 
 ## 团队成员
 
@@ -237,24 +255,96 @@ flowchart TB
     S4 -.->|按需加载| A3
 ```
 
-## 使用示例
+## 框架使用指南
+
+### 基本交互：直接说需求
+
+你只需要用自然语言描述需求，Max 会自动判断该派谁干活：
 
 ```
 你: 帮我设计一个登录页面
-Max: [分析需求，派遣艾拉] → 艾拉输出设计稿 → .dev-agents/shared/designs/
+→ Max 自动派遣艾拉，输出设计稿到 .dev-agents/shared/designs/
 
 你: 根据设计稿开发登录功能
-Max: [派遣贾维斯，注入设计稿路径] → 贾维斯实现代码
+→ Max 自动派遣贾维斯，注入设计稿路径，TDD 开发
 
 你: 验收一下登录功能
-Max: [派遣凯尔，注入代码路径 + 需求] → 凯尔输出审查报告 → .dev-agents/shared/reviews/
-
-你: /pr
-Agent: [自动执行] git diff → 撰写 commit message → 推送 → 创建 PR → 返回链接
-
-你: /fix-issue 42
-Agent: [自动执行] 获取 Issue 详情 → 定位代码 → TDD 修复 → 验证 → 询问是否创建 PR
+→ Max 自动派遣凯尔，两阶段审查（规格符合性 + 代码质量）
 ```
+
+你不需要记忆任何命令或流程 — Max 会自动驱动整个工作流管道。
+
+### 显式派遣子 Agent
+
+如果你想跳过 Max 的分析直接指定谁来干，可以用 `/` 前缀：
+
+| 命令 | 效果 | 适用场景 |
+|------|------|---------|
+| `/ella 设计一个仪表盘` | 直接派遣艾拉 | 你明确知道这是设计任务 |
+| `/jarvis 实现这个 API` | 直接派遣贾维斯 | 你明确知道这是开发任务 |
+| `/kyle 审查 src/auth/` | 直接派遣凯尔 | 你明确知道这是审查任务 |
+
+### 使用 Commands 快捷命令
+
+Commands 是预设的工作流模板，输入 `/` 即可触发：
+
+| 命令 | 作用 | 示例 |
+|------|------|------|
+| `/pr` | 提交当前变更并创建 Pull Request | 自动 diff → commit → push → 创建 PR |
+| `/fix-issue 42` | 从 GitHub Issue 出发修复 Bug | 获取 Issue → 定位代码 → TDD 修复 → 验证 |
+| `/review` | 对当前分支进行代码审查 | 分析 diff → 逐文件检查 → 输出审查报告 |
+
+### Hooks 硬约束（自动生效）
+
+Hooks 在后台自动运行，你不需要手动触发：
+
+| Hook | 触发时机 | 效果 |
+|------|---------|------|
+| **完成前验证守卫** | Agent 声称"完成"时 | 如果没有运行验证命令并展示输出，Agent 会被要求补充证据 |
+| **提交前安全检查** | Agent 准备 git commit 时 | 检测未经审查的代码变更，提醒确认用户授权和审查状态 |
+
+如果你发现 Agent 在没有证据的情况下声称完成了，Hook 会自动拦截并要求它补充验证。
+
+### 维护 Harness：让框架越来越强
+
+当你发现 Agent 犯了一个不该犯的错误时：
+
+1. **告诉 Max 记录失败** — Max 会在 `.cursor/rules/harness-log.mdc` 中追加一条记录
+2. **Max 自动修正规则** — 在对应的 rule 文件中补充约束
+3. **高频问题升级为 Hook** — 同类错误 3 次以上，建议升级为硬约束
+
+```
+你: Agent 刚才没写测试就说完成了，记录一下这个问题
+Max: [追加 harness-log.mdc] → [补充 jarvis.md 中的约束] → 下次不会再犯
+```
+
+这就是 Harness Engineering 的核心：**每次失败都让系统变得更强**。
+
+### 自定义框架
+
+#### 添加新的 Rule
+
+在 `.cursor/rules/` 下创建 `.mdc` 文件，使用 YAML frontmatter 控制生效范围：
+
+```yaml
+---
+description: 规则描述
+globs: src/**/*.ts          # 仅对匹配文件生效（留空 = 手动触发）
+alwaysApply: true            # true = 始终生效，false = 按需加载
+---
+```
+
+#### 添加新的 Command
+
+在 `.cursor/commands/` 下创建 `.md` 文件，文件名即为命令名。内容是对 Agent 的自然语言指令。
+
+#### 添加新的 Hook
+
+编辑 `.cursor/hooks.json`，在对应的生命周期事件（如 `stop`）中添加命令。Hook 脚本放在 `.cursor/hooks/` 目录下。
+
+#### 添加新的 Skill
+
+将 Skill 目录（包含 `SKILL.md`）放到 `.cursor/skills/` 下，Cursor 会自动发现并按需加载。
 
 ## 项目结构
 
