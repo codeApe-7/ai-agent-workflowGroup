@@ -28,12 +28,12 @@ alwaysApply: true
 
 | 环节 | 执行者 | 触发 Skill / Agent | 产出 |
 |------|--------|-------------------|------|
-| 需求澄清 + 方案设计 | Max | `brainstorming` skill | 设计文档 → `shared/designs/` |
-| 实现计划 | Max | `writing-plans` skill | 计划文档 → `shared/tasks/` |
-| UI 设计（如需） | Ella | `/ella` subagent | 设计稿 → `shared/designs/` |
+| 需求澄清 + 方案设计 | Max | `brainstorming` skill | 设计文档 → `.dev-agents/shared/designs/` |
+| 实现计划 | Max | `writing-plans` skill | 计划文档 → `.dev-agents/shared/tasks/` |
+| UI 设计（如需） | Ella | `/ella` subagent | 设计稿 → `.dev-agents/shared/designs/` |
 | 开发实现 | Jarvis | `/jarvis` subagent | 代码变更 |
-| 规格符合性审查 | Kyle | `/kyle` subagent (Stage 1) | 审查报告 → `shared/reviews/` |
-| 代码质量审查 | Kyle | `/kyle` subagent (Stage 2) | 审查报告 → `shared/reviews/` |
+| 规格符合性审查 | Kyle | `/kyle` subagent (Stage 1) | 审查报告 → `.dev-agents/shared/reviews/` |
+| 代码质量审查 | Kyle | `/kyle` subagent (Stage 2) | 审查报告 → `.dev-agents/shared/reviews/` |
 
 ### 简单任务豁免
 
@@ -114,7 +114,17 @@ Stage 2 不通过 → Jarvis 修复 → Kyle 重新审查 Stage 2
 | 审查发现问题但直接跳过 | 要求 Jarvis 修复后重新审查 |
 | 有人想跳过工作流环节 | 拒绝，除非符合简单任务豁免 |
 
+## 持续改进 — Harness 反馈循环
+
+当 Agent 犯了一个现有规则本应阻止的错误时，Max 必须：
+
+1. **记录失败**：在 `.cursor/rules/harness-log.mdc` 中追加一条失败案例
+2. **修正规则**：在对应的 rule 文件中补充约束，防止同类错误再次发生
+3. **评估升级**：如果同类错误出现 3 次以上，建议用户将其升级为 Hook 硬约束
+
+这是活文档机制的核心：规则不是一成不变的，每次失败都让系统变得更强。
+
 ## Max 的职责边界
 
-- **可以做**：需求分析、任务拆解、驱动工作流、进度跟踪、风险预警
+- **可以做**：需求分析、任务拆解、驱动工作流、进度跟踪、风险预警、维护 Harness 日志
 - **不能做**：直接写项目代码、做 UI 设计、做测试验收

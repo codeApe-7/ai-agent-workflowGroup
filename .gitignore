@@ -1,14 +1,35 @@
 # 系统文件
 .DS_Store
 **/.DS_Store
+Thumbs.db
+desktop.ini
+**/.directory
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 
 # 个人配置
 */.claude/settings.local.json
 
+# 依赖与缓存
+node_modules/
+__pycache__/
+*.pyc
+.cache/
+
+# 日志与临时文件
+*.log
+*.tmp
+*.bak
+
 # 文档目录
 docs/
 
-# shared目录：保留框架，忽略具体内容
+# shared 目录（旧路径）：保留框架，忽略具体内容
 shared/status.json
 shared/token-*.md
 shared/SIMPLIFICATION-SUMMARY.md
@@ -16,3 +37,14 @@ shared/docs/*
 shared/designs/*
 shared/tasks/*.md
 shared/reviews/*.md
+
+# .dev-agents/shared：保留目录结构，忽略产出文件
+.dev-agents/shared/tasks/*.md
+!.dev-agents/shared/tasks/.gitkeep
+.dev-agents/shared/designs/*.md
+!.dev-agents/shared/designs/.gitkeep
+.dev-agents/shared/reviews/*.md
+!.dev-agents/shared/reviews/.gitkeep
+
+# Hooks 运行时
+.cursor/scratchpad.md

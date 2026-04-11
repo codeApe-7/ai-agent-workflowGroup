@@ -188,24 +188,36 @@ flowchart TD
     Then --> Merge2[Max 汇总]
 ```
 
-### Cursor 三层架构与 Agent 关系
+### Cursor 五层 Harness 架构与 Agent 关系
 
 ```mermaid
 flowchart TB
-    subgraph Layer1["Rules 层"]
+    subgraph Layer1["Rules 层 — 上下文注入"]
         R1["project-core.mdc\n核心约定"]
-        R2["max-coordinator.mdc\n调度规则"]
+        R2["max-coordinator.mdc\n调度规则 + Harness 反馈"]
         R3["git-conventions.mdc\nGit 安全"]
         R4["shared-artifacts.mdc\n产物规范"]
+        R5["harness-log.mdc\n失败案例日志"]
     end
 
-    subgraph Layer2["Subagents 层"]
+    subgraph Layer2["Subagents 层 — 角色隔离"]
         A1["ella.md\nUI/UX 设计师"]
         A2["jarvis.md\n全栈开发"]
         A3["kyle.md\n质量保障 只读"]
     end
 
-    subgraph Layer3["Skills 层"]
+    subgraph Layer4["Hooks 层 — 硬约束"]
+        H1["verify-completion.ts\n完成前验证守卫"]
+        H2["pre-commit-check.ts\n提交前安全检查"]
+    end
+
+    subgraph Layer5["Commands 层 — 工作流复用"]
+        C1["/pr"]
+        C2["/fix-issue"]
+        C3["/review"]
+    end
+
+    subgraph Layer3["Skills 层 — 动态知识"]
         S1["ccpm\n项目管理"]
         S2["ui-ux-pro-max\n设计工具"]
         S3["claude-simone\n开发技能"]
@@ -213,6 +225,8 @@ flowchart TB
     end
 
     Layer1 -->|注入上下文| Max(("Max\n主 Agent"))
+    Layer4 -->|生命周期守卫| Max
+    Layer5 -->|一键触发| Max
     Max -->|委派| A1
     Max -->|委派| A2
     Max -->|委派| A3
@@ -221,24 +235,25 @@ flowchart TB
     S2 -.->|按需加载| A1
     S3 -.->|按需加载| A2
     S4 -.->|按需加载| A3
-
-    style Max fill:#4A90D9,color:#fff,stroke-width:3px
-    style Layer1 fill:#f0f4ff,stroke:#4A90D9
-    style Layer2 fill:#fff0f0,stroke:#E91E63
-    style Layer3 fill:#f0fff0,stroke:#4CAF50
 ```
 
 ## 使用示例
 
 ```
 你: 帮我设计一个登录页面
-Max: [分析需求，派遣艾拉] → 艾拉输出设计稿 → shared/designs/
+Max: [分析需求，派遣艾拉] → 艾拉输出设计稿 → .dev-agents/shared/designs/
 
 你: 根据设计稿开发登录功能
 Max: [派遣贾维斯，注入设计稿路径] → 贾维斯实现代码
 
 你: 验收一下登录功能
-Max: [派遣凯尔，注入代码路径 + 需求] → 凯尔输出审查报告 → shared/reviews/
+Max: [派遣凯尔，注入代码路径 + 需求] → 凯尔输出审查报告 → .dev-agents/shared/reviews/
+
+你: /pr
+Agent: [自动执行] git diff → 撰写 commit message → 推送 → 创建 PR → 返回链接
+
+你: /fix-issue 42
+Agent: [自动执行] 获取 Issue 详情 → 定位代码 → TDD 修复 → 验证 → 询问是否创建 PR
 ```
 
 ## 项目结构
@@ -248,13 +263,22 @@ ai-agent-workflowGroup/
 ├── .cursor/
 │   ├── rules/                     # Rules — 主 Agent (Max) 的行为规则
 │   │   ├── project-core.mdc       #   始终生效：核心约定（中文注释、编码规范）
-│   │   ├── max-coordinator.mdc    #   始终生效：Max 角色 + 团队调度
+│   │   ├── max-coordinator.mdc    #   始终生效：Max 角色 + 团队调度 + Harness 反馈循环
 │   │   ├── git-conventions.mdc    #   始终生效：Git 安全与提交格式
-│   │   └── shared-artifacts.mdc   #   共享目录触发：产物规范
+│   │   ├── shared-artifacts.mdc   #   共享目录触发：产物规范
+│   │   └── harness-log.mdc        #   Harness 失败案例日志（活文档）
 │   ├── agents/                    # Subagents — 可委派的子 Agent
 │   │   ├── ella.md                #   艾拉：UI/UX 设计师
 │   │   ├── jarvis.md              #   贾维斯：全栈开发工程师
 │   │   └── kyle.md                #   凯尔：质量保证工程师（只读模式）
+│   ├── hooks/                     # Hooks — Agent 生命周期硬约束
+│   │   ├── verify-completion.ts   #   stop hook：完成前验证守卫
+│   │   └── pre-commit-check.ts    #   stop hook：提交前安全检查
+│   ├── hooks.json                 # Hooks 配置入口
+│   ├── commands/                  # Commands — 可复用的工作流命令
+│   │   ├── pr.md                  #   /pr：提交并创建 Pull Request
+│   │   ├── fix-issue.md           #   /fix-issue：从 Issue 出发修复
+│   │   └── review.md              #   /review：代码审查
 │   └── skills/                    # Skills — 技能资源（Cursor 自动发现）
 │       ├── brainstorming/         #   工作流：需求澄清与方案设计
 │       ├── writing-plans/         #   工作流：实现计划编写
@@ -277,19 +301,22 @@ ai-agent-workflowGroup/
 ├── scripts/
 │   ├── update-skills.ps1          # Skills 更新脚本（Windows）
 │   ├── update-skills.sh           # Skills 更新脚本（Linux/Mac）
-│   └── check-gitignore.sh         # .gitignore 检查脚本
+│   ├── check-gitignore.sh         # .gitignore 检查脚本
+│   └── clean-system-files.sh      # 系统文件清理脚本
 └── README.md
 ```
 
-### Cursor 三层架构
+### Cursor 五层 Harness 架构
 
-本项目完全遵循 [Cursor 官方规范](https://cursor.com/docs)，利用三层原生机制实现多 Agent 协作：
+本项目遵循 [Cursor 官方规范](https://cursor.com/docs) 与 [Harness Engineering](https://martinfowler.com/articles/harness-engineering.html) 范式，通过五层机制实现多 Agent 可靠协作：
 
 | 层级 | 位置 | 作用 | 详情 |
 |------|------|------|------|
-| **Rules** | `.cursor/rules/` | 注入主 Agent 上下文 | Max 角色、项目约定、Git 规范始终生效 |
+| **Rules** | `.cursor/rules/` | 注入主 Agent 上下文 | Max 角色、项目约定、Git 规范、Harness 日志始终生效 |
 | **Subagents** | `.cursor/agents/` | 独立子 Agent，被 Max 委派 | 艾拉/贾维斯/凯尔各自有独立上下文窗口 |
-| **Skills** | `.cursor/skills/` | 可复用的专业知识包 | 23 个技能包，Cursor 自动发现并按需加载 |
+| **Hooks** | `.cursor/hooks/` | 硬约束 — Agent 生命周期守卫 | 完成前验证、提交前安全检查，系统强制执行 |
+| **Commands** | `.cursor/commands/` | 可复用的工作流命令 | `/pr`、`/fix-issue`、`/review` 一键触发 |
+| **Skills** | `.cursor/skills/` | 可复用的专业知识包 | 27 个技能包，Cursor 自动发现并按需加载 |
 
 ### 子 Agent 调用方式
 

@@ -8,7 +8,7 @@
 
 set -e
 
-PROJECT_ROOT="/Users/yuhao/Desktop/yezannnnn/aiGroup"
+PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || dirname "$(cd "$(dirname "$0")/.." && pwd)")"
 
 cd "$PROJECT_ROOT"
 

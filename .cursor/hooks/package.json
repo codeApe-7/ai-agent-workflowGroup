@@ -1,0 +1,10 @@
+{
+  "name": "aigroup-hooks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cursor Agent 生命周期 Hooks — Harness 硬约束",
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.2"
+  }
+}
