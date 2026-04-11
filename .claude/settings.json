@@ -5,13 +5,19 @@
       "Glob",
       "Grep",
       "Task",
-      "TodoWrite"
+      "TodoWrite",
+      "Shell(bash scripts/harness/*)",
+      "Shell(cat .dev-agents/*)",
+      "Shell(ls *)",
+      "Shell(wc *)"
     ],
     "deny": [
       "Shell(git push *)",
       "Shell(git commit *)",
       "Shell(git merge *)",
-      "Shell(git reset --hard *)"
+      "Shell(git reset --hard *)",
+      "Shell(rm -rf *)",
+      "Shell(sudo *)"
     ]
   }
 }
