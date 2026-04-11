@@ -600,6 +600,22 @@ bash scripts/harness/run-all.sh   # 全量检查
 所有规范、架构决策、质量追踪均版本化存储在 `docs/` 目录下，作为项目的唯一事实源。
 CLAUDE.md 仅作为地图入口（< 100 行），详细内容按需从 `docs/` 检索。
 
+## 致谢
+
+本项目基于 [yezannnnn/agentGroup](https://github.com/yezannnnn/agentGroup) 进行开发和扩展。感谢原作者 [@yezannnnn](https://github.com/yezannnnn) 提出的四 AI 专业分工协作框架理念，为本项目奠定了坚实的基础。
+
+## 社区支持
+
+<div align="center">
+
+**学 AI，上 L 站**
+
+[![LINUX DO](https://img.shields.io/badge/LINUX%20DO-社区-gray?style=flat-square)](https://linux.do/) [![社区支持](https://img.shields.io/badge/社区支持-交流-blue?style=flat-square)](https://linux.do/)
+
+本项目在 [LINUX DO](https://linux.do/) 社区发布与交流，感谢佬友们的支持与反馈。
+
+</div>
+
 ## 许可证
 
 MIT License
