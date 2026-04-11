@@ -5,21 +5,75 @@
 
 ## 快速开始
 
+### 环境要求
+
+| 依赖 | 最低版本 | 用途 |
+|------|---------|------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | 最新版 | AI Agent 运行时（主要使用方式） |
+| [Cursor](https://cursor.com) | 最新版 | AI IDE（可选，替代使用方式） |
+| Git | 2.x | 版本控制 |
+| Bash | 4.x+ | Harness 传感器脚本（Windows 用户可用 Git Bash） |
+
+### 安装
+
 ```bash
+# 方式一：作为独立框架使用
 git clone https://github.com/codeApe-7/ai-agent-workflowGroup.git
-cd agentGroup
+cd ai-agent-workflowGroup
+
+# 方式二：集成到已有项目（只复制框架文件）
+# 详见下方"集成到已有项目"章节
+```
+
+### 启动
+
+**Claude Code 中使用（推荐）：**
+
+```bash
+cd ai-agent-workflowGroup
 claude
 ```
 
-就这样。麦克斯 (Max) 会自动就位，根据你的需求派遣对应的团队成员。
+启动后 Max 自动就位，读取 `CLAUDE.md` 作为入口，根据你的需求驱动整个团队。
 
-也可以通过斜杠命令直接派遣团队成员：
+**Cursor 中使用：**
+
+直接用 Cursor 打开项目目录，Agent 会自动读取 `CLAUDE.md` 获取框架规则。
+
+### 三种使用模式
+
+**模式一：完整管道（复杂任务）**
+
+直接描述需求，Max 自动驱动完整管道：
+
+```
+你: 帮我做一个用户认证系统
+→ Max 启动 brainstorming，逐步澄清需求
+→ Max 产出实现计划，用户确认
+→ Max 派遣 Jarvis 逐任务开发，Kyle 两阶段审查
+→ Max 收尾集成
+```
+
+**模式二：斜杠命令直接派遣（明确任务）**
+
+跳过 Max 调度，直接派遣指定成员：
 
 ```
 /ella 设计一个登录页面         # 直接派遣设计师
 /jarvis 实现用户认证 API       # 直接派遣开发
 /kyle 审查用户模块代码          # 直接派遣质量保障
 ```
+
+**模式三：简单问答（轻量任务）**
+
+不涉及设计决策的简单问题，Max 直接回答：
+
+```
+你: 这个项目用的什么技术栈？
+→ Max 直接回答，不启动管道
+```
+
+判断标准：涉及 2 个以上文件或需要设计决策 → 走完整管道。
 
 ## 团队成员
 
@@ -215,6 +269,8 @@ Stage 1 不通过 → 修复 → 重审 Stage 1 → 通过后才进入 Stage 2
 
 ## 使用示例
 
+### 示例 1：完整功能开发
+
 ```
 你: 帮我做一个用户认证系统
 
@@ -226,6 +282,141 @@ Max: [启动 subagent-driven-development]
   → ...
 Max: [启动 finishing-a-development-branch] → 全量测试 → 用户选择集成方式
 ```
+
+### 示例 2：直接派遣设计
+
+```
+/ella 设计一个电商首页，风格参考 Apple Store，需要有 hero banner、商品分类、推荐列表
+
+→ Ella 读取 PERSONA 和 ui-ux-pro-max 技能
+→ 产出设计稿到 .dev-agents/shared/designs/ecommerce-home.md
+→ 返回：设计稿路径 + 设计决策摘要 + 实现注意事项
+```
+
+### 示例 3：代码审查
+
+```
+/kyle 审查 src/auth/ 目录下的认证模块代码，对照实现计划 .dev-agents/shared/tasks/auth-plan.md
+
+→ Kyle 读取实现计划和代码
+→ Stage 1：逐条检查规格符合性
+→ Stage 2：检查代码质量、安全性、可维护性
+→ 产出审查报告到 .dev-agents/shared/reviews/auth-review.md
+```
+
+### 示例 4：Bug 调试
+
+```
+你: 用户登录后 token 刷新失败，返回 401
+
+→ Max 检测到 Bug 信号，启动 systematic-debugging
+→ 派遣 Jarvis 执行四阶段根因调查
+→ 第一阶段：阅读错误信息、稳定复现
+→ 第二阶段：找到可工作示例，对照差异
+→ 第三阶段：假设验证（一次一个变量）
+→ 第四阶段：创建失败测试 → 修复 → 验证
+```
+
+### 示例 5：Harness 健康检查
+
+```
+你: 跑一下项目健康检查
+
+→ Max 启动 entropy-management 技能
+→ 第一阶段：运行 scripts/harness/run-all.sh 自动化扫描
+→ 第二阶段：推理型扫描（文档一致性、架构漂移）
+→ 第三阶段：修复问题 + 将重复问题编码为约束
+→ 第四阶段：更新 docs/QUALITY_SCORE.md 和 docs/tech-debt-tracker.md
+```
+
+## 集成到已有项目
+
+aiGroup 可以作为"脚手架"集成到你的任何项目中。
+
+### 步骤 1：复制框架文件
+
+将以下目录和文件复制到你的项目根目录：
+
+```bash
+# 必须复制
+CLAUDE.md                    # Agent 入口
+docs/                        # 知识库
+.claude/                     # Claude Code 配置（commands/ + hooks.json + settings.json）
+.dev-agents/                 # 角色定义 + 协作产物目录
+scripts/harness/             # Harness 传感器
+
+# 按需复制
+skills/max/workflow/         # 工作流技能（强烈推荐）
+skills/ella/                 # 设计技能（如果需要 UI 设计）
+skills/jarvis/               # 开发技能（如果需要工程团队技能集）
+skills/kyle/                 # QA 技能（如果需要质量保障）
+```
+
+### 步骤 2：适配你的项目
+
+1. **编辑 `CLAUDE.md`**：不需要大改，只需确认知识库地图路径正确
+2. **编辑 `docs/ARCHITECTURE.md`**：替换为你项目的架构描述
+3. **编辑 `docs/coding-standards.md`**：替换为你项目的编码规范
+4. **编辑 `.dev-agents/*/PERSONA.md`**：根据需要调整角色定义
+
+### 步骤 3：更新 .gitignore
+
+确保 `docs/` 不被忽略（框架已自动处理），协作产物按需忽略：
+
+```gitignore
+# 子项目文档目录（不影响根目录 docs/ 知识库）
+**/docs/
+!/docs/
+
+# shared 目录：保留框架，忽略具体产出内容
+.dev-agents/shared/tasks/*.md
+.dev-agents/shared/designs/*.md
+.dev-agents/shared/reviews/*.md
+```
+
+### 步骤 4：验证安装
+
+```bash
+bash scripts/harness/run-all.sh
+```
+
+所有检查通过即可开始使用。
+
+## 常用命令速查
+
+### 日常使用
+
+| 命令 | 说明 | 使用场景 |
+|------|------|---------|
+| `claude` | 启动 Claude Code + Max | 开始工作 |
+| `/ella <任务>` | 直接派遣设计师 | 界面设计、交互原型 |
+| `/jarvis <任务>` | 直接派遣开发 | 编码、技术方案、Bug 修复 |
+| `/kyle <任务>` | 直接派遣质量保障 | 代码审查、功能验收 |
+
+### Harness 维护
+
+| 命令 | 说明 | 建议频率 |
+|------|------|---------|
+| `bash scripts/harness/run-all.sh` | 全量 Harness 传感器检查 | 每次开发完成后 |
+| `bash scripts/update-skills.sh all` | 更新所有远程技能 | 每周一次 |
+| `bash scripts/check-gitignore.sh` | 检查 .gitignore 规则 | 添加新文件类型时 |
+| `bash scripts/clean-system-files.sh` | 清理 .DS_Store 等系统文件 | 偶尔运行 |
+
+> Windows 用户：用 Git Bash 运行以上命令（`"D:\Git\bin\bash.exe" scripts/harness/run-all.sh`）。
+
+### 自定义与扩展
+
+| 想要做 | 修改什么 |
+|--------|---------|
+| 调整 Agent 角色定义 | `.dev-agents/{name}/PERSONA.md` |
+| 修改工作流规则 | `skills/max/workflow/{skill}/SKILL.md` |
+| 添加新的编码规范 | `docs/coding-standards.md` |
+| 添加新的传感器检查 | `scripts/harness/lint-*.sh` 中添加检查项 |
+| 添加新的危险信号 | `docs/red-flags.md` 中添加条目 |
+| 将重复问题编码为约束 | 遵循 `docs/steering-loop.md` 转向循环流程 |
+| 添加新的 Hook | `.claude/hooks.json` 中添加事件 |
+| 修改权限控制 | `.claude/settings.json` 中调整 allow/deny |
+| 添加新团队成员 | 新建 `.dev-agents/{name}/PERSONA.md` + `.claude/commands/{name}.md` |
 
 ## 项目结构
 
@@ -304,7 +495,7 @@ flowchart TB
     subgraph MAX["Max 项目经理"]
         M1["ccpm\n关键链项目管理"]
         M2["pm-claude-skills\nPM 技能集"]
-        M3["workflow\n6 个门禁工作流技能"]
+        M3["workflow\n7 个门禁工作流技能"]
     end
 
     subgraph ELLA["Ella 设计师"]
@@ -345,7 +536,7 @@ flowchart TB
 
 | 技能              | 来源                                                                                 | 许可证   | 更新方式 |
 |-------------------|--------------------------------------------------------------------------------------|----------|----------|
-| 工作流技能 (6个)  | 原创，受 [obra/superpowers](https://github.com/obra/superpowers) 启发                | MIT      | 内置     |
+| 工作流技能 (7个)  | 原创，受 [obra/superpowers](https://github.com/obra/superpowers) 和 [Harness Engineering](https://martinfowler.com/articles/harness-engineering.html) 启发 | MIT | 内置 |
 | CCPM 项目管理     | [automazeio/ccpm](https://github.com/automazeio/ccpm)                               | MIT      | 脚本自动 |
 | PM Claude Skills  | [mohitagw15856/pm-claude-skills](https://github.com/mohitagw15856/pm-claude-skills)  | MIT      | 脚本自动 |
 | Claude Simone     | [Helmi/claude-simone](https://github.com/Helmi/claude-simone)                        | 见原仓库 | 脚本自动 |
