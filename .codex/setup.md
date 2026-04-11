@@ -42,16 +42,31 @@ cmd /c mklink /J "$env:USERPROFILE\.agents\skills\aigroup-workflow" "$env:USERPR
 cmd /c mklink /J "$env:USERPROFILE\.agents\skills\aigroup-domain" "$env:USERPROFILE\projects\work-group-improve\skills"
 ```
 
-### 3. 启用子代理支持
+### 3. 启用子代理与嵌套 AGENTS.md 支持
 
-在 Codex 配置中启用多代理特性（如适用）：
+在 `~/.codex/config.toml` 中启用：
 
 ```toml
 [features]
 multi_agent = true
+child_agents_md = true
 ```
 
-### 4. 重启 Codex
+- `multi_agent` — 启用 `spawn_agent` 子代理功能
+- `child_agents_md` — 启用嵌套 AGENTS.md 发现，子目录中的 AGENTS.md 会覆盖父级指令
+
+### 4. 安装 Harness（一键）
+
+```bash
+bash .codex/sandbox-setup.sh
+```
+
+此脚本会：
+- 安装 Git pre-commit hook → 每次 `git commit` 自动检查
+- 验证项目结构完整性
+- 输出 `[notify]` hook 配置指引
+
+### 5. 重启 Codex
 
 退出并重新启动 Codex CLI，使技能被自动发现。
 
@@ -111,6 +126,12 @@ ls skills/
 
 # 确认子代理模板
 ls .dev-agents/shared/templates/
+
+# 确认 Harness 层
+bash .harness/run-all.sh
+
+# 确认 pre-commit hook 已安装
+test -f .git/hooks/pre-commit && echo "Hook installed" || echo "Hook missing — run: bash .harness/hooks/install.sh"
 
 # 确认 Codex 技能链接（可选步骤 2 完成后）
 ls -la ~/.agents/skills/aigroup-workflow

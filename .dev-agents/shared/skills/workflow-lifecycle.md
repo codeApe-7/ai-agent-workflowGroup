@@ -105,6 +105,44 @@ Max: finishing-branch 技能（分支收尾）
 3. 读取领域技能的 SKILL.md 后按其指引执行
 4. 各角色的可用领域技能详见其 PERSONA.md
 
+## Harness Engineering 集成
+
+### Computational Sensors
+
+所有角色在执行任务时，必须在关键节点运行 `.harness/` 中的自动化检查：
+
+| 节点 | 检查命令 | 说明 |
+|------|---------|------|
+| 提交前 | `bash .harness/run-all.sh` | 全量 Harness 检查 |
+| 任务完成时 | `bash .harness/linters/check-write-scope.sh` | 确认未越权 |
+| 文档修改后 | `bash .harness/linters/check-doc-freshness.sh` | 确认引用完整 |
+
+### Steering Loop
+
+Agent 犯错时的标准响应流程：
+
+1. 记录到 `.cursor/rules/harness-log.mdc`
+2. 判断能否机械化 → 是则新增 `.harness/` 中的 Linter 或结构测试
+3. 验证新规则能阻止同类问题
+4. 更新 `.harness/quality/QUALITY_SCORE.md` 对应评分
+
+### Garbage Collection（熵治理）
+
+定期（建议每周或每个 Sprint 结束时）执行：
+
+```bash
+bash .harness/garbage-collection/drift-scanner.sh
+```
+
+扫描内容：
+- 超大文档（>500 行 Markdown）→ 拆分
+- 已完成但未归档的任务文件 → 归档到 `tasks/archived/`
+- 孤立的设计文档 → 关联任务或归档
+- AGENTS.md 膨胀（>200 行）→ 下沉详细规则
+- 技能文件与实际执行的偏差 → 修正
+
+扫描结果用于更新 `QUALITY_SCORE.md` 并生成修复任务。
+
 ## 简单请求豁免
 
 以下情况 Max 可以直接回答，不强制走完整流程：

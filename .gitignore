@@ -26,3 +26,6 @@ docs/
 # Codex 工作树
 .worktrees/
 worktrees/
+
+# Harness 运行时日志（由 notify hook 生成，不入版本控制）
+.harness/notify.log

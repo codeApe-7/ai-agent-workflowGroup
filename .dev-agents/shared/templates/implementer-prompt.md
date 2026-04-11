@@ -43,6 +43,33 @@
 4. 不越界修改 WRITE_SCOPE 之外的文件
 5. 完成后提交简要变更说明
 
+## Harness 检查门（提交前必须通过）
+
+在声称完成和提交代码之前，必须依次运行以下 Computational Sensors：
+
+```bash
+# 1. WRITE_SCOPE 越权检查 — 确认未修改范围外文件
+bash .harness/linters/check-write-scope.sh "{WRITE_SCOPE_PATTERN}"
+
+# 2. 项目 Linter / TypeCheck（如适用）
+{LINT_COMMAND:-echo "No lint command configured"}
+
+# 3. 完整测试套件
+{TEST_COMMAND}
+
+# 4. 任务文档格式检查（如创建了任务文件）
+bash .harness/linters/check-task-format.sh
+```
+
+**任何检查失败 → 修复后重新运行全部检查。不可跳过。**
+
+> Codex 沙箱（`workspace-write` 模式）可以运行 `.harness/` 脚本，因为它们是仓库的一部分。
+> 只有在极端受限环境（如 `read-only` 沙箱）下，才用以下手动替代：
+> 1. 列出所有修改的文件，确认均在 WRITE_SCOPE 内
+> 2. 运行 Linter，确认 0 errors
+> 3. 运行测试，确认全部通过
+> 4. 检查新增文件的命名和格式
+
 ## 完成后报告
 
 以下列格式之一结束：

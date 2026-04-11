@@ -38,6 +38,20 @@
 - [ ] {验收条件 2}
 - [ ] {验收条件 3}
 
+## Harness 检查门
+
+提交前必须通过的 Computational Sensors（不可跳过）：
+
+- [ ] WRITE_SCOPE 检查：所有修改文件均在声明范围内
+- [ ] Linter/TypeCheck 通过：0 errors
+- [ ] 测试通过：全部绿色，无回归
+- [ ] 文档格式：新增任务/设计文件符合命名规范
+
+```bash
+# 一键检查（如 .harness/ 可用）
+bash .harness/run-all.sh
+```
+
 ## 交付物
 
 | 产物 | 路径 | 说明 |
