@@ -65,3 +65,16 @@ Agent 之间不能直接通信，所有协作通过 `.dev-agents/shared/` 目录
 
 架构规则不仅写在文档中，还通过 `scripts/harness/` 下的计算型传感器机械化执行。
 Agent 的自由度在约束边界内最大化。
+
+### 4. Hooks 自动化反馈（Claude Code CLI 专属）
+
+`.claude/hooks.json` 配置了生命周期 Hooks，**由 Claude Code 运行时自动触发**：
+
+| Hook 事件 | 触发时机 | 脚本 | exit 行为 |
+|-----------|---------|------|----------|
+| PostToolUse | Agent 编辑文件后 | `hook-post-edit.sh` | exit 0 静默通过；exit 2 错误回注 |
+| Stop | Agent 准备停止时 | `hook-stop.sh` | exit 0 允许停止；exit 2 阻止停止 |
+
+**重要区别**：
+- **Claude Code CLI**：Hooks 自动执行，如同 git hook，Agent 无法跳过
+- **Cursor / 其他 IDE**：不支持 hooks.json，传感器需要 Agent 根据 CLAUDE.md 指令主动运行

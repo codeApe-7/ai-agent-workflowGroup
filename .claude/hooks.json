@@ -1,38 +1,24 @@
 {
-  "hooks": [
+  "PostToolUse": [
     {
-      "event": "PostToolUse",
-      "matcher": {
-        "tool_name": "write_file|str_replace_editor|create_file"
-      },
+      "matcher": "Write|Edit",
       "hooks": [
         {
           "type": "command",
-          "command": "bash scripts/harness/hook-post-edit.sh \"$TOOL_INPUT_PATH\" 2>&1 || true",
-          "timeout": 10000,
-          "description": "代码修改后自动运行结构检查，静默成功，失败回注上下文"
+          "command": "bash scripts/harness/hook-post-edit.sh",
+          "timeout": 10
         }
       ]
-    },
+    }
+  ],
+  "Stop": [
     {
-      "event": "Stop",
+      "matcher": "*",
       "hooks": [
         {
           "type": "command",
-          "command": "bash scripts/harness/hook-stop.sh 2>&1",
-          "timeout": 30000,
-          "description": "Agent 停止前运行全量 Harness 传感器，有错误则回注让 Agent 继续修复"
-        }
-      ]
-    },
-    {
-      "event": "SubagentStop",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "bash scripts/harness/hook-subagent-stop.sh 2>&1 || true",
-          "timeout": 15000,
-          "description": "子代理完成后检查产出是否写入 shared/ 正确位置"
+          "command": "bash scripts/harness/hook-stop.sh",
+          "timeout": 30
         }
       ]
     }
