@@ -5,8 +5,9 @@
 # 个人配置
 */.claude/settings.local.json
 
-# 文档目录
-docs/
+# 子项目文档目录（不影响根目录 docs/ 知识库）
+**/docs/
+!/docs/
 
 # shared目录：保留框架，忽略具体内容
 shared/status.json
