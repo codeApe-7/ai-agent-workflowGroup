@@ -88,13 +88,13 @@ export async function multiSelect(message, choices) {
     return `  ${C.dim}↑↓ 移动${C.reset}  ${C.dim}空格 选择${C.reset}  ${C.dim}a 全选/取消${C.reset}  ${C.dim}回车 确认${C.reset}`
   }
 
-  // 总行数 = 选项行 + 提示行
-  const totalLines = choices.length + 1
-
   function render(isFirst) {
     if (!isFirst) {
-      // 光标在提示行末尾，先回到行首，再回退所有行，清除下方
-      process.stdout.write(`\r\x1b[${totalLines}A\x1b[0J`)
+      // 光标在提示行末尾（无换行），清除当前行，再逐行回退并清除
+      process.stdout.write('\r\x1b[2K')
+      for (let n = 0; n < choices.length; n++) {
+        process.stdout.write('\x1b[1A\x1b[2K')
+      }
     }
     for (const [i, c] of choices.entries()) {
       process.stdout.write(renderLine(c, i) + '\n')
@@ -188,11 +188,12 @@ export async function select(message, choices) {
     return `  ${C.dim}↑↓ 移动${C.reset}  ${C.dim}回车 选择${C.reset}`
   }
 
-  const totalLines = choices.length + 1
-
   function render(isFirst) {
     if (!isFirst) {
-      process.stdout.write(`\r\x1b[${totalLines}A\x1b[0J`)
+      process.stdout.write('\r\x1b[2K')
+      for (let n = 0; n < choices.length; n++) {
+        process.stdout.write('\x1b[1A\x1b[2K')
+      }
     }
     for (const [i, c] of choices.entries()) {
       process.stdout.write(renderLine(c, i) + '\n')
