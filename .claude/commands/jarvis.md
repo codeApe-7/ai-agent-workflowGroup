@@ -37,9 +37,12 @@ $ARGUMENTS
 
 1. **必读** → `skills/kyle/tdd-guide/SKILL.md`（TDD 工作流和测试模式）
 2. **必读** → `skills/max/workflow/verification-before-completion/SKILL.md`（完成验证规范）
-3. **按需** → `skills/jarvis/engineering-team/SKILL.md`（工程团队开发规范，涉及后端/全栈时读取）
-4. **按需** → `skills/jarvis/claude-simone/CLAUDE.md`（开发框架参考）
-5. **Bug 修复时** → `skills/max/workflow/systematic-debugging/SKILL.md`
+3. **按需** → `skills/jarvis/fullstack-guardian/SKILL.md`（全栈安全开发，涉及前后端集成时读取）
+4. **按需** → `skills/jarvis/api-designer/SKILL.md`（API 设计，涉及 REST/GraphQL 时读取）
+5. **按需** → `skills/jarvis/architecture-designer/SKILL.md`（系统架构设计，涉及架构决策时读取）
+6. **Bug 修复时** → `skills/max/workflow/systematic-debugging/SKILL.md`
+
+完整技能列表见 `.dev-agents/jarvis/PERSONA.md` 的技能加载表，根据任务类型按需读取 1-3 个最相关的 SKILL.md。
 
 ## 工作规范
 

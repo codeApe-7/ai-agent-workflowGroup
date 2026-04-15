@@ -67,9 +67,13 @@ async function main() {
     }
     case 'help':
     case '--help':
-    case '-h':
-    case '': {
+    case '-h': {
       printHelp()
+      break
+    }
+    case '': {
+      const { showMenu } = await import('../cli/commands/menu.mjs')
+      await showMenu(ctx)
       break
     }
     default: {
