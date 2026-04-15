@@ -1,47 +1,83 @@
-你是麦克斯 (Max)，项目经理。现在需要为当前项目初始化 aiGroup 框架。
+---
+description: 初始化项目 AI 上下文，生成/更新根级与模块级 CLAUDE.md 索引
+argument-hint: <项目摘要或名称>
+---
 
-## 任务
+## 用法
 
-$ARGUMENTS
+`/init-project <项目摘要或名称>`
+
+## 目标
+
+以"根级简明 + 模块级详尽"的混合策略初始化项目 AI 上下文：
+
+- 在仓库根生成/更新 `CLAUDE.md`（高层愿景、架构总览、模块索引、全局规范）。
+- 在识别的各模块目录生成/更新本地 `CLAUDE.md`（接口、依赖、入口、测试、关键文件等）。
+- 为根 `CLAUDE.md` 自动生成 Mermaid 结构图，并为每个模块 `CLAUDE.md` 添加导航面包屑。
 
 ## 执行步骤
 
-### 1. 项目分析
+### 步骤 1：全仓清点（轻量）
 
-分析当前项目目录，识别：
-- 技术栈（语言、框架、构建工具）
-- 已有配置文件（package.json、pom.xml、go.mod 等）
-- 已有的代码规范和目录结构
-- 是否已有 CLAUDE.md 或 .dev-agents/
+快速统计文件与目录，识别模块根：
+- 查找 `package.json`、`pyproject.toml`、`go.mod`、`pom.xml`、`build.gradle` 等项目标识
+- 识别模块目录：`apps/*`、`packages/*`、`services/*`、`src/modules/*` 等
+- 统计文件数量和目录结构
+- 识别技术栈（语言、框架、构建工具）
 
-### 2. 框架适配
+### 步骤 2：模块优先扫描（中等）
 
-根据项目特征调整框架配置：
-- **CLAUDE.md**：更新知识库地图，确保路径与项目结构匹配
-- **docs/ARCHITECTURE.md**：根据实际项目架构重写
-- **docs/coding-standards.md**：根据项目技术栈调整编码规范
-- **.dev-agents/*/PERSONA.md**：根据项目需要调整角色定义
+对每个模块做定点读取与样本抽取：
+- **入口文件**：`index.*`、`main.*`、`app.*`
+- **接口/API**：路由定义、控制器、GraphQL schema
+- **依赖**：`import`/`require` 语句分析，模块间引用关系
+- **测试**：测试文件和覆盖率配置
+- **数据模型**：实体定义、数据库 schema、类型声明
+- **质量工具**：ESLint、Prettier、TypeScript 配置
 
-### 3. 技能匹配
+### 步骤 3：生成/更新 CLAUDE.md
 
-根据项目技术栈，推荐 Jarvis 优先加载的技能：
-- Node.js/TypeScript 项目 → typescript-pro, nestjs-expert/fastapi-expert
-- Java 项目 → java-architect, spring-boot-engineer
-- Go 项目 → golang-pro, microservices-architect
-- Python 项目 → python-pro, fastapi-expert/django-expert
-- 全栈项目 → fullstack-guardian, api-designer
+**根级 `CLAUDE.md`** 包含：
+- 项目愿景和简介（基于 $ARGUMENTS）
+- 技术栈总览
+- Mermaid 架构图
+- 模块索引（名称 + 路径 + 一句话职责）
+- 全局编码规范和约定
+- 常用命令速查
 
-### 4. 健康检查
+**模块级 `<module>/CLAUDE.md`** 包含：
+- 导航面包屑（`← 返回根 CLAUDE.md`）
+- 模块职责描述
+- 关键文件和入口
+- 公开接口/API
+- 依赖关系（上游和下游）
+- 测试说明
 
-```bash
-bash scripts/harness/run-all.sh
-```
+### 步骤 4：aiGroup 框架适配
 
-### 5. 输出
+如果项目已安装 aiGroup 框架（存在 `.dev-agents/`）：
+- 更新 `docs/ARCHITECTURE.md` 为实际架构
+- 根据技术栈推荐 Jarvis 优先加载的技能
+- 运行 `bash scripts/harness/run-all.sh` 健康检查
 
-完成后报告：
-1. 项目技术栈识别结果
-2. 已调整的配置文件列表
-3. 推荐的技能加载方案
-4. 健康检查结果
-5. 下一步建议
+## 覆盖率与增量更新
+
+- 输出"已扫描文件数 / 估算总文件数"和"已覆盖模块占比"
+- 列出被忽略/跳过的原因和"建议下一步深挖的子路径"
+- 重复运行 `/init-project` 时做**增量更新**与**断点续扫**，不覆盖用户自定义内容
+
+## 安全与边界
+
+- 只读/写文档与索引，**不改源代码**
+- 默认忽略 `node_modules`、`dist`、`build`、`.git`、二进制文件等生成物
+- 结果在主对话打印摘要，全文写入仓库
+
+## 输出要求
+
+在主对话中打印"初始化结果摘要"：
+1. 根级 `CLAUDE.md` 是否创建/更新、主要栏目概览
+2. 识别的模块数量及路径列表
+3. 每个模块 `CLAUDE.md` 的生成/更新情况
+4. 已生成 Mermaid 结构图和导航面包屑数量
+5. 覆盖率与主要缺口
+6. 若未读全：说明原因，并列出推荐的下一步
