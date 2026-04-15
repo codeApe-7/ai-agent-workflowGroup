@@ -20,10 +20,10 @@
 ```bash
 # 方式一：通过 npm 安装 CLI（推荐）
 npm install -g aigroup-workflow
-aigroup init
+aig init
 
 # 方式二：npx 免安装使用
-npx aigroup-workflow init
+npx aig init
 
 # 方式三：克隆仓库
 git clone https://github.com/codeApe-7/ai-agent-workflowGroup.git
@@ -33,11 +33,11 @@ cd ai-agent-workflowGroup
 ### CLI 命令
 
 ```bash
-aigroup init          # 交互式初始化（选择角色、安装技能和配置）
-aigroup update        # 增量更新（只更新技能和传感器，不覆盖自定义）
-aigroup check         # 运行 Harness 健康检查
-aigroup status        # 查看工作流状态
-aigroup init --yes    # 跳过确认，使用默认配置
+aig init          # 交互式初始化（选择角色、安装技能和配置）
+aig update        # 增量更新（只更新技能和传感器，不覆盖自定义）
+aig check         # 运行 Harness 健康检查
+aig status        # 查看工作流状态
+aig init --yes    # 跳过确认，使用默认配置
 ```
 
 `init` 命令支持交互式多选：使用 **方向键** 移动光标，**空格** 切换选中角色，**回车** 确认。
@@ -354,7 +354,7 @@ aiGroup 可以作为"脚手架"集成到你的任何项目中。
 
 ```bash
 cd your-project
-npx aigroup-workflow init
+npx aig init
 ```
 
 交互式选择需要的角色，自动安装所有框架文件。
@@ -388,7 +388,7 @@ skills/kyle/                 # QA 技能（如果需要质量保障）
 ### 验证安装
 
 ```bash
-aigroup check
+aig check
 # 或
 bash scripts/harness/run-all.sh
 ```
@@ -410,11 +410,11 @@ bash scripts/harness/run-all.sh
 
 | 命令 | 说明 |
 |------|------|
-| `aigroup init` | 交互式初始化框架 |
-| `aigroup init --yes` | 使用默认配置初始化 |
-| `aigroup update` | 增量更新技能和传感器 |
-| `aigroup check` | 运行 Harness 健康检查 |
-| `aigroup status` | 查看工作流状态 |
+| `aig init` | 交互式初始化框架 |
+| `aig init --yes` | 使用默认配置初始化 |
+| `aig update` | 增量更新技能和传感器 |
+| `aig check` | 运行 Harness 健康检查 |
+| `aig status` | 查看工作流状态 |
 
 ### Harness 维护
 

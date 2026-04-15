@@ -90,7 +90,7 @@ function printHelp() {
   ║   aiGroup — AI 团队协作框架 CLI          ║
   ╚══════════════════════════════════════════╝
 
-  用法: aigroup <命令> [选项]
+  用法: aig <命令> [选项]        （也可用 aigroup）
 
   命令:
     init,   i     完整初始化（交互式选择角色、技能、配置）
@@ -101,13 +101,12 @@ function printHelp() {
 
   选项:
     --yes, -y     跳过确认，全部使用默认值
-    --lang <语言>  设置语言（zh-CN / en）
 
   示例:
-    npx aigroup-workflow init          # 交互式初始化
-    npx aigroup-workflow init --yes    # 使用默认配置初始化
-    npx aigroup-workflow update        # 增量更新
-    npx aigroup-workflow check         # 健康检查
+    npx aig init              # 交互式初始化
+    npx aig init --yes        # 使用默认配置初始化
+    npx aig update            # 增量更新
+    npx aig check             # 健康检查
 `)
 }
 
