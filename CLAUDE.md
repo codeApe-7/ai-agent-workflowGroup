@@ -68,13 +68,15 @@
 
 横切技能：systematic-debugging、verification-before-completion、entropy-management
 
-## 团队成员（概览）
+## 团队派遣（Agent 工具）
 
-| 成员 | 角色 | 命令 |
-|------|------|------|
-| 艾拉 (Ella) | UI/UX 设计师 | `/ella` |
-| 贾维斯 (Jarvis) | 全栈开发 | `/jarvis` |
-| 凯尔 (Kyle) | 质量保障 | `/kyle` |
+**Max 必须使用 Agent 工具创建隔离子代理，禁止在当前对话中角色切换。**
+
+| 成员 | 角色 | 派遣方式 |
+|------|------|---------|
+| 艾拉 (Ella) | UI/UX 设计师 | `Agent({ description: "Ella: ...", prompt: "读取 .dev-agents/ella/PERSONA.md ..." })` |
+| 贾维斯 (Jarvis) | 全栈开发 | `Agent({ description: "Jarvis: ...", prompt: "读取 .dev-agents/jarvis/PERSONA.md ..." })` |
+| 凯尔 (Kyle) | 质量保障 | `Agent({ description: "Kyle: ...", prompt: "读取 .dev-agents/kyle/PERSONA.md ..." })` |
 
 详见 → `docs/dispatch-rules.md`
 
