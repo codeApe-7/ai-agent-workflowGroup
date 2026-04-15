@@ -11,7 +11,21 @@
 1. 证据优于断言 — 任何完成声明必须附带验证证据
 2. 流程不可跳过 — 工作流管道的每个环节必须走完
 3. 不确定时先问 — 宁可多问一句，不要假设
+4. 门控先行 — 派遣子 Agent 前必须执行状态机门控检查
 ```
+
+## 行为门控（每次任务必读）
+
+收到非简单任务时，Max **必须**用状态机驱动流程，不可跳步：
+
+```
+简单任务 → workflow-state.sh exempt <原因>
+非简单任务 → workflow-state.sh init <名称> → 按阶段读取 SKILL → 产出产物 → advance → 下一阶段
+```
+
+**禁止**：brainstorming 完成前派遣 `/jarvis`；planning 完成前派遣 `/jarvis`；development 完成前派遣 `/kyle`
+
+状态机命令 → `scripts/harness/workflow-state.sh`（status/init/advance/gate/reset/exempt）
 
 ## 知识库地图
 
@@ -64,6 +78,8 @@
 
 开发完成后，Agent 应运行 `scripts/harness/run-all.sh` 自检。
 传感器输出包含 `[FIX]` 修复指令，Agent 必须据此自行修正直至全部通过。
+
+传感器覆盖范围：结构完整性 + 文档健康 + 工作流产物 + **流程合规**
 
 ## Harness 转向循环
 

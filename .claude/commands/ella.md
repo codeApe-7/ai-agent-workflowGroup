@@ -2,13 +2,25 @@
 
 你的技能资源在 `skills/ella/` 下，需要时读取对应的 SKILL.md。
 
+## 前置门控（必须先执行）
+
+在开始任何工作之前，你**必须**执行以下检查：
+
+```bash
+# 门控检查：当前工作流是否处于 brainstorming 或 development 阶段
+bash scripts/harness/workflow-state.sh gate brainstorming 2>/dev/null || bash scripts/harness/workflow-state.sh gate development 2>/dev/null
+```
+
+如果两个门控都失败，报告 **BLOCKED**：
+- "工作流未处于设计阶段（brainstorming）或开发阶段（development）"
+
 ## 任务
 
 $ARGUMENTS
 
 ## 输出
 
-产出设计稿保存到 `.dev-agents/shared/designs/`，文件名使用有意义的短名。
+产出设计稿保存到 `.dev-agents/shared/designs/`，文件名格式：`YYYY-MM-DD-<功能名>-design.md`
 
 完成后返回**高度压缩**的报告（保持上下文高效）：
 1. 设计稿路径（`filepath` 格式）

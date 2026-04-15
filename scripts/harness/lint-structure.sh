@@ -113,7 +113,7 @@ done
 echo ""
 echo "▸ Harness 传感器套件检查"
 
-for script in "scripts/harness/lint-structure.sh" "scripts/harness/lint-docs.sh" "scripts/harness/lint-workflow-artifacts.sh" "scripts/harness/run-all.sh"; do
+for script in "scripts/harness/lint-structure.sh" "scripts/harness/lint-docs.sh" "scripts/harness/lint-workflow-artifacts.sh" "scripts/harness/lint-process.sh" "scripts/harness/workflow-state.sh" "scripts/harness/run-all.sh"; do
     if [ -f "$script" ]; then
         pass "$script 存在"
     else

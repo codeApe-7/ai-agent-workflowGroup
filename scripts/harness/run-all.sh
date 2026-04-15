@@ -50,6 +50,7 @@ run_sensor() {
 run_sensor "结构检查" "$SCRIPT_DIR/lint-structure.sh"
 run_sensor "文档检查" "$SCRIPT_DIR/lint-docs.sh"
 run_sensor "工作流产物检查" "$SCRIPT_DIR/lint-workflow-artifacts.sh"
+run_sensor "流程合规检查" "$SCRIPT_DIR/lint-process.sh"
 
 echo "╔════════════════════════════════════════╗"
 echo "║            总体检查结果                ║"

@@ -10,8 +10,11 @@
 #   exit 0 = 允许停止
 #   exit 2 = 阻止停止，错误信息回注让 Agent 继续修复
 #
-# 这是 back-pressure 的核心：
-#   确保 Agent 不会在留下问题时停止
+# 检查范围：
+#   1. 结构检查（lint-structure.sh）
+#   2. 文档检查（lint-docs.sh）
+#   3. 工作流产物检查（lint-workflow-artifacts.sh）
+#   4. 流程合规检查（lint-process.sh）— 新增
 # ================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -40,6 +43,22 @@ collect_failures "$DOCS_OUTPUT" $? "文档检查"
 
 ARTIFACT_OUTPUT=$(bash "$SCRIPT_DIR/lint-workflow-artifacts.sh" 2>&1)
 collect_failures "$ARTIFACT_OUTPUT" $? "工作流产物检查"
+
+PROCESS_OUTPUT=$(bash "$SCRIPT_DIR/lint-process.sh" 2>&1)
+collect_failures "$PROCESS_OUTPUT" $? "流程合规检查"
+
+# 检查工作流状态：如果有活跃工作流且未完成，警告
+if [ -f ".dev-agents/shared/.workflow-state" ]; then
+    CURRENT_STAGE=$(grep "^stage=" ".dev-agents/shared/.workflow-state" | cut -d'=' -f2-)
+    EXEMPT=$(grep "^exempt=" ".dev-agents/shared/.workflow-state" | cut -d'=' -f2-)
+    TASK_NAME=$(grep "^task=" ".dev-agents/shared/.workflow-state" | cut -d'=' -f2-)
+
+    if [ "$CURRENT_STAGE" != "idle" ] && [ "$EXEMPT" != "true" ]; then
+        ERRORS="${ERRORS}--- 工作流状态检查 ---\n"
+        ERRORS="${ERRORS}[FAIL] 工作流未完成就停止（阶段: $CURRENT_STAGE，任务: $TASK_NAME）\n"
+        ERRORS="${ERRORS}[FIX] 完成当前工作流阶段后再停止，或运行 bash scripts/harness/workflow-state.sh reset 重置\n\n"
+    fi
+fi
 
 # 静默成功，失败时 exit 2 阻止停止
 if [ -n "$ERRORS" ]; then

@@ -22,5 +22,17 @@
         }
       ]
     }
+  ],
+  "SubagentStop": [
+    {
+      "matcher": "*",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash scripts/harness/hook-subagent-stop.sh",
+          "timeout": 15
+        }
+      ]
+    }
   ]
 }
