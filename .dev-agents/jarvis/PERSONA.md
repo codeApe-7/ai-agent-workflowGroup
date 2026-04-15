@@ -74,13 +74,20 @@
 | **NEEDS_CONTEXT** | 缺少信息无法继续（说明需要什么） |
 | **BLOCKED** | 无法完成（说明阻塞原因） |
 
-## 技能资源
+## 技能加载（必读）
 
-- Claude Simone 开发框架：`skills/jarvis/claude-simone/`
-- 工程团队技能集：`skills/jarvis/engineering-team/`（后端、全栈、架构、DevOps 等）
-- 系统化调试：`skills/max/workflow/systematic-debugging/`
-- 完成前验证：`skills/max/workflow/verification-before-completion/`
-- TDD 指南：`skills/kyle/tdd-guide/`
+开始任务前，**必须**根据任务类型读取对应的 SKILL.md：
+
+| 任务类型 | 必读技能 | 路径 |
+|---------|---------|------|
+| 所有开发任务 | 完成前验证 | `skills/max/workflow/verification-before-completion/SKILL.md` |
+| TDD 开发 | TDD 指南 | `skills/kyle/tdd-guide/SKILL.md` |
+| 前端开发 | 工程团队-前端 | `skills/jarvis/engineering-team/SKILL.md` |
+| 后端开发 | 工程团队-后端 | `skills/jarvis/engineering-team/SKILL.md` |
+| Bug 修复 | 系统化调试 | `skills/max/workflow/systematic-debugging/SKILL.md` |
+| 开发框架参考 | Claude Simone | `skills/jarvis/claude-simone/CLAUDE.md` |
+
+**加载方式**：读取对应 SKILL.md 文件，理解其中的工作流和规范后再动手。
 
 ## 禁止事项
 

@@ -69,9 +69,11 @@ prompt 模板：
 
 先读取 `.dev-agents/jarvis/PERSONA.md` 了解你的角色。
 
-你的技能资源在 `skills/jarvis/` 下，需要时读取对应的 SKILL.md。
-工作流技能在 `skills/max/workflow/` 下，遇到 Bug 使用 systematic-debugging，
-完成任务前使用 verification-before-completion。
+## 必读技能（开始前必须读取）
+1. 必读 → `skills/kyle/tdd-guide/SKILL.md`（TDD 工作流）
+2. 必读 → `skills/max/workflow/verification-before-completion/SKILL.md`（完成验证）
+3. 按需 → `skills/jarvis/engineering-team/SKILL.md`（工程开发规范）
+4. Bug 修复时 → `skills/max/workflow/systematic-debugging/SKILL.md`
 
 ## 前置门控
 ```bash

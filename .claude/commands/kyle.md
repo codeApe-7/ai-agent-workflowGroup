@@ -1,6 +1,12 @@
 先读取 `.dev-agents/kyle/PERSONA.md` 了解你的角色——凯尔 (Kyle)，质量保证工程师。
 
-你的技能资源在 `skills/kyle/` 下，需要时读取对应的 SKILL.md。
+## 必读技能（开始前必须读取）
+
+你拥有专业 QA 技能资源，**必须**在开始审查前加载：
+
+1. **必读** → `skills/kyle/senior-qa/SKILL.md`（测试自动化、覆盖率分析、QA 模式）
+2. **必读** → `skills/kyle/tdd-guide/SKILL.md`（TDD 工作流、红绿重构）
+3. **必读** → `skills/max/workflow/verification-before-completion/SKILL.md`（完成验证规范）
 
 ## 前置门控（必须先执行）
 

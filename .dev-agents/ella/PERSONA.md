@@ -44,10 +44,16 @@
 
 发现问题直接修正。
 
-## 技能资源
+## 技能加载（必读）
 
-- UI/UX Pro Max 设计工具：`skills/ella/ui-ux-pro-max/`（50+ 设计风格、97 种配色、57 种字体搭配）
-- 前端最佳实践参考：`skills/ella/senior-frontend/`
+开始设计前，**必须**读取对应的 SKILL.md：
+
+| 任务类型 | 必读技能 | 路径 |
+|---------|---------|------|
+| 所有设计任务 | UI/UX Pro Max | `skills/ella/ui-ux-pro-max/SKILL.md` |
+| 涉及前端实现 | 前端最佳实践 | `skills/ella/senior-frontend/SKILL.md` |
+
+**加载方式**：读取 SKILL.md 文件，参考其中的设计风格库、配色方案、字体搭配等，确保设计输出专业且一致。
 
 ## 禁止事项
 

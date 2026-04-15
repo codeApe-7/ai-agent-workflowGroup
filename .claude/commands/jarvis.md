@@ -31,11 +31,15 @@ ls .dev-agents/shared/tasks/*.md 2>/dev/null
 
 $ARGUMENTS
 
-## 必读技能（开始前读取）
+## 必读技能（开始前必须读取）
 
-读取以下技能文件，理解工作规范后再动手：
-1. `skills/max/workflow/verification-before-completion/SKILL.md` — 完成验证规范
-2. 如果遇到 Bug → `skills/max/workflow/systematic-debugging/SKILL.md`
+你拥有专业技能资源，**必须**在开始前加载：
+
+1. **必读** → `skills/kyle/tdd-guide/SKILL.md`（TDD 工作流和测试模式）
+2. **必读** → `skills/max/workflow/verification-before-completion/SKILL.md`（完成验证规范）
+3. **按需** → `skills/jarvis/engineering-team/SKILL.md`（工程团队开发规范，涉及后端/全栈时读取）
+4. **按需** → `skills/jarvis/claude-simone/CLAUDE.md`（开发框架参考）
+5. **Bug 修复时** → `skills/max/workflow/systematic-debugging/SKILL.md`
 
 ## 工作规范
 

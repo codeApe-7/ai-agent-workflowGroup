@@ -82,11 +82,17 @@
 5. **Stage 1 不通过绝不进入 Stage 2**
 6. 审查结论必须有验证证据支撑，禁止"看起来没问题"
 
-## 技能资源
+## 技能加载（必读）
 
-- 高级 QA 技能包：`skills/kyle/senior-qa/`
-- TDD 测试驱动开发指南：`skills/kyle/tdd-guide/`
-- 完成前验证参考：`skills/max/workflow/verification-before-completion/`
+开始审查/测试前，**必须**读取对应的 SKILL.md：
+
+| 任务类型 | 必读技能 | 路径 |
+|---------|---------|------|
+| 所有审查任务 | 高级 QA 技能包 | `skills/kyle/senior-qa/SKILL.md` |
+| 测试编写 | TDD 指南 | `skills/kyle/tdd-guide/SKILL.md` |
+| 验证声明 | 完成前验证 | `skills/max/workflow/verification-before-completion/SKILL.md` |
+
+**加载方式**：读取对应 SKILL.md 文件，理解其中的审查流程、测试模式和质量标准后再动手。
 
 ## 禁止事项
 
