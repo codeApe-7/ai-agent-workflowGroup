@@ -42,11 +42,11 @@ if [ -f "$STATE_FILE" ]; then
 
         # 检查阶段与产物是否匹配
         case "$CURRENT_STAGE" in
-            planning|development|review|finishing)
+            validation|design|planning|development|testing|documentation|finishing)
                 DESIGN_COUNT=$(find "$SHARED_DIR/designs/" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
                 if [ "$DESIGN_COUNT" -eq 0 ]; then
-                    fail "当前阶段 $CURRENT_STAGE，但缺少设计文档"
-                    fix "工作流不应跳过 brainstorming 阶段。在 $SHARED_DIR/designs/ 中补充设计文档"
+                    fail "当前阶段 $CURRENT_STAGE，但缺少需求/设计文档"
+                    fix "工作流不应跳过 brainstorming 阶段。在 $SHARED_DIR/designs/ 中补充文档"
                 else
                     pass "设计文档存在（$DESIGN_COUNT 个），符合阶段 $CURRENT_STAGE 的前置要求"
                 fi
@@ -54,7 +54,7 @@ if [ -f "$STATE_FILE" ]; then
         esac
 
         case "$CURRENT_STAGE" in
-            development|review|finishing)
+            development|testing|documentation|finishing)
                 TASK_COUNT=$(find "$SHARED_DIR/tasks/" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
                 if [ "$TASK_COUNT" -eq 0 ]; then
                     fail "当前阶段 $CURRENT_STAGE，但缺少实现计划"
@@ -66,11 +66,11 @@ if [ -f "$STATE_FILE" ]; then
         esac
 
         case "$CURRENT_STAGE" in
-            finishing)
+            documentation|finishing)
                 REVIEW_COUNT=$(find "$SHARED_DIR/reviews/" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
                 if [ "$REVIEW_COUNT" -eq 0 ]; then
-                    fail "当前阶段 finishing，但缺少审查报告"
-                    fix "不应跳过 review 阶段。派遣 Kyle 完成两阶段审查"
+                    fail "当前阶段 $CURRENT_STAGE，但缺少审查报告"
+                    fix "不应跳过 testing 阶段。派遣 Kyle 完成测试验证和两阶段审查"
                 else
                     pass "审查报告存在（$REVIEW_COUNT 个），符合 finishing 的前置要求"
                 fi

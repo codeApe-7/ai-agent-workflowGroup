@@ -16,14 +16,15 @@
 
 ## 行为门控（每次任务必读）
 
-收到非简单任务时，Max **必须**用状态机驱动流程，不可跳步：
+收到非简单任务时，Max **必须**用状态机驱动 8 阶段流程，不可跳步：
 
 ```
 简单任务 → workflow-state.sh exempt <原因>
-非简单任务 → workflow-state.sh init <名称> → 按阶段读取 SKILL → 产出产物 → advance → 下一阶段
+非简单任务 → workflow-state.sh init <名称> → 按阶段读取 SKILL → 产出产物 → advance
+  需求收集 → 需求验证 → 方案设计 → 任务拆解 → 实施开发 → 测试验证 → 文档更新 → 分支收尾
 ```
 
-**禁止**：brainstorming 完成前派遣 `/jarvis`；planning 完成前派遣 `/jarvis`；development 完成前派遣 `/kyle`
+**禁止**：design 完成前派遣 `/jarvis`；planning 完成前派遣 `/jarvis`；development 完成前派遣 `/kyle`
 
 状态机命令 → `scripts/harness/workflow-state.sh`（status/init/advance/gate/reset/exempt）
 
@@ -42,10 +43,10 @@
 | 技术债追踪 | `docs/tech-debt-tracker.md` |
 | Harness 转向循环 | `docs/steering-loop.md` |
 
-## 强制工作流管道（概览）
+## 强制工作流管道（8 阶段）
 
 ```
-需求澄清(brainstorming) → 实现计划(writing-plans) → 开发执行(subagent) → 两阶段审查(Kyle) → 分支收尾
+需求收集 → 需求验证 → 方案设计 → 任务拆解 → 实施开发 → 测试验证 → 文档更新 → 分支收尾
 ```
 
 详见 → `docs/workflow-pipeline.md`
@@ -54,15 +55,18 @@
 
 ## 工作流技能
 
-| 技能 | 路径 |
-|------|------|
-| brainstorming | `skills/max/workflow/brainstorming/` |
-| writing-plans | `skills/max/workflow/writing-plans/` |
-| subagent-driven-development | `skills/max/workflow/subagent-driven-development/` |
-| systematic-debugging | `skills/max/workflow/systematic-debugging/` |
-| verification-before-completion | `skills/max/workflow/verification-before-completion/` |
-| finishing-a-development-branch | `skills/max/workflow/finishing-a-development-branch/` |
-| **entropy-management** | `skills/max/workflow/entropy-management/` |
+| 阶段 | 技能 | 路径 |
+|------|------|------|
+| 需求收集 | brainstorming | `skills/max/workflow/brainstorming/` |
+| 需求验证 | requirement-validation | `skills/max/workflow/requirement-validation/` |
+| 方案设计 | solution-design | `skills/max/workflow/solution-design/` |
+| 任务拆解 | writing-plans | `skills/max/workflow/writing-plans/` |
+| 实施开发 | subagent-driven-development | `skills/max/workflow/subagent-driven-development/` |
+| 测试验证 | testing | `skills/max/workflow/testing/` |
+| 文档更新 | documentation | `skills/max/workflow/documentation/` |
+| 分支收尾 | finishing-a-development-branch | `skills/max/workflow/finishing-a-development-branch/` |
+
+横切技能：systematic-debugging、verification-before-completion、entropy-management
 
 ## 团队成员（概览）
 
@@ -77,14 +81,11 @@
 ## Harness 传感器
 
 开发完成后，Agent 应运行 `scripts/harness/run-all.sh` 自检。
-传感器输出包含 `[FIX]` 修复指令，Agent 必须据此自行修正直至全部通过。
-
-传感器覆盖范围：结构完整性 + 文档健康 + 工作流产物 + **流程合规**
+传感器覆盖：结构完整性 + 文档健康 + 工作流产物 + **流程合规**
 
 ## Harness 转向循环
 
-当问题反复出现时，不是修改 prompt，而是将修复编码为约束（Linter/文档/技能），确保自动执行。
-详见 → `docs/steering-loop.md`
+当问题反复出现时，将修复编码为约束（Linter/文档/技能），确保自动执行。详见 → `docs/steering-loop.md`
 
 ## Max 的职责边界
 

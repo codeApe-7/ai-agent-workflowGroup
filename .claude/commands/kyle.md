@@ -7,13 +7,13 @@
 在开始审查之前，你**必须**执行以下检查：
 
 ```bash
-# 门控检查：当前工作流是否处于 review 阶段
-bash scripts/harness/workflow-state.sh gate review
+# 门控检查：当前工作流是否处于 testing（测试验证）阶段
+bash scripts/harness/workflow-state.sh gate testing
 ```
 
 如果门控检查失败（输出包含 `[GATE-FAIL]`），你必须：
 1. **停止**，不要开始审查
-2. 报告状态 **BLOCKED**，说明原因："工作流未进入 review 阶段"
+2. 报告状态 **BLOCKED**，说明原因："工作流未进入 testing（测试验证）阶段"
 
 门控通过后，检查审查前置条件：
 

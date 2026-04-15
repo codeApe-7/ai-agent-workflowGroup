@@ -7,12 +7,12 @@
 在开始任何工作之前，你**必须**执行以下检查：
 
 ```bash
-# 门控检查：当前工作流是否处于 brainstorming 或 development 阶段
-bash scripts/harness/workflow-state.sh gate brainstorming 2>/dev/null || bash scripts/harness/workflow-state.sh gate development 2>/dev/null
+# 门控检查：当前工作流是否处于 brainstorming、design 或 development 阶段
+bash scripts/harness/workflow-state.sh gate brainstorming 2>/dev/null || bash scripts/harness/workflow-state.sh gate design 2>/dev/null || bash scripts/harness/workflow-state.sh gate development 2>/dev/null
 ```
 
-如果两个门控都失败，报告 **BLOCKED**：
-- "工作流未处于设计阶段（brainstorming）或开发阶段（development）"
+如果所有门控都失败，报告 **BLOCKED**：
+- "工作流未处于需求收集（brainstorming）、方案设计（design）或实施开发（development）阶段"
 
 ## 任务
 
