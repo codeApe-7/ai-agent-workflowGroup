@@ -84,15 +84,30 @@
 
 ## 技能加载（必读）
 
-开始审查/测试前，**必须**读取对应的 SKILL.md：
+开始审查/测试前，**必须**根据任务类型读取对应的 SKILL.md：
 
-| 任务类型 | 必读技能 | 路径 |
-|---------|---------|------|
+### 团队通用技能
+
+| 任务类型 | 技能 | 路径 |
+|---------|------|------|
 | 所有审查任务 | 高级 QA 技能包 | `skills/kyle/senior-qa/SKILL.md` |
 | 测试编写 | TDD 指南 | `skills/kyle/tdd-guide/SKILL.md` |
 | 验证声明 | 完成前验证 | `skills/max/workflow/verification-before-completion/SKILL.md` |
 
-**加载方式**：读取对应 SKILL.md 文件，理解其中的审查流程、测试模式和质量标准后再动手。
+### Kyle 专业技能库
+
+所有技能位于 `skills/kyle/<skill-name>/SKILL.md`：
+
+| 场景 | Skill | 说明 |
+|------|-------|------|
+| 测试策略 | `test-master` | 测试架构、覆盖率分析、测试计划 |
+| 代码审查 | `code-reviewer` | PR 审查、质量分析、缺陷检测 |
+| 安全审查 | `security-reviewer` | 安全代码审计、漏洞扫描 |
+| E2E 测试 | `playwright-expert` | Playwright 自动化测试 |
+| 混沌工程 | `chaos-engineer` | 故障注入测试、韧性验证 |
+
+**加载方式**：根据当前任务类型，读取 1-2 个最相关的 SKILL.md，理解其中的审查流程、测试模式和质量标准后再动手。
+**来源**：[Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills) (MIT License)
 
 ## 禁止事项
 

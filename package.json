@@ -1,0 +1,35 @@
+{
+  "name": "aigroup-workflow",
+  "version": "1.0.1",
+  "description": "AI 团队协作框架 — 通过角色派遣、工作流管道和 Harness 传感器驱动 AI 协作开发",
+  "type": "module",
+  "bin": {
+    "aigroup": "bin/aigroup.mjs"
+  },
+  "files": [
+    "bin/",
+    "cli/",
+    "docs/",
+    "skills/",
+    "scripts/",
+    ".dev-agents/",
+    ".claude/commands/",
+    ".claude/hooks.json",
+    "CLAUDE.md"
+  ],
+  "keywords": [
+    "claude-code",
+    "ai-agent",
+    "workflow",
+    "harness",
+    "cli"
+  ],
+  "author": "shuaishuai-li",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "aigroup-workflow": "^1.0.0"
+  }
+}

@@ -30,12 +30,15 @@ ai-agent-workflowGroup/
 │       └── templates/         # 文档模板
 ├── skills/                    # 技能库
 │   ├── max/                   # PM 技能
-│   │   ├── workflow/          # 工作流技能（6 个门控阶段 + 熵管理）
-│   │   ├── ccpm/              # Critical Chain 项目管理
-│   │   └── pm-claude-skills/  # PM 辅助技能
-│   ├── ella/                  # 设计技能
-│   ├── jarvis/                # 开发技能（Claude Simone + Engineering Team）
-│   └── kyle/                  # QA 技能
+│   │   ├── workflow/          # 工作流技能（8 阶段管道 + 横切技能）
+│   │   ├── competitive-analysis/  # 竞品分析
+│   │   ├── meeting-notes/         # 会议纪要
+│   │   ├── prd-template/          # PRD 撰写
+│   │   ├── stakeholder-update/    # 干系人汇报
+│   │   └── user-research-synthesis/ # 用户研究综合
+│   ├── ella/                  # 设计技能（UI/UX + 前端框架 x7）
+│   ├── jarvis/                # 开发技能（45 Skills：架构/后端/语言/数据库/DevOps/安全）
+│   └── kyle/                  # QA 技能（审查/测试/安全审计/混沌工程）
 ├── scripts/                   # 自动化脚本
 │   ├── harness/               # Harness 传感器（计算型反馈）
 │   └── *.sh                   # 维护脚本

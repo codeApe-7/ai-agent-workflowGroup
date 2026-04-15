@@ -76,18 +76,97 @@
 
 ## 技能加载（必读）
 
-开始任务前，**必须**根据任务类型读取对应的 SKILL.md：
+开始任务前，**必须**根据任务类型读取对应的 SKILL.md。
 
-| 任务类型 | 必读技能 | 路径 |
-|---------|---------|------|
+### 团队通用技能
+
+| 任务类型 | 技能 | 路径 |
+|---------|------|------|
 | 所有开发任务 | 完成前验证 | `skills/max/workflow/verification-before-completion/SKILL.md` |
 | TDD 开发 | TDD 指南 | `skills/kyle/tdd-guide/SKILL.md` |
-| 前端开发 | 工程团队-前端 | `skills/jarvis/engineering-team/SKILL.md` |
-| 后端开发 | 工程团队-后端 | `skills/jarvis/engineering-team/SKILL.md` |
 | Bug 修复 | 系统化调试 | `skills/max/workflow/systematic-debugging/SKILL.md` |
-| 开发框架参考 | Claude Simone | `skills/jarvis/claude-simone/CLAUDE.md` |
 
-**加载方式**：读取对应 SKILL.md 文件，理解其中的工作流和规范后再动手。
+### Jarvis 专业技能库（45 Skills）
+
+所有技能位于 `skills/jarvis/<skill-name>/SKILL.md`，按任务场景分类如下：
+
+**架构与设计**
+
+| 场景 | Skill | 说明 |
+|------|-------|------|
+| 系统架构设计 | `architecture-designer` | 架构决策、ADR、技术选型 |
+| 微服务设计 | `microservices-architect` | 服务拆分、DDD、Saga 模式 |
+| API 设计 | `api-designer` | REST/GraphQL、OpenAPI 3.1 规范 |
+| GraphQL | `graphql-architect` | Schema 设计、联邦架构 |
+| 全栈开发 | `fullstack-guardian` | 前后端安全集成、三视角开发 |
+| 功能规划 | `feature-forge` | 功能从构思到交付的完整流程 |
+| 遗留系统改造 | `legacy-modernizer` | 渐进式现代化、Strangler Fig 模式 |
+
+**后端框架**
+
+| 场景 | Skill | 说明 |
+|------|-------|------|
+| Spring Boot | `spring-boot-engineer` | Java/Spring 企业级后端 |
+| NestJS | `nestjs-expert` | Node.js 后端框架 |
+| FastAPI | `fastapi-expert` | Python 异步 API 框架 |
+| Django | `django-expert` | Python Web 全栈框架 |
+| Rails | `rails-expert` | Ruby on Rails |
+| Laravel | `laravel-specialist` | PHP 后端框架 |
+| .NET Core | `dotnet-core-expert` | C#/.NET 后端 |
+
+**编程语言**
+
+| 场景 | Skill | 说明 |
+|------|-------|------|
+| TypeScript | `typescript-pro` | 高级类型系统、泛型、tRPC |
+| JavaScript | `javascript-pro` | ES2024+、异步模式 |
+| Python | `python-pro` | 类型安全、async、pytest |
+| Go | `golang-pro` | 并发、gRPC、微服务 |
+| Rust | `rust-engineer` | 所有权、并发安全 |
+| Java | `java-architect` | JVM 优化、设计模式 |
+| C++ | `cpp-pro` | 现代 C++、内存管理 |
+| C# | `csharp-developer` | .NET 生态 |
+| Kotlin | `kotlin-specialist` | Kotlin 多平台 |
+| Swift | `swift-expert` | iOS/macOS 开发 |
+| PHP | `php-pro` | 现代 PHP 8+ |
+
+**数据库与数据**
+
+| 场景 | Skill | 说明 |
+|------|-------|------|
+| 数据库优化 | `database-optimizer` | 查询调优、索引策略 |
+| PostgreSQL | `postgres-pro` | EXPLAIN、JSONB、复制 |
+| SQL | `sql-pro` | 高级 SQL、窗口函数 |
+| Pandas | `pandas-pro` | 数据分析、DataFrame |
+| Spark | `spark-engineer` | 大数据处理 |
+| ML 管道 | `ml-pipeline` | 机器学习工程化 |
+| RAG 架构 | `rag-architect` | 检索增强生成 |
+| 模型微调 | `fine-tuning-expert` | LLM 微调 |
+
+**DevOps 与基础设施**
+
+| 场景 | Skill | 说明 |
+|------|-------|------|
+| CI/CD 与部署 | `devops-engineer` | 流水线、Docker、GitOps |
+| Kubernetes | `kubernetes-specialist` | K8s 编排、Helm |
+| Terraform | `terraform-engineer` | 基础设施即代码 |
+| 云架构 | `cloud-architect` | AWS/GCP/Azure 架构 |
+| SRE | `sre-engineer` | 可靠性工程、SLO |
+| 监控 | `monitoring-expert` | 可观测性、告警 |
+
+**安全与工具**
+
+| 场景 | Skill | 说明 |
+|------|-------|------|
+| 安全编码 | `secure-code-guardian` | OWASP、认证授权 |
+| 调试排错 | `debugging-wizard` | 系统化调试方法论 |
+| CLI 开发 | `cli-developer` | 命令行工具开发 |
+| WebSocket | `websocket-engineer` | 实时通信 |
+| MCP 开发 | `mcp-developer` | MCP Server 开发 |
+| 代码文档 | `code-documenter` | API 文档、JSDoc |
+
+**加载方式**：根据当前任务类型，读取 1-3 个最相关的 SKILL.md，理解其中的工作流和规范后再动手。不要一次性加载所有技能。
+**来源**：[Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills) (MIT License)
 
 ## 禁止事项
 

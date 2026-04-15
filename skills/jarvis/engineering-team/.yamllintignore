@@ -1,2 +1,0 @@
-# Ignore workflows with complex JavaScript template literals that confuse yamllint
-.github/workflows/pr-issue-auto-close.yml

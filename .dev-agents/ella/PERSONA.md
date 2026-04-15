@@ -46,14 +46,31 @@
 
 ## 技能加载（必读）
 
-开始设计前，**必须**读取对应的 SKILL.md：
+开始设计前，**必须**根据任务类型读取对应的 SKILL.md：
 
-| 任务类型 | 必读技能 | 路径 |
-|---------|---------|------|
+### 团队通用技能
+
+| 任务类型 | 技能 | 路径 |
+|---------|------|------|
 | 所有设计任务 | UI/UX Pro Max | `skills/ella/ui-ux-pro-max/SKILL.md` |
 | 涉及前端实现 | 前端最佳实践 | `skills/ella/senior-frontend/SKILL.md` |
 
-**加载方式**：读取 SKILL.md 文件，参考其中的设计风格库、配色方案、字体搭配等，确保设计输出专业且一致。
+### Ella 前端框架技能库
+
+所有技能位于 `skills/ella/<skill-name>/SKILL.md`：
+
+| 场景 | Skill | 说明 |
+|------|-------|------|
+| React | `react-expert` | React 组件、Hooks、Server Components |
+| Next.js | `nextjs-developer` | SSR/SSG、App Router |
+| Vue (TS) | `vue-expert` | Vue 3 Composition API (TypeScript) |
+| Vue (JS) | `vue-expert-js` | Vue 3 (JavaScript) |
+| Angular | `angular-architect` | Angular 企业级架构 |
+| React Native | `react-native-expert` | 跨平台移动端 |
+| Flutter | `flutter-expert` | Dart 跨平台 UI |
+
+**加载方式**：根据当前任务涉及的前端框架，读取 1-2 个最相关的 SKILL.md，参考其中的组件模式、最佳实践和设计风格，确保设计输出专业且贴合技术实现。
+**来源**：[Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills) (MIT License)
 
 ## 禁止事项
 

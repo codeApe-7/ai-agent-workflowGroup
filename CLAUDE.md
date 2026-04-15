@@ -68,6 +68,16 @@
 
 横切技能：systematic-debugging、verification-before-completion、entropy-management
 
+### PM 辅助技能
+
+| 场景 | 技能 | 路径 |
+|------|------|------|
+| 竞品分析 | competitive-analysis | `skills/max/competitive-analysis/` |
+| 会议纪要 | meeting-notes | `skills/max/meeting-notes/` |
+| PRD 撰写 | prd-template | `skills/max/prd-template/` |
+| 干系人汇报 | stakeholder-update | `skills/max/stakeholder-update/` |
+| 用户研究综合 | user-research-synthesis | `skills/max/user-research-synthesis/` |
+
 ## 团队派遣（Agent 工具）
 
 **Max 必须使用 Agent 工具创建隔离子代理，禁止在当前对话中角色切换。**
