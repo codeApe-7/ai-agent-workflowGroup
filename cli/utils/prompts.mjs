@@ -88,19 +88,22 @@ export async function multiSelect(message, choices) {
     return `  ${C.dim}↑↓ 移动${C.reset}  ${C.dim}空格 选择${C.reset}  ${C.dim}a 全选/取消${C.reset}  ${C.dim}回车 确认${C.reset}`
   }
 
+  // 总行数 = 选项行 + 提示行
+  const totalLines = choices.length + 1
+
   function render(isFirst) {
     if (!isFirst) {
-      // 回到列表顶部重绘
-      process.stdout.write(`\x1b[${choices.length + 1}A\x1b[0J`)
+      // 光标在提示行末尾，先回到行首，再回退所有行，清除下方
+      process.stdout.write(`\r\x1b[${totalLines}A\x1b[0J`)
     }
     for (const [i, c] of choices.entries()) {
-      console.log(renderLine(c, i))
+      process.stdout.write(renderLine(c, i) + '\n')
     }
     process.stdout.write(renderHint())
   }
 
-  // 首次绘制
-  console.log(`\n  ${C.cyan}?${C.reset} ${C.bold}${message}${C.reset} ${C.dim}(空格选择, 回车确认)${C.reset}`)
+  // 标题行
+  process.stdout.write(`\n  ${C.cyan}?${C.reset} ${C.bold}${message}${C.reset} ${C.dim}(空格选择, 回车确认)${C.reset}\n`)
   process.stdout.write(C.hideCursor)
   render(true)
 
@@ -185,18 +188,20 @@ export async function select(message, choices) {
     return `  ${C.dim}↑↓ 移动${C.reset}  ${C.dim}回车 选择${C.reset}`
   }
 
+  const totalLines = choices.length + 1
+
   function render(isFirst) {
     if (!isFirst) {
-      process.stdout.write(`\x1b[${choices.length + 1}A\x1b[0J`)
+      process.stdout.write(`\r\x1b[${totalLines}A\x1b[0J`)
     }
     for (const [i, c] of choices.entries()) {
-      console.log(renderLine(c, i))
+      process.stdout.write(renderLine(c, i) + '\n')
     }
     process.stdout.write(renderHint())
   }
 
-  // 首次绘制
-  console.log(`\n  ${C.cyan}?${C.reset} ${C.bold}${message}${C.reset}`)
+  // 标题行
+  process.stdout.write(`\n  ${C.cyan}?${C.reset} ${C.bold}${message}${C.reset}\n`)
   process.stdout.write(C.hideCursor)
   render(true)
 
