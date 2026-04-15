@@ -42,9 +42,11 @@ export const BASE_DIRS = [
   'skills/max/workflow/entropy-management',
 ]
 
-/** Hooks 配置（必装） */
+/** Hooks 和通用命令（必装） */
 export const HOOKS_FILES = [
   '.claude/hooks.json',
+  '.claude/commands/init-project.md',
+  '.claude/commands/git-commit.md',
 ]
 
 /** 角色资产 */
@@ -80,6 +82,8 @@ export const UPDATABLE_FILES = [
   '.claude/commands/jarvis.md',
   '.claude/commands/ella.md',
   '.claude/commands/kyle.md',
+  '.claude/commands/init-project.md',
+  '.claude/commands/git-commit.md',
 ]
 
 // ─── 文件操作 ───
