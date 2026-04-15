@@ -43,9 +43,9 @@ export async function init(ctx) {
     log.info('使用默认配置：全部角色')
   } else {
     selectedAgents = await multiSelect('选择要安装的团队成员', [
-      { name: AGENT_ASSETS.jarvis.label, value: 'jarvis', checked: true },
-      { name: AGENT_ASSETS.ella.label, value: 'ella', checked: true },
-      { name: AGENT_ASSETS.kyle.label, value: 'kyle', checked: true },
+      { name: '贾维斯 (Jarvis)', value: 'jarvis', description: '全栈开发工程师 · 45 Skills', checked: true },
+      { name: '艾拉 (Ella)', value: 'ella', description: 'UI/UX 设计师 · 10 Skills', checked: true },
+      { name: '凯尔 (Kyle)', value: 'kyle', description: '质量保证工程师 · 7 Skills', checked: true },
     ])
 
     if (selectedAgents.length === 0) {
