@@ -40,6 +40,11 @@ export const BASE_DIRS = [
   'skills/max/workflow/systematic-debugging',
   'skills/max/workflow/verification-before-completion',
   'skills/max/workflow/entropy-management',
+  'skills/max/competitive-analysis',
+  'skills/max/meeting-notes',
+  'skills/max/prd-template',
+  'skills/max/stakeholder-update',
+  'skills/max/user-research-synthesis',
 ]
 
 /** Hooks 和通用命令（必装） */
@@ -60,7 +65,14 @@ export const AGENT_ASSETS = {
   ella: {
     label: '艾拉 (Ella) — UI/UX 设计师',
     dirs: ['.dev-agents/ella'],
-    commands: ['.claude/commands/ella.md'],
+    commands: [
+      '.claude/commands/ella.md',
+      '.claude/commands/ella-design.md',
+      '.claude/commands/ella-handoff.md',
+      '.claude/commands/ella-prototype.md',
+      '.claude/commands/ella-spec.md',
+      '.claude/commands/ella-style.md',
+    ],
     skills: ['skills/ella'],
   },
   kyle: {
@@ -75,12 +87,22 @@ export const AGENT_ASSETS = {
 export const UPDATABLE_DIRS = [
   'scripts/harness',
   'skills/max/workflow',
+  'skills/max/competitive-analysis',
+  'skills/max/meeting-notes',
+  'skills/max/prd-template',
+  'skills/max/stakeholder-update',
+  'skills/max/user-research-synthesis',
 ]
 
 export const UPDATABLE_FILES = [
   '.claude/hooks.json',
   '.claude/commands/jarvis.md',
   '.claude/commands/ella.md',
+  '.claude/commands/ella-design.md',
+  '.claude/commands/ella-handoff.md',
+  '.claude/commands/ella-prototype.md',
+  '.claude/commands/ella-spec.md',
+  '.claude/commands/ella-style.md',
   '.claude/commands/kyle.md',
   '.claude/commands/init-project.md',
   '.claude/commands/git-commit.md',
