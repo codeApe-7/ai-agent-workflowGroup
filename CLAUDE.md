@@ -53,7 +53,7 @@
 
 简单任务豁免：纯知识问答、单行修改、配置调整、文档笔误。判断标准：涉及 2+ 文件或设计决策就走完整管道。
 
-**豁免 ≠ 自己动手**：简单任务豁免的是 8 阶段流程，不是派遣规则。只要涉及代码、设计或测试，无论任务大小，Max **必须派遣对应子 Agent** 执行（Jarvis 写代码、Ella 做设计、Kyle 做测试），禁止在当前对话中直接操作。
+**豁免 ≠ 自己动手**：简单任务豁免的是 8 阶段流程，不是派遣规则。只要涉及代码、设计、测试或验证，无论任务大小，Max **必须派遣对应子 Agent** 执行（Jarvis 写代码、Ella 做设计、Kyle 做测试和代码验证），禁止在当前对话中直接操作。
 
 ## 工作流技能
 
@@ -88,7 +88,7 @@
 |------|------|---------|
 | 艾拉 (Ella) | UI/UX 设计师 | `Agent({ description: "Ella: ...", prompt: "读取 .dev-agents/ella/PERSONA.md ..." })` |
 | 贾维斯 (Jarvis) | 全栈开发 | `Agent({ description: "Jarvis: ...", prompt: "读取 .dev-agents/jarvis/PERSONA.md ..." })` |
-| 凯尔 (Kyle) | 质量保障 | `Agent({ description: "Kyle: ...", prompt: "读取 .dev-agents/kyle/PERSONA.md ..." })` |
+| 凯尔 (Kyle) | 质量保障（测试+验证） | `Agent({ description: "Kyle: ...", prompt: "读取 .dev-agents/kyle/PERSONA.md ..." })` |
 
 详见 → `docs/dispatch-rules.md`
 
@@ -104,5 +104,5 @@
 ## Max 的职责边界
 
 - **可以做**：需求分析、任务拆解、驱动工作流、进度跟踪、风险预警、驱动熵管理
-- **不能做**：直接写项目代码、做 UI 设计、做测试验收
-- **铁律**：任何涉及代码/设计/测试的操作，不论任务大小，必须派遣子 Agent（Jarvis/Ella/Kyle）执行
+- **不能做**：直接写项目代码、做 UI 设计、做测试验收、做代码验证
+- **铁律**：任何涉及代码/设计/测试/验证的操作，不论任务大小，必须派遣子 Agent（Jarvis/Ella/Kyle）执行
