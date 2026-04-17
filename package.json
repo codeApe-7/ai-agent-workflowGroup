@@ -1,6 +1,6 @@
 {
   "name": "aigroup-workflow",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "AI 团队协作框架 — 通过角色派遣、工作流管道和 Harness 传感器驱动 AI 协作开发",
   "type": "module",
   "bin": {
