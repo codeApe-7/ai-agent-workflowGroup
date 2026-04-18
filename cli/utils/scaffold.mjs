@@ -52,33 +52,25 @@ export const HOOKS_FILES = [
   '.claude/hooks.json',
   '.claude/commands/init-project.md',
   '.claude/commands/git-commit.md',
+  '.claude/agents/init-architect.md',
+  '.claude/agents/get-current-datetime.md',
 ]
 
-/** 角色资产 */
+/** 角色资产（原生子代理：`.claude/agents/{name}.md`） */
 export const AGENT_ASSETS = {
   jarvis: {
     label: '贾维斯 (Jarvis) — 全栈开发工程师',
-    dirs: ['.dev-agents/jarvis'],
-    commands: ['.claude/commands/jarvis.md'],
+    agents: ['.claude/agents/jarvis.md'],
     skills: ['skills/jarvis'],
   },
   ella: {
     label: '艾拉 (Ella) — UI/UX 设计师',
-    dirs: ['.dev-agents/ella'],
-    commands: [
-      '.claude/commands/ella.md',
-      '.claude/commands/ella-design.md',
-      '.claude/commands/ella-handoff.md',
-      '.claude/commands/ella-prototype.md',
-      '.claude/commands/ella-spec.md',
-      '.claude/commands/ella-style.md',
-    ],
+    agents: ['.claude/agents/ella.md'],
     skills: ['skills/ella'],
   },
   kyle: {
     label: '凯尔 (Kyle) — 质量保证工程师',
-    dirs: ['.dev-agents/kyle'],
-    commands: ['.claude/commands/kyle.md'],
+    agents: ['.claude/agents/kyle.md'],
     skills: ['skills/kyle'],
   },
 }
@@ -96,16 +88,13 @@ export const UPDATABLE_DIRS = [
 
 export const UPDATABLE_FILES = [
   '.claude/hooks.json',
-  '.claude/commands/jarvis.md',
-  '.claude/commands/ella.md',
-  '.claude/commands/ella-design.md',
-  '.claude/commands/ella-handoff.md',
-  '.claude/commands/ella-prototype.md',
-  '.claude/commands/ella-spec.md',
-  '.claude/commands/ella-style.md',
-  '.claude/commands/kyle.md',
+  '.claude/agents/jarvis.md',
+  '.claude/agents/ella.md',
+  '.claude/agents/kyle.md',
   '.claude/commands/init-project.md',
   '.claude/commands/git-commit.md',
+  '.claude/agents/init-architect.md',
+  '.claude/agents/get-current-datetime.md',
 ]
 
 // ─── 文件操作 ───
@@ -242,10 +231,7 @@ export function scaffold(pkgRoot, projectRoot, options = {}) {
     if (!agent) continue
     let agentCopied = 0
 
-    for (const dir of agent.dirs) {
-      agentCopied += copyDirRecursive(join(pkgRoot, dir), join(projectRoot, dir), { overwrite })
-    }
-    for (const file of agent.commands) {
+    for (const file of agent.agents) {
       const ok = copySingleFile(join(pkgRoot, file), join(projectRoot, file), overwrite)
       if (ok) agentCopied++
     }
@@ -274,18 +260,19 @@ export function scaffoldUpdate(pkgRoot, projectRoot) {
   }
   sections.push({ name: '工作流技能 + 传感器', count: totalCopied })
 
-  // 更新命令文件（覆盖）
+  // 更新命令/子代理文件（覆盖）
   let cmdCopied = 0
   const config = readConfig(projectRoot)
   const agents = config?.agents || ['jarvis', 'ella', 'kyle']
+  const roleIds = new Set(['jarvis', 'ella', 'kyle'])
   for (const file of UPDATABLE_FILES) {
-    // 只更新用户选择的角色的命令文件
-    const agentId = file.match(/commands\/(\w+)\.md/)?.[1]
-    if (agentId && !agents.includes(agentId)) continue
+    // 角色子代理文件：仅更新用户选中的角色
+    const m = file.match(/agents\/([\w-]+)\.md$/)
+    if (m && roleIds.has(m[1]) && !agents.includes(m[1])) continue
     const ok = copySingleFile(join(pkgRoot, file), join(projectRoot, file), true)
     if (ok) cmdCopied++
   }
-  sections.push({ name: '命令文件', count: cmdCopied })
+  sections.push({ name: '命令/子代理文件', count: cmdCopied })
   totalCopied += cmdCopied
 
   return { totalCopied, sections }

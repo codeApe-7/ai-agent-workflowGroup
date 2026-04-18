@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat&colorA=080f12&colorB=1fa669)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-purple.svg?style=flat&colorA=080f12&colorB=1fa669)](https://claude.ai/code)
 
-> 单入口 AI 团队：一个命令启动，按需自动派遣设计、开发、测试专家。
+> 单入口 AI 团队：Max 指挥官接收需求，按需自动派遣原生子代理（Ella/Jarvis/Kyle）执行。
 > 内置门禁式工作流：需求澄清 → 方案设计 → 实现计划 → 子代理开发 → 两阶段审查 → 分支收尾。
 
 ## 快速开始
@@ -65,7 +65,9 @@ claude
 
 ### 三种使用模式
 
-**模式一：完整管道（复杂任务）**
+**模式一：自然语言描述（推荐）**
+
+直接描述需求即可，Max 会根据任务类型自动调用对应子代理（通过 `Agent({subagent_type: ...})`）：
 
 ```
 你: 帮我做一个用户认证系统
@@ -75,17 +77,28 @@ claude
 → Max 收尾集成
 ```
 
-**模式二：斜杠命令直接派遣（明确任务）**
+**模式二：指定角色派遣（明确意图时）**
+
+在描述中点名角色，Max 会跳过判断直接派遣：
 
 ```
-/ella 设计一个登录页面         # 直接派遣设计师
-/jarvis 实现用户认证 API       # 直接派遣开发
-/kyle 审查用户模块代码          # 直接派遣质量保障
-/init-project 我的项目         # 初始化项目 AI 上下文
-/git-commit                    # 智能 Git 提交
+你: 让 Ella 设计一个登录页面
+你: 找 Jarvis 实现用户认证 API
+你: 请 Kyle 审查用户模块代码
 ```
 
-**模式三：简单问答（轻量任务）**
+子代理身份、门控、技能加载都由 `.claude/agents/<role>.md` 自动注入，Max 无需在 prompt 里重复 PERSONA。
+
+**模式三：项目级斜杠命令（工具类操作）**
+
+```
+/init-project 我的项目         # 初始化项目 AI 上下文（根级+模块级 CLAUDE.md）
+/git-commit                    # 智能 Git 提交（Conventional Commits）
+```
+
+这是仅有的两个保留的 slash 命令——都是项目工具，不是角色派遣。角色派遣统一走 Agent 工具。
+
+**模式四：简单问答（轻量任务）**
 
 ```
 你: 这个项目用的什么技术栈？
@@ -96,22 +109,26 @@ claude
 
 ## 团队成员
 
-| 成员 | 角色 | 技能数 | 负责什么 |
-|------|------|--------|---------|
-| 麦克斯 (Max) | 项目经理 | 16 | 需求分析、任务拆解、进度协调、工作流管道 |
-| 艾拉 (Ella) | UI/UX 设计师 | 10 | 界面设计、交互原型、前端框架参考 |
-| 贾维斯 (Jarvis) | 全栈开发 | 45 | 架构设计、前后端编码、API、DevOps |
-| 凯尔 (Kyle) | 质量保障 | 7 | 代码审查、测试策略、安全审计、E2E |
+三名子代理以 Claude Code **原生子代理**形式定义在 `.claude/agents/`，Max 作为宿主会话通过 Agent 工具调用：
 
-## 斜杠命令
+| 成员 | 角色 | 定义位置 | 技能数 | 负责什么 |
+|------|------|---------|--------|---------|
+| 麦克斯 (Max) | 项目经理 | `CLAUDE.md`（宿主会话） | 16 | 需求分析、任务拆解、进度协调、工作流管道 |
+| 艾拉 (Ella) | UI/UX 设计师 | `.claude/agents/ella.md` | 10 | 界面设计、交互原型、前端框架参考 |
+| 贾维斯 (Jarvis) | 全栈开发 | `.claude/agents/jarvis.md` | 45 | 架构设计、前后端编码、API、DevOps |
+| 凯尔 (Kyle) | 质量保障 | `.claude/agents/kyle.md` | 7 | 代码审查、测试策略、安全审计、E2E |
+
+> "Max" 是宿主 Claude 会话的代号，不是独立 agent——所有规则由 `CLAUDE.md` 加载。
+> Ella/Jarvis/Kyle 是**真子代理**，拥有独立 context window、工具集和门控。
+
+## 可用斜杠命令
 
 | 命令 | 说明 |
 |------|------|
-| `/ella <任务>` | 派遣设计师 — 界面设计、交互原型、设计规范 |
-| `/jarvis <任务>` | 派遣开发 — 编码、技术方案、Bug 修复 |
-| `/kyle <任务>` | 派遣质量保障 — 代码审查、功能验收 |
-| `/init-project <名称>` | 初始化项目 AI 上下文 — 生成根级和模块级 CLAUDE.md 索引 |
+| `/init-project <名称>` | 初始化项目 AI 上下文 — 生成根级和模块级 `CLAUDE.md`，保留 aiGroup 框架 |
 | `/git-commit` | 智能 Git 提交 — 分析变更、生成 Conventional Commits 信息 |
+
+角色派遣**没有专属 slash 命令**——Claude Code 原生机制下，子代理由 `Agent({subagent_type})` 工具调用，触发方式是用户自然语言描述或明确点名角色（见上文"三种使用模式"）。
 
 ## 工作流程
 
@@ -150,16 +167,16 @@ sequenceDiagram
     Max->>Max: 分析并拆解任务
 
     Note over Max,Ella: 阶段一 设计
-    Max->>Ella: 派遣设计任务
-    Ella-->>Max: 设计完成
+    Max->>Ella: Agent(subagent_type=ella)
+    Ella-->>Max: 设计完成 + 压缩报告
 
     Note over Max,Jarvis: 阶段二 开发
-    Max->>Jarvis: 派遣开发任务+设计稿路径
-    Jarvis-->>Max: 开发完成
+    Max->>Jarvis: Agent(subagent_type=jarvis) + 设计稿路径
+    Jarvis-->>Max: 开发完成 + 验证证据
 
     Note over Max,Kyle: 阶段三 验收
-    Max->>Kyle: 派遣验收任务+代码路径
-    Kyle-->>Max: 验收完成
+    Max->>Kyle: Agent(subagent_type=kyle) + 代码路径
+    Kyle-->>Max: 两阶段审查结论
 
     Max-->>User: 汇总全流程结果
 ```
@@ -169,21 +186,21 @@ sequenceDiagram
 ```mermaid
 flowchart LR
     subgraph CTX["独立上下文窗口"]
-        MaxCtx["Max\nRules 注入"]
-        EllaCtx["Ella\n独立窗口"]
-        JarvisCtx["Jarvis\n独立窗口"]
-        KyleCtx["Kyle\n独立窗口"]
+        MaxCtx["Max\nCLAUDE.md 注入"]
+        EllaCtx["Ella\n.claude/agents/ella.md"]
+        JarvisCtx["Jarvis\n.claude/agents/jarvis.md"]
+        KyleCtx["Kyle\n.claude/agents/kyle.md"]
     end
 
-    subgraph SHARED["共享产物目录"]
+    subgraph SHARED["共享产物目录 .dev-agents/shared/"]
         Tasks[("tasks/")]
         Designs[("designs/")]
         Reviews[("reviews/")]
     end
 
-    MaxCtx -->|"派遣注入\n需求+产物路径"| EllaCtx
-    MaxCtx -->|"派遣注入\n需求+设计稿路径"| JarvisCtx
-    MaxCtx -->|"派遣注入\n代码路径+需求"| KyleCtx
+    MaxCtx -->|"Agent 派遣\n任务+产物路径"| EllaCtx
+    MaxCtx -->|"Agent 派遣\n任务+设计稿路径"| JarvisCtx
+    MaxCtx -->|"Agent 派遣\n代码路径+规格"| KyleCtx
 
     EllaCtx -->|写入设计稿| Designs
     JarvisCtx -->|读取设计稿| Designs
@@ -195,7 +212,7 @@ flowchart LR
     style KyleCtx fill:#FF9800,color:#fff
 ```
 
-> **关键规则**：子 Agent 之间不能直接通信，所有上下文由 Max 在派遣时注入，跨 Agent 协作通过 `.dev-agents/shared/` 目录下的文件实现。
+> **关键规则**：子代理之间不能直接通信，所有上下文由 Max 在 `Agent` 调用的 prompt 中注入；跨代理协作通过 `.dev-agents/shared/` 目录下的文件实现。子代理身份（PERSONA/门控/技能清单）不需要注入，由 Claude Code 从 agent 定义文件自动加载。
 
 ## 工作流技能（门禁式管道）
 
@@ -237,7 +254,7 @@ Stage 1 不通过 → 修复 → 重审 → 通过后才进入 Stage 2。
 ```mermaid
 flowchart TB
     subgraph MAX["Max 项目经理"]
-        M1["workflow\n8阶段工作流管道"]
+        M1["workflow\n8 阶段工作流管道"]
         M2["PM 辅助技能\n竞品分析/PRD/会议纪要等"]
     end
 
@@ -297,10 +314,13 @@ npx aigroup-workflow init
 
 ```bash
 # 必须复制
-CLAUDE.md                    # Agent 入口
+CLAUDE.md                    # 宿主会话规则（Max 的"宪法"）
 docs/                        # 知识库
-.claude/                     # Claude Code 配置
-.dev-agents/                 # 角色定义 + 协作产物目录
+.claude/agents/              # 原生子代理定义（ella/jarvis/kyle/init-architect/...）
+.claude/commands/            # 工具类斜杠命令（init-project/git-commit）
+.claude/hooks.json           # Hooks 配置
+.claude/settings.json        # 权限配置
+.dev-agents/shared/          # 子代理协作产物目录（空目录结构）
 scripts/harness/             # Harness 传感器
 
 # 按需复制
@@ -322,7 +342,7 @@ bash scripts/harness/run-all.sh
 
 ```
 aiGroup/
-├── CLAUDE.md                  # Agent 入口
+├── CLAUDE.md                  # 宿主会话规则（Max 的"宪法"）
 ├── package.json               # npm 包配置
 ├── bin/aigroup.mjs            # CLI 入口
 ├── cli/                       # CLI 实现
@@ -332,23 +352,23 @@ aiGroup/
 ├── .claude/                   # Claude Code 配置
 │   ├── settings.json          #   权限设置
 │   ├── hooks.json             #   Harness Hooks
-│   └── commands/              #   斜杠命令
-│       ├── ella.md            #     /ella
-│       ├── jarvis.md          #     /jarvis
-│       ├── kyle.md            #     /kyle
-│       ├── init-project.md    #     /init-project
-│       └── git-commit.md      #     /git-commit
-├── .dev-agents/               # 角色定义 + 协作产物
-│   ├── ella/PERSONA.md
-│   ├── jarvis/PERSONA.md
-│   ├── kyle/PERSONA.md
-│   └── shared/                #   tasks/ designs/ reviews/ templates/
+│   ├── commands/              #   工具类斜杠命令
+│   │   ├── init-project.md    #     /init-project
+│   │   └── git-commit.md      #     /git-commit
+│   └── agents/                #   原生子代理定义（Agent({subagent_type}) 调用）
+│       ├── ella.md            #     艾拉（UI/UX 设计师）
+│       ├── jarvis.md          #     贾维斯（全栈开发）
+│       ├── kyle.md            #     凯尔（质量保障）
+│       ├── init-architect.md  #     项目初始化架构师
+│       └── get-current-datetime.md
+├── .dev-agents/shared/        # 角色间协作产物工作区
+│   └── tasks/ designs/ reviews/ templates/
 ├── skills/                    # 技能库（按角色分组）
 │   ├── max/                   #   PM: workflow(11) + 辅助技能(5)
 │   ├── ella/                  #   设计: UI/UX + 前端框架(10)
 │   ├── jarvis/                #   开发: 45 Skills
 │   └── kyle/                  #   QA: 7 Skills
-└── scripts/harness/           # Harness 传感器套件
+└── scripts/harness/           # Harness 传感器套件（5 个传感器）
 ```
 
 ## Harness Engineering
@@ -364,6 +384,16 @@ Agent = Model + Harness
 | **推理型反馈** | AI 审查 | Kyle 两阶段审查 |
 | **熵管理** | 防退化 | entropy-management + 质量评分 |
 
+### 传感器套件（5 个）
+
+| 传感器 | 覆盖 |
+|-------|------|
+| `lint-structure.sh` | 目录结构、核心文件、子代理定义 |
+| `lint-docs.sh` | 文档健康、交叉引用有效性 |
+| `lint-workflow-artifacts.sh` | 工作流产物完整性 |
+| `lint-process.sh` | 流程合规检查 |
+| `lint-delegation.sh` | 派遣契约检查（防止 prompt 重复定义子代理内容） |
+
 ```bash
 bash scripts/harness/run-all.sh   # 全量检查
 ```
@@ -377,12 +407,10 @@ bash scripts/harness/run-all.sh   # 全量检查
 | `aig update` | 增量更新 |
 | `aig check` | 健康检查 |
 | `aig status` | 工作流状态 |
-| `/ella <任务>` | 派遣设计师 |
-| `/jarvis <任务>` | 派遣开发 |
-| `/kyle <任务>` | 派遣 QA |
 | `/init-project <名称>` | 项目 AI 上下文初始化 |
 | `/git-commit` | 智能 Git 提交 |
 
+> 角色派遣无专属 slash 命令——自然语言描述即可，Max 通过 `Agent` 工具自动调用子代理。
 > `aig` 是 `aigroup` 的短别名。npx 用户：`npx aigroup-workflow <命令>`。
 
 ## 致谢

@@ -31,13 +31,13 @@ export async function update(ctx) {
   log.dim('将覆盖更新:')
   log.dim('  • scripts/harness/*（传感器脚本）')
   log.dim('  • skills/max/workflow/*（工作流技能）')
-  log.dim('  • .claude/commands/*（子 Agent 命令）')
+  log.dim('  • .claude/commands/*（通用命令）')
+  log.dim('  • .claude/agents/*（原生子代理定义）')
   log.dim('')
   log.dim('不会触碰:')
   log.dim('  • CLAUDE.md（项目入口）')
   log.dim('  • docs/*（知识库文档）')
   log.dim('  • .dev-agents/shared/*（工作产物）')
-  log.dim('  • .dev-agents/*/PERSONA.md（角色定义）')
 
   if (!skipPrompt) {
     const proceed = await confirm('确认更新？', true)

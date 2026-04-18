@@ -11,15 +11,16 @@ description: 当有实现计划且任务相互独立时使用。使用 Agent 工
 
 ```
 ❌ 错误方式（角色切换）：
-   Max 在当前对话里"假装变成 Jarvis"，读 PERSONA.md 然后开始写代码
+   Max 在当前对话里"假装变成 Jarvis"然后开始写代码
    → 共享上下文、无隔离、Max 的项目管理视角被污染
 
 ✅ 正确方式（Agent 工具派遣）：
-   Max 调用 Agent 工具 → 创建独立子代理 → 子代理有自己的上下文
+   Max 调用 Agent({subagent_type: "jarvis", ...}) → 创建独立子代理
+   → 子代理有自己的上下文、技能和门控
    → 子代理完成后返回结果给 Max → Max 继续协调
 ```
 
-**铁律：Max 自己绝不写代码。所有开发/审查工作必须通过 Agent 工具委派给隔离的子代理。**
+**铁律：Max 自己绝不写代码。所有开发/审查工作必须通过 Agent 工具委派给隔离的子代理（`.claude/agents/{ella,jarvis,kyle}.md`）。**
 
 ## 铁律
 
@@ -62,23 +63,10 @@ Max 必须使用 **Agent 工具** 派遣 Jarvis。以下是具体的调用方式
 
 ### 步骤 1：准备 prompt
 
-从实现计划中提取当前任务的全文，组装为子代理的 prompt：
+Jarvis 子代理已在 `.claude/agents/jarvis.md` 里定义了身份、门控、必读技能和报告规范，prompt 只需注入**任务本身和上下文**：
 
 ```
 prompt 模板：
-
-先读取 `.dev-agents/jarvis/PERSONA.md` 了解你的角色。
-
-## 必读技能（开始前必须读取）
-1. 必读 → `skills/kyle/tdd-guide/SKILL.md`（TDD 工作流）
-2. 必读 → `skills/max/workflow/verification-before-completion/SKILL.md`（完成验证）
-3. 按需 → `skills/jarvis/engineering-team/SKILL.md`（工程开发规范）
-4. Bug 修复时 → `skills/max/workflow/systematic-debugging/SKILL.md`
-
-## 前置门控
-```bash
-bash scripts/harness/workflow-state.sh gate development
-```
 
 ## 任务
 [此处粘贴从实现计划中提取的完整任务文本，包含：
@@ -95,16 +83,13 @@ bash scripts/harness/workflow-state.sh gate development
 ## 工作规范
 - 遵循 TDD：先写失败测试 → 确认失败 → 写最小实现 → 确认通过 → 提交
 - 参照实现计划中的验收条件逐项确认
-
-## 完成后报告
-返回状态：DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED
-包含：变更文件列表、验证证据、验收条件对照、风险点
 ```
 
 ### 步骤 2：调用 Agent 工具
 
 ```
 Agent({
+  subagent_type: "jarvis",
   description: "Jarvis: [任务简述]",
   prompt: "[上面组装好的 prompt]"
 })
@@ -130,19 +115,15 @@ Agent({
 
 ## 派遣 Kyle 审查子代理 — 具体操作
 
+Kyle 子代理已在 `.claude/agents/kyle.md` 里定义了身份、门控、两阶段审查流程和报告模板，prompt 只需注入**审查基准和对象**：
+
 ### Stage 1：规格符合性审查
 
 ```
 Agent({
+  subagent_type: "kyle",
   description: "Kyle: Stage 1 规格审查 - [功能名]",
   prompt: "
-先读取 `.dev-agents/kyle/PERSONA.md` 了解你的角色。
-
-## 前置门控
-```bash
-bash scripts/harness/workflow-state.sh gate testing
-```
-
 ## Stage 1：规格符合性审查
 
 审查基准（实现计划规格）：
@@ -169,10 +150,9 @@ Jarvis 修改的文件：
 
 ```
 Agent({
+  subagent_type: "kyle",
   description: "Kyle: Stage 2 质量审查 - [功能名]",
   prompt: "
-先读取 `.dev-agents/kyle/PERSONA.md` 了解你的角色。
-
 ## Stage 2：代码质量审查（Stage 1 已通过）
 
 代码变更的 git diff：

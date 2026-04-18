@@ -19,15 +19,11 @@ ai-agent-workflowGroup/
 │   ├── QUALITY_SCORE.md       # 质量评分追踪
 │   ├── tech-debt-tracker.md   # 技术债追踪
 │   └── steering-loop.md       # 转向循环机制
-├── .dev-agents/               # Agent 角色与协作产物
-│   ├── ella/PERSONA.md        # 艾拉（UI/UX 设计师）
-│   ├── jarvis/PERSONA.md      # 贾维斯（全栈开发）
-│   ├── kyle/PERSONA.md        # 凯尔（质量保障）
-│   └── shared/                # Agent 间协作产物
-│       ├── tasks/             # 实现计划
-│       ├── designs/           # 设计方案与设计稿
-│       ├── reviews/           # 审查报告
-│       └── templates/         # 文档模板
+├── .dev-agents/shared/        # Agent 间协作产物工作区
+│   ├── tasks/                 # 实现计划
+│   ├── designs/               # 设计方案与设计稿
+│   ├── reviews/               # 审查报告
+│   └── templates/             # 文档模板
 ├── skills/                    # 技能库
 │   ├── max/                   # PM 技能
 │   │   ├── workflow/          # 工作流技能（8 阶段管道 + 横切技能）
@@ -44,7 +40,14 @@ ai-agent-workflowGroup/
 │   └── *.sh                   # 维护脚本
 └── .claude/                   # Claude Code 配置
     ├── settings.json          # 权限配置
-    └── commands/              # 斜杠命令（/ella /jarvis /kyle）
+    ├── hooks.json             # Hook 配置
+    ├── commands/              # 通用斜杠命令（/init-project /git-commit）
+    └── agents/                # 原生子代理定义
+        ├── ella.md            # 艾拉（UI/UX 设计师）
+        ├── jarvis.md          # 贾维斯（全栈开发）
+        ├── kyle.md            # 凯尔（质量保障）
+        ├── init-architect.md  # 项目初始化架构师
+        └── get-current-datetime.md
 ```
 
 ## 核心设计决策

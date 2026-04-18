@@ -33,17 +33,17 @@ for f in "CLAUDE.md" "docs/README.md" "docs/ARCHITECTURE.md"; do
     fi
 done
 
-# ── 2. Agent Persona 文件 ──
+# ── 2. 原生子代理定义 ──
 echo ""
-echo "▸ Agent Persona 检查"
+echo "▸ 原生子代理定义检查"
 
 for agent in ella jarvis kyle; do
-    persona=".dev-agents/$agent/PERSONA.md"
-    if [ -f "$persona" ]; then
-        pass "$persona 存在"
+    agent_file=".claude/agents/$agent.md"
+    if [ -f "$agent_file" ]; then
+        pass "$agent_file 存在"
     else
-        fail "$persona 缺失"
-        fix "创建 $persona，定义 $agent 的角色、能力和约束"
+        fail "$agent_file 缺失"
+        fix "创建 $agent_file，包含 YAML frontmatter（name/description/tools）和角色定义"
     fi
 done
 
