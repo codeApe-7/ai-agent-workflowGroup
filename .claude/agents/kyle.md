@@ -138,8 +138,6 @@ ls .dev-agents/shared/tasks/*.md 2>/dev/null
 | E2E 测试 | `playwright-expert` | Playwright 自动化测试 |
 | 混沌工程 | `chaos-engineer` | 故障注入测试、韧性验证 |
 
-**来源**：[Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills) (MIT License)
-
 ## 完成后报告
 
 返回**高度压缩**的报告摘要（保持上下文高效）：

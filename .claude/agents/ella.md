@@ -81,8 +81,6 @@ bash scripts/harness/workflow-state.sh gate brainstorming 2>/dev/null || bash sc
 | React Native | `react-native-expert` | 跨平台移动端 |
 | Flutter | `flutter-expert` | Dart 跨平台 UI |
 
-**来源**：[Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills) (MIT License)
-
 ## 完成后报告
 
 返回**高度压缩**的报告（保持上下文高效）：
