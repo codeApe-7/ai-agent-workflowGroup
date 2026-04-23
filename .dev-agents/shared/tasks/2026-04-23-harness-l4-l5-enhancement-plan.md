@@ -1477,14 +1477,14 @@ git status --short | grep -E "memory/(project|system)"
 
 ## 任务 12：整体验证 + 冒烟测试
 
-- [ ] **步骤 12.1：运行全量 harness 自检**
+- [x] **步骤 12.1：运行全量 harness 自检**
 
 ```bash
 bash scripts/harness/run-all.sh 2>&1 | tail -20
 ```
 预期：状态为 `✅ 全部通过`。若有 warn 是 memory/ 目录刚建 + 日志刚开始，可接受；若有 FAIL 必须修复。
 
-- [ ] **步骤 12.2：运行单元测试**
+- [x] **步骤 12.2：运行单元测试**
 
 ```bash
 bash scripts/harness/tests/test-log-event.sh
@@ -1492,7 +1492,7 @@ bash scripts/harness/tests/test-logs-query.sh
 ```
 预期：两个测试全部通过。
 
-- [ ] **步骤 12.3：冒烟测试 — B 项记忆系统**
+- [x] **步骤 12.3：冒烟测试 — B 项记忆系统**
 
 打开 `.dev-agents/shared/memory/activeContext.md`，手动写入：
 - workflow_id：当前工作流名
@@ -1505,7 +1505,7 @@ bash scripts/harness/tests/test-logs-query.sh
 cat .dev-agents/shared/memory/activeContext.md
 ```
 
-- [ ] **步骤 12.4：冒烟测试 — C 项查询**
+- [x] **步骤 12.4：冒烟测试 — C 项查询**
 
 ```bash
 # 确保有活跃工作流（当前应该就是）
@@ -1514,7 +1514,7 @@ bash scripts/harness/logs-query.sh --hotspots --days 7
 ```
 预期：`--stats` 输出当前工作流各阶段耗时；`--hotspots` 输出 lint_fail 类别排行（或"无匹配事件"若未触发 lint 失败）。
 
-- [ ] **步骤 12.5：验证 A 项迁移完成**
+- [x] **步骤 12.5：验证 A 项迁移完成**
 
 ```bash
 # 旧路径不应存在
@@ -1584,3 +1584,12 @@ git commit -m "feat(harness): 新增记忆系统 3 件套 + 日志 schema + giti
 - [ ] `.dev-agents/shared/logs/README.md` 存在
 - [ ] `.gitignore` 包含 `events-*.jsonl` 和 `activeContext.md` 规则
 - [ ] 手动触发一次 advance，日志文件中出现 stage_exit 和 stage_enter 事件
+
+## Post-review Fix（2026-04-23 Kyle 一轮后补修）
+
+Kyle 一轮审查发现 2 BLOCK + 1 WARN（见 `.dev-agents/shared/reviews/2026-04-23-harness-l4-l5-enhancement-review.md`）：
+- [Fix] `logs-query.sh` cmd_hotspots sed 提取从 `rule` 改为 `lint` 跟随任务 8.1 字段契约
+- [Fix] `logs-query.sh` 新增 `get_log_files_within_days()` 使 `--days N` 对 cmd_hotspots/cmd_export 真实过滤
+- [Fix] `tests/test-logs-query.sh` mock 数据同步为 `lint=structure/docs`，新增 `--days 1/3650` 过滤断言与 `red_flag` flag_id 聚合断言；测试 4 改用 `rm -f events-*.jsonl` 清理全部历史日志
+- 测试结果：12 通过 / 0 失败（原 9 通过）；run-all.sh 全绿；手动 `lint_fail` + `--hotspots` 能正常输出 lint 名
+

@@ -12,6 +12,32 @@
 
 LOG_DIR=".dev-agents/shared/logs"
 
+# ── 辅助：返回近 N 天内的日志文件路径（一行一个）──
+# 基于文件名 events-YYYY-MM-DD.jsonl 解析日期并与 (today - N 天) 比较。
+# date -d 不可用时（非 GNU date 环境）兜底为返回全部文件。
+get_log_files_within_days() {
+    local days="$1"
+    local cutoff_ts
+    cutoff_ts=$(date -d "$days days ago" +%s 2>/dev/null || echo "0")
+    if [ "$cutoff_ts" -eq 0 ]; then
+        ls -1 "$LOG_DIR"/events-*.jsonl 2>/dev/null
+        return
+    fi
+    for f in "$LOG_DIR"/events-*.jsonl; do
+        [ -f "$f" ] || continue
+        local fname
+        fname=$(basename "$f")
+        local fdate
+        fdate=$(echo "$fname" | sed -n 's/^events-\([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\)\.jsonl$/\1/p')
+        [ -z "$fdate" ] && continue
+        local fts
+        fts=$(date -d "$fdate" +%s 2>/dev/null || echo "0")
+        if [ "$fts" -ge "$cutoff_ts" ]; then
+            echo "$f"
+        fi
+    done
+}
+
 cmd_stats() {
     local wf_id="$1"
     local state_file=".dev-agents/shared/.workflow-state"
@@ -73,7 +99,7 @@ cmd_hotspots() {
     fi
 
     local files
-    files=$(ls -1 "$LOG_DIR"/events-*.jsonl 2>/dev/null)
+    files=$(get_log_files_within_days "$days")
     if [ -z "$files" ]; then
         echo "[INFO] 无匹配事件"
         return 0
@@ -85,12 +111,14 @@ cmd_hotspots() {
     echo ""
     echo "▸ lint_fail 规则 top 10"
 
+    # 字段契约：lint_fail 事件 payload 使用 lint=<name>（任务 8.1 修正后）；
+    # red_flag 事件 payload 使用 flag_id=<id>。两种事件按各自字段聚合。
     grep -h -E '"event_type":"(lint_fail|red_flag)"' $files 2>/dev/null \
         | while IFS= read -r line; do
-            rule=$(echo "$line" | sed -n 's/.*"rule":"\([^"]*\)".*/\1/p')
+            lint=$(echo "$line" | sed -n 's/.*"lint":"\([^"]*\)".*/\1/p')
             flag=$(echo "$line" | sed -n 's/.*"flag_id":"\([^"]*\)".*/\1/p')
             type=$(echo "$line" | sed -n 's/.*"event_type":"\([^"]*\)".*/\1/p')
-            key="${rule}${flag}"
+            key="${lint}${flag}"
             [ -n "$key" ] && echo "${type}:${key}"
         done \
         | sort | uniq -c | sort -rn | head -10 \
@@ -116,7 +144,8 @@ cmd_export() {
 
     echo "ts,workflow_id,stage,event_type,actor,duration_ms" > "$out"
 
-    for f in "$LOG_DIR"/events-*.jsonl; do
+    # --days N 真实过滤：只导出近 N 天内的日志文件
+    while IFS= read -r f; do
         [ -f "$f" ] || continue
         while IFS= read -r line; do
             ts=$(echo "$line" | sed -n 's/.*"ts":"\([^"]*\)".*/\1/p')
@@ -127,7 +156,7 @@ cmd_export() {
             dur=$(echo "$line" | sed -n 's/.*"duration_ms":\([0-9]*\).*/\1/p')
             echo "$ts,$wf,$stg,$et,$ac,$dur" >> "$out"
         done < "$f"
-    done
+    done <<< "$(get_log_files_within_days "$days")"
 
     echo "[OK] 已导出到 $out（$(wc -l < "$out") 行）"
 }
