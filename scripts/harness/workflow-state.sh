@@ -83,6 +83,32 @@ updated=$(date '+%Y-%m-%d %H:%M:%S')
 EOF
 }
 
+# 计算自上次 updated 以来的毫秒数（用于 stage_exit duration）
+compute_stage_duration_ms() {
+    local last_updated
+    last_updated=$(get_field "updated")
+    if [ -z "$last_updated" ]; then
+        echo "0"
+        return
+    fi
+    local last_ts
+    last_ts=$(date -d "$last_updated" +%s 2>/dev/null || echo "0")
+    local now_ts
+    now_ts=$(date +%s)
+    if [ "$last_ts" -eq 0 ]; then
+        echo "0"
+    else
+        echo $(( (now_ts - last_ts) * 1000 ))
+    fi
+}
+
+# 调用 log-event.sh（失败不报错）
+log_event() {
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    bash "$script_dir/log-event.sh" "$@" 2>/dev/null || true
+}
+
 stage_index() {
     local target="$1"
     for i in "${!STAGES[@]}"; do
@@ -146,9 +172,12 @@ cmd_init() {
     fi
 
     write_state "brainstorming" "$task_name" "$(date '+%Y-%m-%d %H:%M:%S')"
+    log_event workflow_start --stage brainstorming --payload "task_name=$task_name"
+    log_event stage_enter --stage brainstorming
     echo "[OK] 工作流已启动: $task_name"
     echo "[STATE] 当前阶段: brainstorming（需求收集）"
     echo "[NEXT] 收集和分析功能需求，记录到 .dev-agents/shared/designs/ 后运行 advance"
+    echo "[REMIND] 若本工作流涉及架构决策，完成后请更新 .dev-agents/shared/memory/activeContext.md"
 }
 
 cmd_advance() {
@@ -235,12 +264,18 @@ cmd_advance() {
     local next
     next=$(next_stage "$current_stage")
 
+    local stage_duration_ms
+    stage_duration_ms=$(compute_stage_duration_ms)
+    log_event stage_exit --stage "$current_stage" --duration-ms "$stage_duration_ms" --payload "next_stage=$next"
+
     if [ "$next" = "idle" ]; then
         write_state "idle" "" "" "false"
+        log_event workflow_complete --stage idle --payload "prev_stage=$current_stage"
         echo "[OK] 工作流已完成: $task"
         echo "[STATE] 状态已重置为 idle"
     else
         write_state "$next" "$task" "$(get_field 'started')"
+        log_event stage_enter --stage "$next" --payload "prev_stage=$current_stage"
         echo "[OK] 阶段推进: $current_stage（$(stage_label "$current_stage")） → $next（$(stage_label "$next")）"
         echo "[STATE] 当前阶段: $next（$(stage_label "$next")）"
 
@@ -250,16 +285,19 @@ cmd_advance() {
             design)
                 echo "[NEXT] 设计技术方案和架构，产出方案决策文档后 advance" ;;
             planning)
-                echo "[NEXT] 将需求拆解为可执行任务，保存到 .dev-agents/shared/tasks/" ;;
+                echo "[NEXT] 将需求拆解为可执行任务，保存到 .dev-agents/shared/tasks/"
+                echo "[REMIND] 方案设计已完成，请更新 .dev-agents/shared/memory/projectContext.md 记录架构决策" ;;
             development)
                 echo "[NEXT] 派遣 Jarvis 子代理按任务执行开发" ;;
             testing)
                 echo "[NEXT] 派遣 Kyle 编写和执行测试用例，进行两阶段审查" ;;
             documentation)
-                echo "[NEXT] 更新相关文档（API 文档、README、ARCHITECTURE 等）" ;;
+                echo "[NEXT] 更新相关文档（API 文档、README、ARCHITECTURE 等）"
+                echo "[REMIND] Kyle 已通过审查，若发现值得沉淀的代码模式，请更新 .dev-agents/shared/memory/systemPatterns.md" ;;
             finishing)
                 echo "[NEXT] 执行分支收尾流程（集成/PR/归档）" ;;
         esac
+        echo "[REMIND] 阶段已推进，请同步更新 .dev-agents/shared/memory/activeContext.md 反映当前状态"
     fi
 }
 
@@ -315,6 +353,7 @@ cmd_reset() {
         return 0
     fi
 
+    log_event workflow_reset --stage "$current_stage" --payload "prev_task=${task:-unnamed}"
     write_state "idle" "" "" "false"
     echo "[OK] 工作流已重置（原任务: ${task:-未命名}，原阶段: $current_stage）"
 }
@@ -328,6 +367,7 @@ cmd_exempt() {
     fi
 
     write_state "idle" "exempt: $reason" "$(date '+%Y-%m-%d %H:%M:%S')" "true"
+    log_event workflow_exempt --stage idle --payload "reason=$reason"
     echo "[OK] 已标记为简单任务豁免: $reason"
     echo "[INFO] 豁免任务完成后请运行 workflow-state.sh reset 恢复正常模式"
 }
