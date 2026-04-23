@@ -12,7 +12,11 @@ ERRORS=0
 WARNINGS=0
 
 pass() { echo -e "  [PASS] $1"; }
-fail() { echo -e "  [FAIL] $1"; ERRORS=$((ERRORS + 1)); }
+fail() {
+    echo -e "  [FAIL] $1"
+    ERRORS=$((ERRORS + 1))
+    bash "$(dirname "${BASH_SOURCE[0]}")/log-event.sh" lint_fail --actor harness --payload "lint=docs" 2>/dev/null || true
+}
 warn() { echo -e "  [WARN] $1"; WARNINGS=$((WARNINGS + 1)); }
 fix()  { echo -e "        [FIX] $1"; }
 

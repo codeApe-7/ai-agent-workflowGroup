@@ -12,7 +12,11 @@ ERRORS=0
 WARNINGS=0
 
 pass() { echo -e "  [PASS] $1"; }
-fail() { echo -e "  [FAIL] $1"; ERRORS=$((ERRORS + 1)); }
+fail() {
+    echo -e "  [FAIL] $1"
+    ERRORS=$((ERRORS + 1))
+    bash "$(dirname "${BASH_SOURCE[0]}")/log-event.sh" lint_fail --actor harness --payload "lint=workflow-artifacts" 2>/dev/null || true
+}
 warn() { echo -e "  [WARN] $1"; WARNINGS=$((WARNINGS + 1)); }
 fix()  { echo -e "        [FIX] $1"; }
 
@@ -38,7 +42,7 @@ if [ -d "$SHARED_DIR/tasks" ]; then
                 pass "$filename 有结构化标题"
             else
                 warn "$filename 缺少结构化标题"
-                fix "参考 .dev-agents/shared/templates/implementation-plan.md 模板重构 $plan"
+                fix "参考 docs/templates/implementation-plan.md 模板重构 $plan"
             fi
 
             if grep -q -iE "(验收|acceptance|完成标准|done)" "$plan" 2>/dev/null; then
@@ -102,10 +106,10 @@ if [ -d "$SHARED_DIR/reviews" ]; then
                 pass "$filename 包含两阶段审查"
             elif [ "$HAS_STAGE1" -gt 0 ]; then
                 warn "$filename 只有 Stage 1，缺少 Stage 2"
-                fix "补充 Stage 2 代码质量审查，参考 .dev-agents/shared/templates/code-review.md"
+                fix "补充 Stage 2 代码质量审查，参考 docs/templates/code-review.md"
             else
                 warn "$filename 审查结构不完整"
-                fix "参考 .dev-agents/shared/templates/code-review.md 重构审查报告"
+                fix "参考 docs/templates/code-review.md 重构审查报告"
             fi
         done
     else
@@ -120,13 +124,14 @@ fi
 echo ""
 echo "▸ 模板完整性检查"
 
+TEMPLATES_DIR="docs/templates"
 REQUIRED_TEMPLATES=("prd.md" "implementation-plan.md" "code-review.md")
 for tmpl in "${REQUIRED_TEMPLATES[@]}"; do
-    if [ -f "$SHARED_DIR/templates/$tmpl" ]; then
+    if [ -f "$TEMPLATES_DIR/$tmpl" ]; then
         pass "模板 $tmpl 存在"
     else
         fail "模板 $tmpl 缺失"
-        fix "创建 $SHARED_DIR/templates/$tmpl"
+        fix "创建 $TEMPLATES_DIR/$tmpl"
     fi
 done
 

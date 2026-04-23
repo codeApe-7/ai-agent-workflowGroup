@@ -12,7 +12,11 @@ ERRORS=0
 WARNINGS=0
 
 pass() { echo -e "  [PASS] $1"; }
-fail() { echo -e "  [FAIL] $1"; ERRORS=$((ERRORS + 1)); }
+fail() {
+    echo -e "  [FAIL] $1"
+    ERRORS=$((ERRORS + 1))
+    bash "$(dirname "${BASH_SOURCE[0]}")/log-event.sh" lint_fail --actor harness --payload "lint=structure" 2>/dev/null || true
+}
 warn() { echo -e "  [WARN] $1"; WARNINGS=$((WARNINGS + 1)); }
 fix()  { echo -e "        [FIX] $1"; }
 
@@ -51,7 +55,7 @@ done
 echo ""
 echo "▸ 协作产物目录检查"
 
-for dir in ".dev-agents/shared/tasks" ".dev-agents/shared/designs" ".dev-agents/shared/reviews" ".dev-agents/shared/templates"; do
+for dir in ".dev-agents/shared/tasks" ".dev-agents/shared/designs" ".dev-agents/shared/reviews" ".dev-agents/shared/memory" ".dev-agents/shared/logs" "docs/templates"; do
     if [ -d "$dir" ]; then
         pass "$dir/ 存在"
     else

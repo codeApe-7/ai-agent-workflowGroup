@@ -19,7 +19,11 @@ ERRORS=0
 WARNINGS=0
 
 pass() { echo -e "  [PASS] $1"; }
-fail() { echo -e "  [FAIL] $1"; ERRORS=$((ERRORS + 1)); }
+fail() {
+    echo -e "  [FAIL] $1"
+    ERRORS=$((ERRORS + 1))
+    bash "$(dirname "${BASH_SOURCE[0]}")/log-event.sh" lint_fail --actor harness --payload "lint=delegation" 2>/dev/null || true
+}
 warn() { echo -e "  [WARN] $1"; WARNINGS=$((WARNINGS + 1)); }
 fix()  { echo -e "        [FIX] $1"; }
 
@@ -31,7 +35,7 @@ echo ""
 # ─────────────────────────────────────────
 # 扫描目标：CLAUDE.md + docs/ + skills/
 # 排除目标：.claude/agents/（规范定义自身）
-#          .dev-agents/shared/templates/（模板允许示例）
+#          docs/templates/（模板允许示例）
 #          .git/、node_modules/、.idea/
 # ─────────────────────────────────────────
 SCAN_INCLUDE=("CLAUDE.md" "docs" "skills")
@@ -42,7 +46,7 @@ scan_files() {
         | grep -v "^\.git/" \
         | grep -v "node_modules/" \
         | grep -v "\.idea/" \
-        | grep -v "/shared/templates/" \
+        | grep -v "docs/templates/" \
         || true
 }
 
