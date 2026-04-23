@@ -20,30 +20,15 @@ color: orange
 
 ## 一.5、aiGroup 框架保护（铁律）
 
-当调用方传入 `preserve_framework=true` 时，写入**根** `CLAUDE.md` 必须遵守以下规则：
+当调用方传入 `preserve_framework=true` 时：
 
-1. **先读后写**：写入前读取现有根 `CLAUDE.md`，定位框架特征标记（任一命中即判定为框架内容）：
-   - `## 角色：麦克斯 (Max)`
-   - `## 全局铁律`
-   - `## 行为门控`
-   - `## 团队派遣`
-   - `<!-- aiGroup 框架边界` 注释行
-2. **保留区间**：从文件开头到 `<!-- aiGroup 框架边界 ... -->` 注释行（含）的全部内容**原样保留**，禁止覆盖、删除、重排、润色。若文件不含该注释但命中其他框架特征标记，则保留从开头到最后一个 `##` 框架章节末尾的全部内容。
-3. **追加区间**：仅在框架区块末尾之后追加（或更新）以下结构：
+1. **根 `CLAUDE.md` 全文受保护** — 不得覆盖、删除、追加、润色任何内容。根 CLAUDE.md 是 aiGroup 框架的导航入口，保持 ≤100 行的精简形态。
+2. **项目上下文独立存放** — 本代理生成的"项目愿景、架构总览、Mermaid 结构图、模块索引、编码规范、变更记录"等内容**全部写入 `docs/PROJECT_CONTEXT.md`**，不再追加到根 CLAUDE.md。
+3. **根 CLAUDE.md 已内置指引** — "知识库地图"表格中已有指向 `docs/PROJECT_CONTEXT.md` 的条目，无需再动。
+4. **模块级不受限** — 模块级 `<module>/CLAUDE.md` 不适用本保护规则，正常按第三节结构生成/更新。
+5. **全新项目（`preserve_framework=false`）** — 按常规方式生成完整根 `CLAUDE.md`（此时不存在框架保护需求）。
 
-   ```markdown
-   ---
-
-   # 项目上下文（由 /init-project 生成）
-
-   [项目愿景、架构总览、Mermaid 结构图、模块索引、编码规范、变更记录等]
-   ```
-
-4. **增量更新**：若 `# 项目上下文（由 /init-project 生成）` 区块已存在，仅更新该区块内容，禁止触碰上方框架区块。
-5. **全新项目**：当 `preserve_framework=false` 或未检测到框架特征标记时，按常规方式生成完整根 `CLAUDE.md`，无需保护。
-6. **模块级不受限**：模块级 `<module>/CLAUDE.md` 不适用本保护规则，正常按第三节结构生成/更新。
-
-> 违反本节任何一条 = 破坏 aiGroup 框架 = 必须回滚。
+> 违反第 1 条 = 破坏 aiGroup 框架 = 必须回滚。
 
 ## 二、分阶段策略（自动选择强度）
 
@@ -71,19 +56,19 @@ color: orange
 
 ## 三、产物与增量更新
 
-1.  **写入根级 `CLAUDE.md`**
+1.  **写入 `docs/PROJECT_CONTEXT.md`（preserve_framework=true 时）**
     - 如果已存在，则在顶部插入/更新 `变更记录 (Changelog)`。
-    - 根级结构（精简而全局）：
+    - 结构（精简而全局）：
       - 项目愿景
       - 架构总览
-      - **✨ 新增：模块结构图（Mermaid）**
+      - **✨ 模块结构图（Mermaid）**
         - 在"模块索引"表格**上方**，根据识别出的模块路径，生成一个 Mermaid `graph TD` 树形图。
         - 每个节点应可点击，并链接到对应模块的 `CLAUDE.md` 文件。
         - 示例语法：
 
           ```mermaid
           graph TD
-              A["(根) 我的项目"] --> B["packages"];
+              A["(根) [项目名]"] --> B["packages"];
               B --> C["auth"];
               B --> D["ui-library"];
               A --> E["services"];
@@ -100,6 +85,8 @@ color: orange
       - 编码规范
       - AI 使用指引
       - 变更记录 (Changelog)
+
+    > **preserve_framework=false 场景**：若调用方明确不保护框架（新项目），则按原方式写入根 `CLAUDE.md`。
 
 2.  **写入模块级 `CLAUDE.md`**
     - 放在每个模块目录下，结构建议：

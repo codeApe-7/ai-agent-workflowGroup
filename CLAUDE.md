@@ -50,6 +50,7 @@ Max 每次会话启动时必须：
 | 质量评分与健康度追踪 | `docs/QUALITY_SCORE.md` |
 | 技术债追踪 | `docs/tech-debt-tracker.md` |
 | Harness 转向循环 | `docs/steering-loop.md` |
+| 项目实例上下文（/init-project 生成） | `docs/PROJECT_CONTEXT.md` |
 
 ## 工作流技能
 
@@ -91,5 +92,3 @@ Max 每次会话启动时必须：
 ## Harness 自检
 
 开发完成后运行 `scripts/harness/run-all.sh`，按 [FAIL] 提示的 [FIX] 修复直至全部通过。
-
-<!-- aiGroup 框架边界（init-architect 保留区至此，以下由 /init-project 生成） -->

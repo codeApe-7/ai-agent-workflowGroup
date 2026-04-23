@@ -16,6 +16,7 @@ Agent 应按需检索本目录下的文档，而非依赖 CLAUDE.md 中的简短
 | [QUALITY_SCORE.md](QUALITY_SCORE.md) | 各模块质量评分与健康度追踪 | 每次审查后 |
 | [tech-debt-tracker.md](tech-debt-tracker.md) | 已知技术债与偿还计划 | 持续更新 |
 | [steering-loop.md](steering-loop.md) | Harness 转向循环：问题→编码为规则→自动执行 | 发现重复问题时 |
+| [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | 项目实例上下文（/init-project 生成） | 项目初始化时 |
 
 ## 子目录
 
