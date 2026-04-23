@@ -273,3 +273,89 @@ done
 
 - 本次审查实际运行的命令和输出均已粘贴在"冒烟验证结果"和"Stage 2"章节中
 - 核心 bug 复现命令见 S1-1 和 S1-2 的"复现证据"块，可直接在 repo 根目录复现
+
+---
+
+## 补充审查（2026-04-23 Kyle）
+
+**审查范围**：commit 7441373 对前次 2 BLOCK + 1 WARN 的修复
+
+**门控**：`workflow-state.sh gate testing` → [GATE] 通过
+**Git**：7441373 在 HEAD（最新 commit）
+
+### S1-1 重审：--hotspots 字段提取错位
+
+**源码确认**（scripts/harness/logs-query.sh:116-125）：
+- 同时提取 `"lint":"..."` 和 `"flag_id":"..."`，按 `event_type:key` 聚合，契约正确
+
+**实地触发**：
+```
+$ bash scripts/harness/log-event.sh lint_fail --actor harness --payload "lint=smoke-kyle-retest"
+$ bash scripts/harness/logs-query.sh --hotspots --days 1
+======================================
+  失败热点（近 1 天 top 10）
+======================================
+
+▸ lint_fail 规则 top 10
+  lint_fail:teststructure                  1 次
+  lint_fail:test                           1 次
+  lint_fail:smoke-kyle-retest              1 次
+```
+
+**结论**：**通过**。`smoke-kyle-retest` 成功提取并按 lint_fail 聚合。
+
+### S2-2 重审：--days N 真实过滤
+
+**函数存在**：scripts/harness/logs-query.sh:18 `get_log_files_within_days()`，基于文件名 `events-YYYY-MM-DD.jsonl` 解析日期 + GNU date 计算窗口；date 不可用时兜底为全量。
+
+**对比测试**（注入 events-2025-01-01.jsonl，含 `ancient-marker`）：
+```
+=== --days 1 ===
+  lint_fail:teststructure                  1 次
+  lint_fail:test                           1 次
+  lint_fail:smoke-kyle-retest              1 次
+  （不含 ancient-marker）
+
+=== --days 3650 ===
+  lint_fail:teststructure                  1 次
+  lint_fail:test                           1 次
+  lint_fail:smoke-kyle-retest              1 次
+  lint_fail:ancient-marker                 1 次
+```
+
+**结论**：**通过**。`--days 1` 正确排除旧日志，`--days 3650` 正确包含。临时文件已清理。
+
+### S2-3 重审：test-logs-query 契约对齐
+
+```
+$ bash scripts/harness/tests/test-logs-query.sh
+▸ 测试 1：--stats 输出包含阶段耗时        [PASS]×2
+▸ 测试 2：--hotspots 输出按次数降序       [PASS]×3（断言 lint_fail:structure / docs / red_flag:3）
+▸ 测试 2b：--days 过滤真实生效             [PASS]×2（新增：3650 天含 ancient、1 天排除 ancient）
+▸ 测试 3：--export 生成 CSV               [PASS]×3
+▸ 测试 4：空日志不报错                    [PASS]×2
+结果: 12 通过 / 0 失败
+```
+
+**结论**：**通过**。mock 事件使用 `lint=structure` 新契约，且新增 2 条 `--days` 断言（总 12 断言 vs 前次 9 条，+3 条）。
+
+### 回归测试
+
+| 测试 | 结果 |
+|------|------|
+| `test-log-event.sh` | 12 通过 / 0 失败 |
+| `run-all.sh` | 5 个传感器全绿，0 错误，1 warn（设计文档 TODO，既有状态，非本次范围） |
+
+**结论**：无回归。
+
+### 新发现问题
+
+无。修复精准，未引入副作用。
+
+### 最终结论
+
+**通过**
+
+- S1-1、S2-2、S2-3 三项修复全部验证通过
+- 回归测试无异常
+- commit 7441373 可交付
