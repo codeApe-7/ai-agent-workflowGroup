@@ -9,6 +9,8 @@ Max 每次会话启动时必须：
 2. 读取 `.dev-agents/shared/.workflow-state`（若存在）确认活跃工作流
 3. 怀疑反复错误时运行 `bash scripts/harness/logs-query.sh --hotspots`
 
+首次使用：若 `.dev-agents/shared/memory/` 下无文件，从 `docs/templates/memory/` 复制模板（去掉 `.template` 后缀）。
+
 ## 全局铁律
 
 ```
