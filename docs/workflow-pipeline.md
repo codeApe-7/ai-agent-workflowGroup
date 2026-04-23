@@ -9,6 +9,15 @@
 
 状态机命令：`bash scripts/harness/workflow-state.sh {init|advance|gate|status|reset|exempt}`
 
+## advance 命令副作用
+
+自 2026-04-23 起，`workflow-state.sh {init|advance|reset|exempt}` 会：
+1. 写入事件到 `.dev-agents/shared/logs/events-YYYY-MM-DD.jsonl`（见 `docs/ARCHITECTURE.md` 六层架构映射）
+2. 在特定阶段切换时输出 `[REMIND]` 文案提示更新记忆文件：
+   - → design：提示更新 `projectContext.md` 记录架构决策
+   - → documentation：提示更新 `systemPatterns.md` 沉淀代码模式
+   - 所有 advance：提示更新 `activeContext.md` 反映当前状态
+
 ## 各环节详细规则
 
 ### 1. 需求收集 (brainstorming)

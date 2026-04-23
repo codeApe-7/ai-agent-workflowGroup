@@ -1593,3 +1593,16 @@ Kyle 一轮审查发现 2 BLOCK + 1 WARN（见 `.dev-agents/shared/reviews/2026-
 - [Fix] `tests/test-logs-query.sh` mock 数据同步为 `lint=structure/docs`，新增 `--days 1/3650` 过滤断言与 `red_flag` flag_id 聚合断言；测试 4 改用 `rm -f events-*.jsonl` 清理全部历史日志
 - 测试结果：12 通过 / 0 失败（原 9 通过）；run-all.sh 全绿；手动 `lint_fail` + `--hotspots` 能正常输出 lint 名
 
+## 实现计划自检（Documentation 阶段 2026-04-23）
+
+documentation 阶段由 Jarvis 执行，完成以下文档更新：
+- [x] `docs/ARCHITECTURE.md` 新增"六层架构实现映射"章节（含 L4 记忆系统详解 + L5 观测系统详解）
+- [x] `docs/workflow-pipeline.md` 新增"advance 命令副作用"小节
+- [x] `docs/red-flags.md` 第 8 条补充 `logs-query.sh --hotspots` 命令提示
+- [x] `docs/README.md` 新增子目录小节，引用 `templates/`
+- [x] `docs/QUALITY_SCORE.md` 更新日期至 2026-04-23，变更记录追加 L4/L5 补强条目
+- [x] `bash scripts/harness/lint-docs.sh` 全部通过
+- [x] `bash scripts/harness/run-all.sh` 0 错误（仅 1 个已知设计文档 WARN 与本次无关）
+
+范围仅限上述 5 个文档，未触及其他文件，符合"只更新受影响的文档"原则。
+

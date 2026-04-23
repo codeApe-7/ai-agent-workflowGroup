@@ -86,3 +86,32 @@ Agent 的自由度在约束边界内最大化。
 **重要区别**：
 - **Claude Code CLI**：Hooks 自动执行，如同 git hook，Agent 无法跳过
 - **Cursor / 其他 IDE**：不支持 hooks.json，传感器需要 Agent 根据 CLAUDE.md 指令主动运行
+
+## 六层架构实现映射
+
+本项目完整实现 Harness Engineering 定义的六层架构：
+
+| 层 | 职责 | 本项目实现 |
+|----|------|-----------|
+| ① 上下文边界层 | 角色定义、信息裁剪、分层管理 | `CLAUDE.md`（< 100 行入口）+ `.claude/agents/*.md`（角色） + `docs/`（按需加载） + `skills/`（渐进式披露） |
+| ② 工具系统层 | 连接模型与现实 | `Agent(subagent_type)` 派遣 + `.dev-agents/shared/` 文件邮箱 + CLI 工具（Gemini/Qwen/Codex） |
+| ③ 执行编排层 | 任务分解为可执行步骤 | `scripts/harness/workflow-state.sh` 8 阶段状态机 + `docs/workflow-pipeline.md` + `skills/max/workflow/*` |
+| ④ 记忆与状态层 | 解决 Agent 失忆 | `.dev-agents/shared/.workflow-state`（会话状态） + `.dev-agents/shared/memory/`（长期记忆 3 件套） |
+| ⑤ 评估与观测层 | 建立质量反馈 | `scripts/harness/lint-*.sh`（5 个静态传感器） + Kyle 两阶段审查 + `.dev-agents/shared/logs/`（JSONL 事件日志） + `scripts/harness/logs-query.sh`（查询工具） |
+| ⑥ 约束校验与恢复层 | 保障鲁棒性 | `.claude/hooks.json`（运行时约束） + `docs/red-flags.md`（10 条危险信号） + `docs/steering-loop.md`（转向循环将重复错误编码为规则） |
+
+### 记忆系统详解（L4）
+
+- `memory/projectContext.md` — 项目级记忆：产品愿景、架构决策、技术栈
+- `memory/activeContext.md` — 会话级记忆：当前焦点、上次做到哪、下一步（不入 git）
+- `memory/systemPatterns.md` — 模式级记忆：代码模式、重构手法、团队约定
+
+Max 每次会话启动必读 `activeContext.md`（见 CLAUDE.md 会话启动协议）。
+
+### 观测系统详解（L5）
+
+- JSONL 按日滚动：`.dev-agents/shared/logs/events-YYYY-MM-DD.jsonl`
+- 10 种 event_type：`workflow_start/reset/exempt/complete`、`stage_enter/exit`、`dispatch`、`loop_iter`、`lint_fail`、`red_flag`
+- 写入工具：`scripts/harness/log-event.sh`（fail-silent，不阻塞主流程）
+- 查询工具：`scripts/harness/logs-query.sh`（`--stats` / `--hotspots` / `--export`）
+- Schema 详见 `.dev-agents/shared/logs/README.md`

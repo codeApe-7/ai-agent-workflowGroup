@@ -17,6 +17,10 @@ Agent 应按需检索本目录下的文档，而非依赖 CLAUDE.md 中的简短
 | [tech-debt-tracker.md](tech-debt-tracker.md) | 已知技术债与偿还计划 | 持续更新 |
 | [steering-loop.md](steering-loop.md) | Harness 转向循环：问题→编码为规则→自动执行 | 发现重复问题时 |
 
+## 子目录
+
+- `templates/` — 静态文档模板（PRD / 实现计划 / 代码审查等）
+
 ## 使用原则
 
 1. **渐进式披露** — Agent 先读 CLAUDE.md 获取全局地图，按需深入本目录
