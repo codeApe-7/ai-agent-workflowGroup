@@ -1529,7 +1529,7 @@ grep -rn "dev-agents/shared/templates" --include="*.sh" --include="*.mjs" script
 - "[OK] 新路径完整"
 - 引用计数：0
 
-- [ ] **步骤 12.6：提交**
+- [x] **步骤 12.6：提交**
 
 ```bash
 git add .gitignore .dev-agents/shared/logs/README.md .dev-agents/shared/memory/
