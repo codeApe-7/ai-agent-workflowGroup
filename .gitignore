@@ -21,3 +21,4 @@ shared/reviews/*.md
 # ── Harness 运行时状态 ──
 .dev-agents/shared/logs/events-*.jsonl
 .dev-agents/shared/memory/activeContext.md
+.dev-agents/shared/.workflow-state
