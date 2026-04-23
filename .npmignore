@@ -1,0 +1,19 @@
+# ── npm 发布忽略规则 ──
+# package.json files[] 已精确列出允许发布的路径。
+# 本文件作为兜底，防止 files[] 某天改回宽松规则时泄漏运行时产物。
+
+# 运行时产物工作区（消费方按需自建）
+.dev-agents/
+
+# 开发时状态与日志
+*.log
+.workflow-state
+
+# 其他已被 gitignore 的本地状态
+.idea/
+.spec-workflow/
+.claude/settings.local.json
+
+# 图片等临时文件
+*.jpg
+*.png
