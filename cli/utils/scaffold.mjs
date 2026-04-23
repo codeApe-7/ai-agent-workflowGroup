@@ -28,7 +28,7 @@ export const BASE_DIRS = [
   '.dev-agents/shared/tasks',
   '.dev-agents/shared/designs',
   '.dev-agents/shared/reviews',
-  '.dev-agents/shared/templates',
+  'docs/templates',
   'skills/max/workflow/brainstorming',
   'skills/max/workflow/requirement-validation',
   'skills/max/workflow/solution-design',

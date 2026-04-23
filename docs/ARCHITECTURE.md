@@ -12,6 +12,7 @@ ai-agent-workflowGroup/
 ├── docs/                      # 知识库：详细规范与标准
 │   ├── README.md              # 知识库索引
 │   ├── ARCHITECTURE.md        # 本文件
+│   ├── templates/             # 静态文档模板（prd/implementation-plan/code-review 等）
 │   ├── workflow-pipeline.md   # 工作流管道详细规则
 │   ├── dispatch-rules.md      # 派遣规则与上下文传递
 │   ├── coding-standards.md    # 编码与 Git 规范
@@ -19,11 +20,12 @@ ai-agent-workflowGroup/
 │   ├── QUALITY_SCORE.md       # 质量评分追踪
 │   ├── tech-debt-tracker.md   # 技术债追踪
 │   └── steering-loop.md       # 转向循环机制
-├── .dev-agents/shared/        # Agent 间协作产物工作区
+├── .dev-agents/shared/        # Agent 间协作产物工作区（运行时动态）
 │   ├── tasks/                 # 实现计划
 │   ├── designs/               # 设计方案与设计稿
 │   ├── reviews/               # 审查报告
-│   └── templates/             # 文档模板
+│   ├── memory/                # 长期记忆（projectContext/activeContext/systemPatterns）
+│   └── logs/                  # 运行时事件日志（JSONL 按日滚动）
 ├── skills/                    # 技能库
 │   ├── max/                   # PM 技能
 │   │   ├── workflow/          # 工作流技能（8 阶段管道 + 横切技能）
