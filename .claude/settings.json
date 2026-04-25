@@ -7,7 +7,7 @@
       "Task",
       "TodoWrite",
       "Shell(bash scripts/harness/*)",
-      "Shell(cat .dev-agents/*)",
+      "Shell(cat .orchestration/*)",
       "Shell(ls *)",
       "Shell(wc *)"
     ],

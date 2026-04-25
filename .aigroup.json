@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "targets": [
+    "claude",
+    "codex"
+  ],
+  "modules": [
+    "workflow",
+    "engineering-core",
+    "quality"
+  ],
+  "agentModules": [
+    "agents-core"
+  ],
+  "installedAt": "2026-04-25",
+  "updatedAt": "2026-04-25"
+}

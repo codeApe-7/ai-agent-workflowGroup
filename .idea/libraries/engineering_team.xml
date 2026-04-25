@@ -1,0 +1,26 @@
+<component name="libraryTable">
+  <library name="engineering-team">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/ms365-tenant-manager.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-data-scientist.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/code-reviewer.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-computer-vision.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/tech-stack-evaluator.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-fullstack.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-ml-engineer.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-secops.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/aws-solution-architect.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-architect.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-devops.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-qa.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-data-engineer.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-backend.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-prompt-engineer.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-frontend.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/senior-security.zip!/" />
+      <root url="jar://$PROJECT_DIR$/skills/jarvis/engineering-team/tdd-guide.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

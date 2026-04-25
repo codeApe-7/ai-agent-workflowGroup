@@ -4,8 +4,8 @@
 META:
   type: implementation-plan
   date: YYYY-MM-DD
-  author: Max
-  design: .dev-agents/shared/designs/xxx-design.md
+  author: coordinator
+  design: .orchestration/<session>/architect/xxx-design.md
 -->
 
 > **执行方式**：推荐使用 subagent-driven-development 技能按任务派遣子代理执行。
@@ -78,5 +78,5 @@ git commit -m "feat: [中文描述]"
 
 - [ ] 所有任务完成
 - [ ] 全量测试通过
-- [ ] Kyle Stage 1 审查通过（规格符合性）
-- [ ] Kyle Stage 2 审查通过（代码质量）
+- [ ] code-reviewer Stage 1 审查通过（规格符合性）
+- [ ] code-reviewer Stage 2 审查通过（代码质量）

@@ -18,37 +18,29 @@ export async function check(ctx) {
     return
   }
 
-  const runAllPath = join(PROJECT_ROOT, 'scripts/harness/run-all.sh')
-  if (!existsSync(runAllPath)) {
-    log.error('传感器脚本不存在: scripts/harness/run-all.sh')
-    log.info('请运行 aigroup update 重新安装传感器')
+  const dispatcherPath = join(PROJECT_ROOT, 'scripts/hooks/dispatcher.cjs')
+  if (!existsSync(dispatcherPath)) {
+    log.error('Hook dispatcher 不存在: scripts/hooks/dispatcher.cjs')
+    log.info('请运行 aigroup update 重新安装')
     return
   }
 
   try {
     const { execSync } = await import('node:child_process')
-    const output = execSync('bash scripts/harness/run-all.sh', {
+    const output = execSync('node scripts/hooks/dispatcher.cjs stop', {
       cwd: PROJECT_ROOT,
       encoding: 'utf-8',
       stdio: 'pipe',
+      input: '{}',
       timeout: 30000,
     })
 
-    // 直接输出传感器结果
-    console.log(output)
-
-    if (output.includes('全部通过')) {
-      process.exit(0)
-    } else {
-      process.exit(1)
-    }
+    if (output.trim()) console.log(output)
+    log.success('Harness 检查通过')
+    process.exit(0)
   } catch (err) {
-    if (err.stdout) {
-      console.log(err.stdout)
-    }
-    if (err.stderr) {
-      console.error(err.stderr)
-    }
+    if (err.stdout) console.log(err.stdout)
+    if (err.stderr) console.error(err.stderr)
     log.error('Harness 检查发现问题，请根据 [FIX] 指令修复')
     process.exit(err.status || 1)
   }

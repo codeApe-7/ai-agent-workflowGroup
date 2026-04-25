@@ -9,18 +9,8 @@
 **/docs/
 !/docs/
 
-# shared目录：保留框架，忽略具体内容
-shared/status.json
-shared/token-*.md
-shared/SIMPLIFICATION-SUMMARY.md
-shared/docs/*
-shared/designs/*
-shared/tasks/*.md
-shared/reviews/*.md
-
-# ── Harness 运行时状态 ──
-.dev-agents/shared/logs/events-*.jsonl
-.dev-agents/shared/memory/activeContext.md
-.dev-agents/shared/memory/projectContext.md
-.dev-agents/shared/memory/systemPatterns.md
-.dev-agents/shared/.workflow-state
+# ── Orchestration 协调产物 ──
+# 日志：所有事件日志
+.orchestration/.logs/events-*.jsonl
+# ECC 参考仓库（克隆作为对照参考，不入库）
+everything-claude-code/

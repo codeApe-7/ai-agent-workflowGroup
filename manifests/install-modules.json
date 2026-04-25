@@ -1,0 +1,294 @@
+{
+  "version": 3,
+  "description": "aiGroup 安装清单：agent / skill / commands 模块分组。skill 物理扁平在 skills/<name>/，自动加载；agent 源池在 agents/<name>.md，由 aigroup init 按需选装到 .claude/agents/。模块分类供跨平台插件消费。",
+  "modules": [
+    {
+      "id": "workflow",
+      "kind": "skills",
+      "description": "跨阶段工作流 skill — 需求工程、规划、调试、文档、验证、收尾。",
+      "paths": [
+        "skills/requirement-engineering",
+        "skills/writing-plans",
+        "skills/subagent-driven-development",
+        "skills/systematic-debugging",
+        "skills/documentation",
+        "skills/verification-before-completion",
+        "skills/finishing-a-development-branch",
+        "skills/entropy-management"
+      ],
+      "targets": [
+        "claude",
+        "codex"
+      ],
+      "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "product",
+      "kind": "skills",
+      "description": "产品管理辅助 skill — PRD、用户研究、竞品、干系人沟通。",
+      "paths": [
+        "skills/competitive-analysis",
+        "skills/meeting-notes",
+        "skills/prd-template",
+        "skills/stakeholder-update",
+        "skills/user-research-synthesis"
+      ],
+      "targets": [
+        "claude",
+        "codex"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "design",
+      "kind": "skills",
+      "description": "UI/UX 和前端实现 skill — 设计规范、组件、框架专项。",
+      "paths": [
+        "skills/ui-ux-pro-max",
+        "skills/senior-frontend",
+        "skills/react-expert",
+        "skills/vue-expert",
+        "skills/vue-expert-js",
+        "skills/angular-architect",
+        "skills/nextjs-developer",
+        "skills/flutter-expert",
+        "skills/react-native-expert",
+        "skills/design-commands"
+      ],
+      "targets": [
+        "claude",
+        "codex"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "engineering-core",
+      "kind": "skills",
+      "description": "后端核心 skill — API、架构、数据库、调试。任何后端任务的基线。",
+      "paths": [
+        "skills/api-designer",
+        "skills/architecture-designer",
+        "skills/microservices-architect",
+        "skills/graphql-architect",
+        "skills/database-optimizer",
+        "skills/postgres-pro",
+        "skills/sql-pro",
+        "skills/debugging-wizard",
+        "skills/legacy-modernizer",
+        "skills/fullstack-guardian",
+        "skills/feature-forge",
+        "skills/code-documenter"
+      ],
+      "targets": [
+        "claude",
+        "codex"
+      ],
+      "defaultInstall": true,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "engineering-languages",
+      "kind": "skills",
+      "description": "语言/栈专项 skill — 按项目栈按需加载，不默认全装。",
+      "paths": [
+        "skills/typescript-pro",
+        "skills/javascript-pro",
+        "skills/nestjs-expert",
+        "skills/python-pro",
+        "skills/fastapi-expert",
+        "skills/django-expert",
+        "skills/pandas-pro",
+        "skills/golang-pro",
+        "skills/rust-engineer",
+        "skills/cpp-pro",
+        "skills/java-architect",
+        "skills/spring-boot-engineer",
+        "skills/kotlin-specialist",
+        "skills/swift-expert",
+        "skills/php-pro",
+        "skills/laravel-specialist",
+        "skills/rails-expert",
+        "skills/csharp-developer",
+        "skills/dotnet-core-expert"
+      ],
+      "targets": [
+        "claude",
+        "codex"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "stable"
+    },
+    {
+      "id": "engineering-infra",
+      "kind": "skills",
+      "description": "基础设施、DevOps、云、CLI、AI/ML 工程 skill。",
+      "paths": [
+        "skills/devops-engineer",
+        "skills/sre-engineer",
+        "skills/cloud-architect",
+        "skills/kubernetes-specialist",
+        "skills/terraform-engineer",
+        "skills/cli-developer",
+        "skills/mcp-developer",
+        "skills/websocket-engineer",
+        "skills/monitoring-expert",
+        "skills/ml-pipeline",
+        "skills/fine-tuning-expert",
+        "skills/rag-architect",
+        "skills/spark-engineer"
+      ],
+      "targets": [
+        "claude",
+        "codex"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "quality",
+      "kind": "skills",
+      "description": "审查、测试、安全 skill — 任何交付前的门禁。",
+      "paths": [
+        "skills/code-reviewer",
+        "skills/security-reviewer",
+        "skills/secure-code-guardian",
+        "skills/tdd-guide",
+        "skills/test-master",
+        "skills/senior-qa",
+        "skills/playwright-expert",
+        "skills/chaos-engineer"
+      ],
+      "targets": [
+        "claude",
+        "codex"
+      ],
+      "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "agents-core",
+      "kind": "agents",
+      "description": "核心 agent — 对齐 ECC 派遣规则（docs/rules/agents.md）。",
+      "agents": [
+        "planner",
+        "architect",
+        "tdd-guide",
+        "code-reviewer",
+        "security-reviewer",
+        "build-error-resolver",
+        "e2e-runner",
+        "refactor-cleaner",
+        "doc-updater",
+        "rust-reviewer",
+        "init-architect",
+        "get-current-datetime"
+      ],
+      "targets": [
+        "claude"
+      ],
+      "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "agents-quality",
+      "kind": "agents",
+      "description": "代码质量深度分析 — 代码探索、架构提取、简化、注释、性能、静默失败、类型设计、对话分析。",
+      "agents": [
+        "code-explorer",
+        "code-architect",
+        "code-simplifier",
+        "comment-analyzer",
+        "conversation-analyzer",
+        "performance-optimizer",
+        "silent-failure-hunter",
+        "type-design-analyzer"
+      ],
+      "targets": [
+        "claude"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "agents-language",
+      "kind": "agents",
+      "description": "各语言专项 reviewer / build-resolver — 按项目栈按需选。",
+      "agents": [
+        "cpp-build-resolver",
+        "cpp-reviewer",
+        "csharp-reviewer",
+        "dart-build-resolver",
+        "flutter-reviewer",
+        "go-build-resolver",
+        "go-reviewer",
+        "java-build-resolver",
+        "java-reviewer",
+        "kotlin-build-resolver",
+        "kotlin-reviewer",
+        "python-reviewer",
+        "pytorch-build-resolver",
+        "rust-build-resolver",
+        "typescript-reviewer"
+      ],
+      "targets": [
+        "claude"
+      ],
+      "defaultInstall": false,
+      "cost": "heavy",
+      "stability": "stable"
+    },
+    {
+      "id": "agents-ops",
+      "kind": "agents",
+      "description": "运维与工作流操作 — 数据库审查、文档查证、PR 分析、loop 操作、harness 优化、个人通信中枢。",
+      "agents": [
+        "chief-of-staff",
+        "database-reviewer",
+        "docs-lookup",
+        "harness-optimizer",
+        "loop-operator",
+        "pr-test-analyzer"
+      ],
+      "targets": [
+        "claude"
+      ],
+      "defaultInstall": false,
+      "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "agents-domain",
+      "kind": "agents",
+      "description": "特殊领域 agent — 无障碍、医疗合规、开源治理、GAN 协作、SEO 等。按业务需要装。",
+      "agents": [
+        "a11y-architect",
+        "gan-evaluator",
+        "gan-generator",
+        "gan-planner",
+        "healthcare-reviewer",
+        "opensource-forker",
+        "opensource-packager",
+        "opensource-sanitizer",
+        "seo-specialist"
+      ],
+      "targets": [
+        "claude"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "experimental"
+    }
+  ]
+}

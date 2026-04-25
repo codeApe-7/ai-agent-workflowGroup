@@ -1,0 +1,33 @@
+{
+  "name": "aigroup-workflow",
+  "version": "1.3.0",
+  "description": "Codex-ready aiGroup workflows — shared skills, AGENTS.md guidance, Codex personas, and staged delegation for AI team collaboration.",
+  "author": {
+    "name": "shuaishuai-li"
+  },
+  "repository": "https://github.com/shuaishuai-li/ai-agent-workflowGroup",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "agents",
+    "skills",
+    "workflow",
+    "ai-team",
+    "multi-agent"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.codex/config.toml",
+  "interface": {
+    "displayName": "aiGroup Workflow",
+    "shortDescription": "Shared skills plus Codex/Claude Code adapters for AI team workflows.",
+    "longDescription": "aiGroup provides a dual-harness AI collaboration framework. Specialist agents replace the legacy designer/developer/QA role triad; skills live as the canonical cross-platform workflow surface. Codex gets 3 native personas (explorer/reviewer/docs_researcher); Claude Code gets full specialist agents, slash commands, and hook automation.",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": [
+      "Read AGENTS.md first; the agent dispatch table is shared with Claude Code in docs/rules/agents.md.",
+      "Load skills by task intent (skills/<name>/SKILL.md), not by legacy role ownership.",
+      "Switch to reviewer persona for correctness, security, and test gaps before completion.",
+      "For build/typecheck failures, load skills/systematic-debugging in main chat — no separate persona needed."
+    ]
+  }
+}

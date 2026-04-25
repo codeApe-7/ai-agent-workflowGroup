@@ -10,7 +10,7 @@
 # 实现：纯 bash + grep + sed，无 jq 依赖
 # ================================================================
 
-LOG_DIR=".dev-agents/shared/logs"
+LOG_DIR=".orchestration/.logs"
 
 # ── 辅助：返回近 N 天内的日志文件路径（一行一个）──
 # 基于文件名 events-YYYY-MM-DD.jsonl 解析日期并与 (today - N 天) 比较。
@@ -39,12 +39,7 @@ get_log_files_within_days() {
 }
 
 cmd_stats() {
-    local wf_id="$1"
-    local state_file=".dev-agents/shared/.workflow-state"
-    if [ -z "$wf_id" ] && [ -f "$state_file" ]; then
-        wf_id=$(grep '^task=' "$state_file" 2>/dev/null | cut -d'=' -f2-)
-    fi
-    wf_id="${wf_id:-unknown}"
+    local wf_id="${1:-unknown}"
 
     if [ ! -d "$LOG_DIR" ]; then
         echo "[INFO] 无匹配事件（logs 目录不存在）"
@@ -88,7 +83,7 @@ cmd_stats() {
     local loop_count
     loop_count=$(grep -h "\"workflow_id\":\"${wf_id}\"" $files 2>/dev/null \
         | grep -c "\"event_type\":\"loop_iter\"")
-    echo "  Kyle 审查-修复循环: $loop_count 次"
+    echo "  reviewer 审查-修复循环: $loop_count 次"
 }
 
 cmd_hotspots() {

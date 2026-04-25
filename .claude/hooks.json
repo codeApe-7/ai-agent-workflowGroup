@@ -5,7 +5,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "bash scripts/harness/hook-post-edit.sh",
+          "command": "node scripts/hooks/dispatcher.cjs post-edit",
           "timeout": 10
         }
       ]
@@ -17,7 +17,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "bash scripts/harness/hook-stop.sh",
+          "command": "node scripts/hooks/dispatcher.cjs stop",
           "timeout": 30
         }
       ]
@@ -29,7 +29,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "bash scripts/harness/hook-subagent-stop.sh",
+          "command": "node scripts/hooks/dispatcher.cjs subagent-stop",
           "timeout": 15
         }
       ]

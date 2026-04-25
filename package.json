@@ -1,6 +1,6 @@
 {
   "name": "aigroup-workflow",
-  "version": "1.3.0",
+  "version": "2.0.2",
   "description": "AI 团队协作框架 — 通过角色派遣、工作流管道和 Harness 传感器驱动 AI 协作开发",
   "type": "module",
   "bin": {
@@ -11,12 +11,17 @@
     "bin/",
     "cli/",
     "docs/",
+    "agents/",
     "skills/",
     "scripts/",
+    "manifests/",
     ".claude/commands/",
-    ".claude/agents/",
     ".claude/hooks.json",
-    "CLAUDE.md"
+    ".claude-plugin/",
+    ".codex/",
+    ".codex-plugin/",
+    "CLAUDE.md",
+    "AGENTS.md"
   ],
   "keywords": [
     "claude-code",

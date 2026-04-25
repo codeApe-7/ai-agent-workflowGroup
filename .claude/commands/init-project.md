@@ -1,6 +1,6 @@
 ---
-description: 初始化项目 AI 上下文，生成/更新根级与模块级 CLAUDE.md 索引
-allowed-tools: Read(**), Write(CLAUDE.md, **/CLAUDE.md)
+description: 初始化项目 AI 上下文 — 根 CLAUDE.md 只做导航，详细内容进 docs/
+allowed-tools: Read(**), Write(CLAUDE.md, **/CLAUDE.md, docs/PROJECT_CONTEXT.md, docs/ARCHITECTURE.md)
 argument-hint: <项目摘要或名称>
 ---
 
@@ -8,73 +8,89 @@ argument-hint: <项目摘要或名称>
 
 `/init-project <项目摘要或名称>`
 
-## 目标
+## 落盘策略（铁律）
 
-以"根级简明 + 模块级详尽"的混合策略初始化项目 AI 上下文：
+**根 `CLAUDE.md` 永远只是导航**——一张索引表，记录每份详细文档的位置。≤100 行。**严禁**写入：项目愿景、架构图、模块清单、规范条目、Changelog 等任何"项目内容"。
 
-- 在仓库根生成/更新 `CLAUDE.md`（高层愿景、架构总览、模块索引、全局规范）。
-- 在识别的各模块目录生成/更新本地 `CLAUDE.md`（接口、依赖、入口、测试、关键文件等）。
-- ✨ **为了提升可读性，会在根 `CLAUDE.md` 中自动生成 Mermaid 结构图，并为每个模块 `CLAUDE.md` 添加导航面包屑**。
+详细内容按主题分散到 `docs/` 下：
 
-## ⚠️ aiGroup 框架保护（铁律）
+| 主题 | 落盘文件 |
+|------|----------|
+| 项目愿景 / 模块索引 / Mermaid 结构图 / 运行与开发 / 测试策略 / 变更记录 | `docs/PROJECT_CONTEXT.md` |
+| 架构总览（组件、数据流、跨切关注点、技术选型） | `docs/ARCHITECTURE.md` |
+| 编码规范 / Git / 测试 / 安全 / 性能 / Hooks 强制规则 | `docs/rules/<topic>.md` |
+| 模块级详细信息（入口、接口、依赖、数据模型、FAQ） | `<module>/CLAUDE.md` |
 
-根 `CLAUDE.md` 是 aiGroup 框架的导航入口（≤ 100 行），**绝对禁止**追加项目上下文内容。
+**根 CLAUDE.md 的唯一形态**（无论是否全新项目）：
 
-### 检测方法
+```markdown
+# CLAUDE.md
 
-读取现有根 `CLAUDE.md`，检查以下任一特征标记：
+> 项目 AI 上下文导航。详情见 `docs/`。
 
-- `## 角色：麦克斯 (Max)`
-- `## 全局铁律`
-- `## 行为门控`
-- `## 团队派遣`
+## 项目快照
+- 名称: <name>
+- 主语言 / 栈: <...>
+- 模块数: <n>
 
-### 保护策略
+## 知识库地图
 
-**检测到框架内容**：设置 `preserve_framework=true` 调用 `init-architect`。该代理会把项目上下文写入 `docs/PROJECT_CONTEXT.md`，**不碰**根 `CLAUDE.md`。
+| 需要了解 | 查阅 |
+|---------|------|
+| 项目愿景与模块索引 | `docs/PROJECT_CONTEXT.md` |
+| 架构总览 | `docs/ARCHITECTURE.md` |
+| 强制规则 | `docs/rules/` |
+| 派遣矩阵（若使用 aiGroup 框架）| `docs/rules/agents.md` |
+| 各模块详细信息 | `<module>/CLAUDE.md` |
 
-**未检测到框架内容**（全新项目）：设置 `preserve_framework=false`，按常规方式在根 `CLAUDE.md` 生成完整项目上下文。
+## 模块入口
 
-### 模块级 CLAUDE.md
+| 模块 | 路径 | 一句话职责 |
+|------|------|-----------|
+| ... | ... | ... |
+```
 
-模块级 `<module>/CLAUDE.md` 不受此保护限制，正常生成/更新。
+## Phases
 
-## 编排说明
+### 1. 时间戳
 
-**步骤 1**：调用 `get-current-datetime` 子智能体获取当前时间戳。
+派遣 `get-current-datetime` 获取当前 UTC 时间戳。
 
-**步骤 2**：调用一次 `init-architect` 子智能体，输入：
+### 2. 调度 init-architect
 
-- `project_summary`: $ARGUMENTS
-- `current_timestamp`: (来自步骤1的时间戳)
-- `preserve_framework`: true/false（基于上述检测结果）
+```
+Agent({
+  subagent_type: "init-architect",
+  project_summary: $ARGUMENTS,
+  current_timestamp: <step 1>
+})
+```
 
-## 执行策略（由 Agent 自适应决定，不需要用户传参）
+`init-architect` 负责：
 
-- **阶段 A：全仓清点（轻量）**
-  快速统计文件与目录，识别模块根（package.json、pyproject.toml、go.mod、apps/_、packages/_、services/\* 等）。
-- **阶段 B：模块优先扫描（中等）**
-  对每个模块做"入口/接口/依赖/测试/数据模型/质量工具"的定点读取与样本抽取。
-- **阶段 C：深度补捞（按需）**
-  若仓库较小或模块规模较小，则扩大读取面；若较大，则对高风险/高价值路径分批追加扫描。
-- **覆盖率度量与可续跑**
-  输出"已扫描文件数 / 估算总文件数、已覆盖模块占比、被忽略/跳过原因"，并列出"建议下一步深挖的子路径"。重复运行 `/init-project` 时按上次索引做**增量更新**与**断点续扫**。
+- 自适应三档扫描（全仓清点 → 模块优先 → 深度补捞），自决读取深度与断点续扫
+- 写入 `docs/PROJECT_CONTEXT.md`（项目愿景、Mermaid 结构图、模块索引、运行/测试策略、Changelog）
+- 写入 `docs/ARCHITECTURE.md`（架构总览：组件、数据流、跨切关注点）
+- 写入各模块 `<module>/CLAUDE.md`（顶部带相对路径面包屑）
+- 写入 / 更新根 `CLAUDE.md` 为**纯导航形态**——若已存在内容是项目内容（非导航）则保留不动，新内容并入 `docs/PROJECT_CONTEXT.md`
+- 写入 `.claude/index.json`（扫描元数据 + 覆盖率 + 缺口清单）
 
-## 安全与边界
+### 3. 摘要回报
 
-- 只读/写文档与索引，不改源代码。
-- 默认忽略常见生成物与二进制大文件。
-- 结果在主对话打印"摘要"，全文写入仓库。
-- **绝不覆盖 aiGroup 框架内容**（角色定义、工作流管道、派遣规则等）。
+从 agent 返回体中提取并打印：
 
-## 输出要求
+- 根 `CLAUDE.md` 状态：新建（导航模板）/ 已存在（保留不动）
+- `docs/PROJECT_CONTEXT.md` 是否创建/更新（含主要章节）
+- `docs/ARCHITECTURE.md` 是否创建/更新
+- 识别的模块数量与路径
+- 每个模块 `CLAUDE.md` 的生成/更新情况
+- ✨ Mermaid 结构图与面包屑导航是否生成
+- 覆盖率与主要缺口
+- 若被上限截断：列出下一步推荐补扫路径
 
-- 在主对话中打印"初始化结果摘要"，包含：
-  - 根级 CLAUDE.md 保护状态（preserve_framework 值；是否已检测并跳过写入）。
-  - `docs/PROJECT_CONTEXT.md` 是否创建/更新、主要栏目概览。
-  - ✨ **是否检测到 aiGroup 框架并已保护**（明确说明）。
-  - 识别的模块数量及其路径列表。
-  - 每个模块 `CLAUDE.md` 的生成/更新情况。
-  - ✨ **明确提及"已生成 Mermaid 结构图"和"已为 N 个模块添加导航面包屑"**。
-  - 覆盖率与主要缺口。
-  - 若未读全：说明"为何到此为止"，并列出**推荐的下一步**（例如"建议优先补扫：packages/auth/src/controllers"）。
+## 硬约束（由 init-architect 执行）
+
+- 只读/写文档与 `.claude/index.json`，不改源代码
+- 默认忽略 `node_modules/`、`.git/`、构建产物、二进制
+- **根 `CLAUDE.md` 只能是导航形态**；若现有内容非导航（含项目愿景 / 架构 / 模块详情等），保留不动并把新内容追加到 `docs/PROJECT_CONTEXT.md`
+- 时间戳来自 step 1，不由 agent 自行生成

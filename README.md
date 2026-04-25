@@ -1,374 +1,270 @@
-# aiGroup - AI 团队协作框架
+# aiGroup — AI 团队协作框架
 
 [![npm version](https://img.shields.io/npm/v/aigroup-workflow?style=flat&colorA=080f12&colorB=1fa669)](https://npmjs.com/package/aigroup-workflow)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat&colorA=080f12&colorB=1fa669)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-purple.svg?style=flat&colorA=080f12&colorB=1fa669)](https://claude.ai/code)
+[![Codex](https://img.shields.io/badge/Codex-CLI-blue.svg?style=flat&colorA=080f12&colorB=1fa669)](https://developers.openai.com/codex)
 
-> 单入口 AI 团队：Max 指挥官接收需求，按需自动派遣原生子代理（Ella/Jarvis/Kyle）执行。
-> 内置门禁式工作流：需求澄清 → 方案设计 → 实现计划 → 子代理开发 → 两阶段审查 → 分支收尾。
+> **双端 AI 团队协作框架**：主会话接收需求，按任务类型派遣**专项子代理**执行。
+> Claude Code 与 Codex 共享同一份 agent / skill / docs 主源，各自薄适配层接入。
+> 重场景走 phase 心智模型（按需裁剪）；轻量任务走 `/plan`、`/review`、`/fix-build`、`/tdd` 单 agent 流程。
+
+## 双端兼容
+
+| Harness | 入口 | Agent 启用位置 | 启动 |
+|---------|------|----------------|------|
+| Claude Code | `CLAUDE.md` | `.claude/agents/<name>.md`（init 时按需选） | `claude` |
+| Codex CLI | `AGENTS.md` | `.codex/agents/<persona>.toml`（3 个原生 persona） | `codex` |
+
+两端共享 `agents/`（源池）/ `skills/` / `docs/` / `scripts/` / `.orchestration/<session>/`。派遣规则单一事实源：`docs/rules/agents.md`。
 
 ## 快速开始
 
-### 环境要求
+### 环境
 
-| 依赖 | 最低版本 | 用途 |
-|------|---------|------|
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | 最新版 | AI Agent 运行时（推荐） |
-| [Cursor](https://cursor.com) | 最新版 | AI IDE（可选） |
-| Node.js | 18+ | CLI 工具 |
-| Git | 2.x | 版本控制 |
-| Bash | 4.x+ | Harness 传感器（Windows 用 Git Bash） |
+| 依赖 | 用途 |
+|------|------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 或 [Codex CLI](https://developers.openai.com/codex) | AI Agent 运行时 |
+| Node.js 18+ | CLI 工具 |
+| Git 2.x | 版本控制 |
+| Bash 4+ | 协调脚本（Windows 用 Git Bash） |
 
 ### 安装
 
 ```bash
-# 方式一：全局安装（推荐，安装后可直接用 aig 命令）
+# 推荐：全局安装
 npm install -g aigroup-workflow
-aig init
+aig init                  # 交互式选择：harness / skill 模块 / agent 模块
 
-# 方式二：npx 免安装
+# 或：npx 一次性
 npx aigroup-workflow init
 
-# 方式三：克隆仓库
+# 或：克隆开发
 git clone https://github.com/codeApe-7/ai-agent-workflowGroup.git
-cd ai-agent-workflowGroup
 ```
 
-### CLI 命令
+`aig init` 会让你选：
+
+1. 启用哪些 harness（Claude Code / Codex CLI）
+2. 装哪些 skill 模块（workflow / engineering-core / quality 默认装；其他按项目栈选）
+3. 装哪些 agent 模块（agents-core 默认装 12 个；语言专项 / 质量分析 / 运维 / 特殊领域按需选）
+
+### CLI
 
 ```bash
-aig                   # 交互式主菜单（无参数启动）
-aig init              # 初始化（交互式选择角色和技能）
-aig init --yes        # 跳过确认，使用默认配置
-aig update            # 增量更新（不覆盖自定义配置）
+aig init              # 初始化（交互式）
+aig init --yes        # 跳过确认，用默认配置
+aig update            # 增量更新（保留自定义）
 aig check             # Harness 健康检查
-aig status            # 工作流状态
+aig status            # 查看活跃 session
 aig help              # 帮助
 ```
 
-> `aig` 是 `aigroup` 的短别名，两者等效。npx 用户使用 `npx aigroup-workflow <命令>`。
+> `aig` 是 `aigroup` 的短别名。npx 用户用 `npx aigroup-workflow <命令>`。
 
-`init` 命令支持 inquirer 风格交互：**方向键** 移动、**空格** 切换选中、**a** 全选、**回车** 确认。
+## Agent 派遣
 
-### 启动
+agent 体系**两端共享一份**——单一 manifest 驱动的源池 + 选装机制。
 
-**Claude Code（推荐）：**
+### 默认装的 12 个 agent（agents-core）
+
+| Agent | 用途 |
+|-------|------|
+| `planner` | 实现规划 — 复杂功能、重构 |
+| `architect` | 系统设计 — 架构决策 |
+| `tdd-guide` | 测试驱动开发 — 新功能、bug 修复 |
+| `code-reviewer` | 代码审查 — 编写代码后 |
+| `security-reviewer` | 安全分析 — 提交前 |
+| `build-error-resolver` | 修复构建 / 类型 / 依赖错误 |
+| `e2e-runner` | E2E 测试 — 关键用户流程 |
+| `refactor-cleaner` | 死代码清理 — 代码维护 |
+| `doc-updater` | 文档更新 |
+| `rust-reviewer` | Rust 代码审查 |
+| `init-architect` | 项目专属（`/init-project` 用） |
+| `get-current-datetime` | 工具 agent |
+
+> 派遣规则采用 ECC 风格 `docs/rules/agents.md`。详细 handoff 内容、并行场景、反模式见 `docs/rules/agents.md`。
+
+### 可选扩展模块（按需装）
+
+| 模块 | agent 数 | 内容 |
+|------|---------|------|
+| `agents-quality` | 8 | code-explorer / code-architect / refactor / 静默失败 / 性能 等 |
+| `agents-language` | 15 | cpp / go / java / kotlin / python / rust / typescript / ... 各语言 reviewer 与 build-resolver |
+| `agents-ops` | 6 | chief-of-staff / database-reviewer / docs-lookup / harness-optimizer / loop-operator / pr-test-analyzer |
+| `agents-domain` | 9 | a11y / healthcare / opensource / gan-* / seo |
+
+源池 `agents/` 共 50 个 agent，覆盖完整 agent 模块清单。
+
+### 三种使用方式
+
+**方式一：自然语言（推荐）**
+
+```
+你: 帮我审一下登录模块
+→ Claude Code：派遣 code-reviewer + security-reviewer 并行
+→ Codex：/agent reviewer，加载 skills/security-reviewer/SKILL.md
+
+你: build 挂了
+→ Claude Code：派遣 build-error-resolver
+→ Codex：主对话 + 加载 skills/systematic-debugging/SKILL.md
+
+你: 帮我规划用户认证系统
+→ Claude Code：planner → architect → tdd-guide → code-reviewer
+→ Codex：主对话规划，必要时 /agent reviewer 审查
+```
+
+**方式二：显式点名**
+
+```
+你: 让 tdd-guide 把用户模块按 TDD 实现
+你: 请 security-reviewer 审一下 auth 流程
+你: 让 doc-updater 把 README 同步一下
+```
+
+**方式三：斜杠命令（Claude Code 专享）**
 
 ```bash
-cd your-project
-claude
+# 重场景（建 session、按 phase 裁剪）
+/workflow-start <任务名>      # ≥2 worker 协作的完整流程
+/init-project <名称>          # 项目 AI 上下文初始化
+
+# 轻量场景（单 agent，不建 session）
+/plan <任务>                  # 派 planner
+/review                       # 派 code-reviewer（双阶段）
+/fix-build                    # 派 build-error-resolver
+/tdd <功能>                   # 派 tdd-guide 走 Red→Green→Refactor
+
+# 工具
+/git-commit                   # 智能 Git 提交（Conventional Commits）
 ```
 
-启动后 Max 自动就位，读取 `CLAUDE.md` 作为入口，根据你的需求驱动整个团队。
+> Codex 端无 slash command，对应操作通过自然语言或 `/agent` 完成。
 
-**Cursor：** 直接打开项目目录，Agent 自动读取 `CLAUDE.md`。
+## Codex 原生 Persona
 
-### 三种使用模式
+`.codex/agents/` 下 3 个 TOML——**仅在需要切换 sandbox / reasoning_effort 时**使用：
 
-**模式一：自然语言描述（推荐）**
+| Persona | sandbox | reasoning | 用途 |
+|---------|---------|-----------|------|
+| `explorer` | read-only | medium | 证据收集、执行路径追踪 |
+| `reviewer` | read-only | high | 代码 + 安全审查 |
+| `docs_researcher` | read-only | medium | API / 文档查证（带网络） |
 
-直接描述需求即可，Max 会根据任务类型自动调用对应子代理（通过 `Agent({subagent_type: ...})`）：
+不存在"Claude agent ↔ Codex role 对照表"——agent 体系本就单一。详见 `.codex/AGENTS.md`。
 
-```
-你: 帮我做一个用户认证系统
-→ Max 启动 brainstorming，逐步澄清需求
-→ Max 产出实现计划，用户确认
-→ Max 派遣 Jarvis 逐任务开发，Kyle 两阶段审查
-→ Max 收尾集成
-```
+## 工作流 Phase 心智模型
 
-**模式二：指定角色派遣（明确意图时）**
-
-在描述中点名角色，Max 会跳过判断直接派遣：
-
-```
-你: 让 Ella 设计一个登录页面
-你: 找 Jarvis 实现用户认证 API
-你: 请 Kyle 审查用户模块代码
-```
-
-子代理身份、门控、技能加载都由 `.claude/agents/<role>.md` 自动注入，Max 无需在 prompt 里重复 PERSONA。
-
-**模式三：项目级斜杠命令（工具类操作）**
-
-```
-/init-project 我的项目         # 初始化项目 AI 上下文（根级+模块级 CLAUDE.md）
-/git-commit                    # 智能 Git 提交（Conventional Commits）
-```
-
-这是仅有的两个保留的 slash 命令——都是项目工具，不是角色派遣。角色派遣统一走 Agent 工具。
-
-**模式四：简单问答（轻量任务）**
-
-```
-你: 这个项目用的什么技术栈？
-→ Max 直接回答，不启动管道
-```
-
-判断标准：涉及 2 个以上文件或需要设计决策 → 走完整管道。
-
-## 团队成员
-
-三名子代理以 Claude Code **原生子代理**形式定义在 `.claude/agents/`，Max 作为宿主会话通过 Agent 工具调用：
-
-| 成员 | 角色 | 定义位置 | 技能数 | 负责什么 |
-|------|------|---------|--------|---------|
-| 麦克斯 (Max) | 项目经理 | `CLAUDE.md`（宿主会话） | 16 | 需求分析、任务拆解、进度协调、工作流管道 |
-| 艾拉 (Ella) | UI/UX 设计师 | `.claude/agents/ella.md` | 10 | 界面设计、交互原型、前端框架参考 |
-| 贾维斯 (Jarvis) | 全栈开发 | `.claude/agents/jarvis.md` | 45 | 架构设计、前后端编码、API、DevOps |
-| 凯尔 (Kyle) | 质量保障 | `.claude/agents/kyle.md` | 7 | 代码审查、测试策略、安全审计、E2E |
-
-> "Max" 是宿主 Claude 会话的代号，不是独立 agent——所有规则由 `CLAUDE.md` 加载。
-> Ella/Jarvis/Kyle 是**真子代理**，拥有独立 context window、工具集和门控。
-
-## 可用斜杠命令
-
-| 命令 | 说明 |
-|------|------|
-| `/init-project <名称>` | 初始化项目 AI 上下文 — 生成根级和模块级 `CLAUDE.md`，保留 aiGroup 框架 |
-| `/git-commit` | 智能 Git 提交 — 分析变更、生成 Conventional Commits 信息 |
-
-角色派遣**没有专属 slash 命令**——Claude Code 原生机制下，子代理由 `Agent({subagent_type})` 工具调用，触发方式是用户自然语言描述或明确点名角色（见上文"三种使用模式"）。
-
-## 工作流程
-
-### 总体协作流程
-
-```mermaid
-flowchart TD
-    User(["用户提出需求"]) --> Max{"Max 分析需求类型"}
-    Max -->|设计类| Ella["Ella 设计师"]
-    Max -->|开发类| Jarvis["Jarvis 开发"]
-    Max -->|测试/审查| Kyle["Kyle 质量保障"]
-    Max -->|简单问题| Direct["Max 直接回答"]
-
-    Ella -->|设计稿| D1["shared/designs/"]
-    Jarvis -->|代码实现| D2["项目代码"]
-    Kyle -->|审查报告| D3["shared/reviews/"]
-
-    D1 --> Summary["Max 汇总结果"]
-    D2 --> Summary
-    D3 --> Summary
-    Direct --> Summary
-    Summary --> Done(["反馈给用户"])
-```
-
-### 完整流水线
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Max
-    participant Ella
-    participant Jarvis
-    participant Kyle
-
-    User->>Max: 提出需求
-    Max->>Max: 分析并拆解任务
-
-    Note over Max,Ella: 阶段一 设计
-    Max->>Ella: Agent(subagent_type=ella)
-    Ella-->>Max: 设计完成 + 压缩报告
-
-    Note over Max,Jarvis: 阶段二 开发
-    Max->>Jarvis: Agent(subagent_type=jarvis) + 设计稿路径
-    Jarvis-->>Max: 开发完成 + 验证证据
-
-    Note over Max,Kyle: 阶段三 验收
-    Max->>Kyle: Agent(subagent_type=kyle) + 代码路径
-    Kyle-->>Max: 两阶段审查结论
-
-    Max-->>User: 汇总全流程结果
-```
-
-### 上下文传递机制
-
-```mermaid
-flowchart LR
-    subgraph CTX["独立上下文窗口"]
-        MaxCtx["Max\nCLAUDE.md 注入"]
-        EllaCtx["Ella\n.claude/agents/ella.md"]
-        JarvisCtx["Jarvis\n.claude/agents/jarvis.md"]
-        KyleCtx["Kyle\n.claude/agents/kyle.md"]
-    end
-
-    subgraph SHARED["共享产物目录 .dev-agents/shared/"]
-        Tasks[("tasks/")]
-        Designs[("designs/")]
-        Reviews[("reviews/")]
-    end
-
-    MaxCtx -->|"Agent 派遣\n任务+产物路径"| EllaCtx
-    MaxCtx -->|"Agent 派遣\n任务+设计稿路径"| JarvisCtx
-    MaxCtx -->|"Agent 派遣\n代码路径+规格"| KyleCtx
-
-    EllaCtx -->|写入设计稿| Designs
-    JarvisCtx -->|读取设计稿| Designs
-    KyleCtx -->|写入审查报告| Reviews
-
-    style MaxCtx fill:#4A90D9,color:#fff
-    style EllaCtx fill:#E91E63,color:#fff
-    style JarvisCtx fill:#4CAF50,color:#fff
-    style KyleCtx fill:#FF9800,color:#fff
-```
-
-> **关键规则**：子代理之间不能直接通信，所有上下文由 Max 在 `Agent` 调用的 prompt 中注入；跨代理协作通过 `.dev-agents/shared/` 目录下的文件实现。子代理身份（PERSONA/门控/技能清单）不需要注入，由 Claude Code 从 agent 定义文件自动加载。
-
-## 工作流技能（门禁式管道）
-
-受 [Superpowers](https://github.com/obra/superpowers) 和 [Harness Engineering](https://martinfowler.com/articles/harness-engineering.html) 启发，内置 8 阶段门禁管道：
+8 phase 是**完整路径**，不是强制路径——每个任务由主会话按复杂度和风险**裁剪**。
 
 ```
 需求收集 → 需求验证 → 方案设计 → 任务拆解 → 实施开发 → 测试验证 → 文档更新 → 分支收尾
 ```
 
-| 技能 | 触发时机 | 核心规则 |
-|------|---------|---------|
-| **brainstorming** | 创造性工作之前 | 一次一个问题、2-3 方案对比、用户批准后继续 |
-| **writing-plans** | 编码前 | 任务粒度 2-5 分钟、禁止占位符、每步有完整代码 |
-| **subagent-driven-development** | 开发执行 | 每任务新子代理、两阶段审查 |
-| **systematic-debugging** | Bug/测试失败 | 四阶段根因分析、3 次失败后质疑架构 |
-| **verification-before-completion** | 声称完成前 | 无验证证据不得声明完成 |
-| **finishing-a-development-branch** | 任务完成后 | 全量测试 → 集成 → 清理 |
-| **entropy-management** | 定期维护 | 传感器扫描 → 修复 → 更新质量评分 |
+| 任务类型 | 建议 phases |
+|---------|------------|
+| 纯 bugfix | 5 → 6（直接 `/tdd` + `/review`）|
+| 小功能增补 | 3 → 4 → 5 → 6 |
+| 新模块 / 架构决策 | 完整 1 → 8（`/workflow-start`）|
+| 重构 | 3 → 4 → 5 → 6 |
+| 纯文档 / 笔误 | 直接做，不建 session |
 
-### 两阶段审查
+状态真相源：`.orchestration/<session>/<worker>/status.md`，由 `node scripts/orchestration/session.cjs set-status` 维护。详见 `docs/workflow-pipeline.md`。
 
-1. **Stage 1：规格符合性** — 多了什么？少了什么？偏离了什么？
-2. **Stage 2：代码质量** — 干净、安全、可维护？
+### 多视角审查（高风险变更）
 
-Stage 1 不通过 → 修复 → 重审 → 通过后才进入 Stage 2。
+- **正确性** — `code-reviewer`
+- **安全** — `security-reviewer`
+- **测试覆盖** — `tdd-guide`（审"该有但没有"）
+- **一致性** — `architect`（审是否破坏架构约束）
 
-### 三条铁律
+可并行：`code-reviewer` + `security-reviewer`、`doc-updater` + `tdd-guide`、多个 `code-explorer` 跑不同模块。
+
+## Skill 体系
+
+Skill 是共享能力层，**不属于任何 agent**。Claude Code 启动时**自动加载** `skills/<name>/SKILL.md`，按 skill `description` frontmatter 自动触发。
 
 ```
-1. 证据优于断言 — 任何完成声明必须附带验证证据
-2. 流程不可跳过 — 工作流管道的每个环节必须走完
-3. 不确定时先问 — 宁可多问一句，不要假设
+skills/<name>/SKILL.md       # 扁平结构，命名小写 + 短横线
 ```
 
-## 技能体系
+按 manifest 模块分类（`manifests/install-modules.json`）：
 
-### 技能与角色对应
+| 模块 | 默认 | 数量 | 内容 |
+|------|------|------|------|
+| `workflow` | ✅ | 8 | 需求工程 / 规划 / 调试 / 文档 / 验证 / 收尾 |
+| `engineering-core` | ✅ | 12 | API / 架构 / 数据库 / 调试 |
+| `quality` | ✅ | 8 | 审查 / 测试 / 安全 |
+| `product` | ⏤ | 5 | PRD / 用户研究 / 干系人 |
+| `design` | ⏤ | 10 | UI/UX + 前端框架 |
+| `engineering-languages` | ⏤ | 19 | TypeScript / Python / Go / Rust / Java / ... |
+| `engineering-infra` | ⏤ | 13 | DevOps / 云 / Kubernetes / CLI / AI/ML |
 
-```mermaid
-flowchart TB
-    subgraph MAX["Max 项目经理"]
-        M1["workflow\n8 阶段工作流管道"]
-        M2["PM 辅助技能\n竞品分析/PRD/会议纪要等"]
-    end
+> agent 文件**不写"必读 skill"段**——硬编码 skill 路径会绑死归属、稀释 prompt、skill 重命名后造成漂移。靠 skill description 自动触发即可。
 
-    subgraph ELLA["Ella 设计师"]
-        E1["ui-ux-pro-max\n50+ 设计风格"]
-        E2["senior-frontend\n前端最佳实践"]
-        E3["前端框架 x7\nReact/Vue/Angular/Next.js\nFlutter/RN"]
-    end
+## 协调协议（`.orchestration/`）
 
-    subgraph JARVIS["Jarvis 开发"]
-        J1["架构与设计 x7"]
-        J2["后端框架 x7"]
-        J3["编程语言 x11"]
-        J4["数据库与数据 x8"]
-        J5["DevOps x6"]
-        J6["安全与工具 x6"]
-    end
+主会话是唯一的 orchestrator/writer；每个 subagent 都是只产文本的 worker。
 
-    subgraph KYLE["Kyle 质量保障"]
-        K1["senior-qa + tdd-guide"]
-        K2["test-master + code-reviewer"]
-        K3["security-reviewer"]
-        K4["playwright-expert + chaos-engineer"]
-    end
+```
+.orchestration/
+├── .logs/                       # 全局事件日志（可选，不入库）
+└── <session>/                   # 一任务一 session
+    ├── session.json             # 元数据
+    └── <worker>/                # = agent 名
+        ├── task.md              # 主→worker
+        ├── handoff.md           # worker→主（Summary / Files / Validation / Follow-ups）
+        └── status.md            # state: not_started / running / completed / failed / blocked
 ```
 
-### 技能分布
-
-| 角色 | 技能数 | 核心领域 |
-|------|--------|---------|
-| **Max** (PM) | 16 | 8 阶段工作流管道 + 3 横切技能 + 5 PM 辅助技能 |
-| **Ella** (设计) | 10 | UI/UX 设计 + 前端最佳实践 + 7 前端框架 |
-| **Jarvis** (开发) | 45 | 架构设计、后端框架、编程语言、数据库、DevOps、安全编码 |
-| **Kyle** (QA) | 7 | QA 实践、TDD、测试策略、代码审查、安全审计、E2E、混沌工程 |
-
-### 技能来源
-
-| 技能 | 来源 | 许可证 |
-|------|------|--------|
-| 工作流技能 (11个) | 原创，受 [obra/superpowers](https://github.com/obra/superpowers) 和 [Harness Engineering](https://martinfowler.com/articles/harness-engineering.html) 启发 | MIT |
-| 开发/QA/前端技能 (62个) | [Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills) | MIT |
-| PM 辅助技能 (5个) | [mohitagw15856/pm-claude-skills](https://github.com/mohitagw15856/pm-claude-skills) | MIT |
-| UI/UX Pro Max / Senior 系列 | SkillsMP 技能市场 | MIT |
-
-## 集成到已有项目
-
-### 方式一：CLI 工具（推荐）
+CLI：
 
 ```bash
-cd your-project
-npx aigroup-workflow init
+node scripts/orchestration/session.cjs init <session-name>
+node scripts/orchestration/session.cjs add-worker <session> <worker> --agent <name> --objective "<目标>" [--lightweight]
+node scripts/orchestration/session.cjs set-status <session> <worker> <state> [--details "<md>"]
+node scripts/orchestration/session.cjs append <session> <worker> <section> --content "<md>"
+node scripts/orchestration/session.cjs status <session>
+node scripts/orchestration/session.cjs list
 ```
 
-交互式选择需要的角色，自动安装所有框架文件。
-
-### 方式二：手动复制
-
-```bash
-# 必须复制
-CLAUDE.md                    # 宿主会话规则（Max 的"宪法"）
-docs/                        # 知识库
-.claude/agents/              # 原生子代理定义（ella/jarvis/kyle/init-architect/...）
-.claude/commands/            # 工具类斜杠命令（init-project/git-commit）
-.claude/hooks.json           # Hooks 配置
-.claude/settings.json        # 权限配置
-.dev-agents/shared/          # 子代理协作产物目录（空目录结构）
-scripts/harness/             # Harness 传感器
-
-# 按需复制
-skills/max/workflow/         # 工作流技能（强烈推荐）
-skills/ella/                 # 设计技能
-skills/jarvis/               # 开发技能
-skills/kyle/                 # QA 技能
-```
-
-### 验证安装
-
-```bash
-aig check
-# 或
-bash scripts/harness/run-all.sh
-```
+`--lightweight` 模式跳过 `task.md`，适合一次性临时 worker。
 
 ## 项目结构
 
 ```
 aiGroup/
-├── CLAUDE.md                  # 宿主会话规则（Max 的"宪法"）
-├── package.json               # npm 包配置
-├── bin/aigroup.mjs            # CLI 入口
-├── cli/                       # CLI 实现
-│   ├── commands/              #   init / update / check / status / menu
-│   └── utils/                 #   prompts / logger / scaffold
-├── docs/                      # 知识库（唯一事实源）
-├── .claude/                   # Claude Code 配置
-│   ├── settings.json          #   权限设置
-│   ├── hooks.json             #   Harness Hooks
-│   ├── commands/              #   工具类斜杠命令
-│   │   ├── init-project.md    #     /init-project
-│   │   └── git-commit.md      #     /git-commit
-│   └── agents/                #   原生子代理定义（Agent({subagent_type}) 调用）
-│       ├── ella.md            #     艾拉（UI/UX 设计师）
-│       ├── jarvis.md          #     贾维斯（全栈开发）
-│       ├── kyle.md            #     凯尔（质量保障）
-│       ├── init-architect.md  #     项目初始化架构师
-│       └── get-current-datetime.md
-├── .dev-agents/shared/        # 角色间协作产物工作区
-│   └── tasks/ designs/ reviews/ templates/
-├── skills/                    # 技能库（按角色分组）
-│   ├── max/                   #   PM: workflow(11) + 辅助技能(5)
-│   ├── ella/                  #   设计: UI/UX + 前端框架(10)
-│   ├── jarvis/                #   开发: 45 Skills
-│   └── kyle/                  #   QA: 7 Skills
-└── scripts/harness/           # Harness 传感器套件（5 个传感器）
+├── CLAUDE.md                    # Claude Code 入口（导航）
+├── AGENTS.md                    # Codex / 通用入口
+├── package.json                 # npm 包
+├── bin/aigroup.mjs              # CLI 入口
+├── cli/                         # CLI 实现
+├── agents/                      # agent 源池（50 个，分发态）
+├── skills/                      # skill 源池（扁平，自动加载）
+├── docs/                        # 知识库（唯一事实源）
+│   ├── rules/agents.md        #   Agent 派遣矩阵
+│   ├── workflow-pipeline.md     #   Phase 心智模型
+│   ├── red-flags.md             #   危险信号清单
+│   ├── rules/                   #   强制规则集
+│   └── PROJECT_CONTEXT.md       #   /init-project 生成
+├── manifests/install-modules.json   # 安装清单（agent / skill 分组）
+├── scripts/
+│   ├── hooks/dispatcher.cjs     # hook dispatcher（PreToolUse / Stop / SubagentStop）
+│   ├── orchestration/session.cjs  # 协调 CLI
+│   ├── harness/                 # 日志写入与查询（可选）
+│   └── update-skills.sh         # 上游 skill 同步
+├── .orchestration/<session>/    # 协作产物工作区
+├── .claude/                     # Claude 适配（init 时填充）
+│   ├── agents/                  #   按选择从 agents/ 复制
+│   ├── commands/                #   /workflow-start /plan /review /fix-build /tdd /init-project /git-commit
+│   ├── hooks.json
+│   └── settings.json
+├── .codex/                      # Codex 适配
+│   ├── AGENTS.md
+│   ├── config.toml              #   Runtime + MCP + 3 个 persona
+│   └── agents/                  #   explorer / reviewer / docs-researcher
+├── .claude-plugin/plugin.json
+└── .codex-plugin/plugin.json
 ```
 
 ## Harness Engineering
@@ -379,51 +275,58 @@ Agent = Model + Harness
 
 | 层级 | 机制 | 实现 |
 |------|------|------|
-| **前馈引导** | 行动前引导 | CLAUDE.md、Skills、工作流管道 |
-| **计算型反馈** | 确定性检查 | Harness 传感器 + Hooks |
-| **推理型反馈** | AI 审查 | Kyle 两阶段审查 |
-| **熵管理** | 防退化 | entropy-management + 质量评分 |
+| **前馈引导** | 行动前提示 | CLAUDE.md / AGENTS.md / Skills（按 description 自动触发）/ docs/rules/ |
+| **计算型反馈** | 确定性检查 | `scripts/hooks/dispatcher.cjs` 路由 6 个 check |
+| **推理型反馈** | AI 审查 | `code-reviewer` / `security-reviewer` / `tdd-guide` / `architect` 多视角 |
+| **熵管理** | 防退化 | `skills/entropy-management` |
 
-### 传感器套件（5 个）
+### Hook 检查（`scripts/hooks/dispatcher.cjs`）
 
-| 传感器 | 覆盖 |
-|-------|------|
-| `lint-structure.sh` | 目录结构、核心文件、子代理定义 |
-| `lint-docs.sh` | 文档健康、交叉引用有效性 |
-| `lint-workflow-artifacts.sh` | 工作流产物完整性 |
-| `lint-process.sh` | 流程合规检查 |
-| `lint-delegation.sh` | 派遣契约检查（防止 prompt 重复定义子代理内容） |
+| 事件 | 触发 | 检查 |
+|------|------|------|
+| `post-edit` | `Write` / `Edit` 后 | CLAUDE.md 体积、docs 空壳 |
+| `subagent-stop` | subagent 结束 | 基础结构、orchestration 三件套完整性 |
+| `stop` | 主会话停止 | 上述 + 派遣反模式、worker 状态门控 |
 
 ```bash
-bash scripts/harness/run-all.sh   # 全量检查
+node scripts/hooks/dispatcher.cjs stop          # 全量检查
+echo '{}' | node scripts/hooks/dispatcher.cjs <event>
 ```
 
-## 常用命令速查
+| Harness | Hook 支持 | 兜底 |
+|---------|-----------|------|
+| Claude Code | ✅ 自动触发 | `.claude/hooks.json` 已配置 |
+| Codex CLI | ❌ 不支持 | 主动运行 `node scripts/hooks/dispatcher.cjs stop` |
 
-| 命令 | 说明 |
-|------|------|
-| `aig` | 交互式主菜单 |
-| `aig init` | 初始化框架 |
-| `aig update` | 增量更新 |
-| `aig check` | 健康检查 |
-| `aig status` | 工作流状态 |
-| `/init-project <名称>` | 项目 AI 上下文初始化 |
-| `/git-commit` | 智能 Git 提交 |
+## Memory（跨会话持久化）
 
-> 角色派遣无专属 slash 命令——自然语言描述即可，Max 通过 `Agent` 工具自动调用子代理。
-> `aig` 是 `aigroup` 的短别名。npx 用户：`npx aigroup-workflow <命令>`。
+按所有权分流到 3 个位置——**不再有项目内 `memory/` 目录**：
+
+| 内容 | 落盘 | git-tracked |
+|------|------|-------------|
+| 项目愿景 / 架构决策 | `docs/PROJECT_CONTEXT.md` + `docs/ARCHITECTURE.md` | ✅ |
+| 团队约定 / 危险信号 / 代码模式 | `docs/rules/<topic>.md` + `docs/red-flags.md` | ✅ |
+| 用户活跃任务 / 个人偏好 | `~/.claude/projects/<slug>/memory/`（Claude 原生自动加载） | ⏤ |
+
+## Skill 来源
+
+| 类别 | 来源 | License |
+|------|------|---------|
+| 工作流技能 | 原创，受 [obra/superpowers](https://github.com/obra/superpowers) 与 [Harness Engineering](https://martinfowler.com/articles/harness-engineering.html) 启发 | MIT |
+| 开发 / QA / 前端技能（62 个） | [Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills) | MIT |
+| PM 辅助技能（5 个） | [mohitagw15856/pm-claude-skills](https://github.com/mohitagw15856/pm-claude-skills) | MIT |
 
 ## 致谢
 
-本项目基于 [yezannnnn/agentGroup](https://github.com/yezannnnn/agentGroup) 进行开发和扩展。感谢原作者 [@yezannnnn](https://github.com/yezannnnn) 提出的四 AI 专业分工协作框架理念。
+本项目基于 [yezannnnn/agentGroup](https://github.com/yezannnnn/agentGroup) 开发扩展。感谢 [@yezannnnn](https://github.com/yezannnnn) 提出的 AI 专业分工协作框架理念。
 
-## 社区支持
+## 社区
 
 <div align="center">
 
 [![LINUX DO](https://img.shields.io/badge/LINUX%20DO-社区-gray?style=flat-square)](https://linux.do/) [![社区支持](https://img.shields.io/badge/社区支持-交流-blue?style=flat-square)](https://linux.do/)
 
-本项目在 [LINUX DO](https://linux.do/) 社区发布与交流，感谢佬友们的支持与反馈。
+本项目在 [LINUX DO](https://linux.do/) 社区发布与交流。
 
 </div>
 

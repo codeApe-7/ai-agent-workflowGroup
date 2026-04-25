@@ -1,8 +1,8 @@
 /**
- * status 命令 — 查看工作流状态和项目概况
+ * status 命令 — 查看工作流 session 状态和项目概况
  */
 
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { readConfig, isInitialized } from '../utils/scaffold.mjs'
 import * as log from '../utils/logger.mjs'
@@ -27,45 +27,57 @@ export async function status(ctx) {
     log.dim(`更新: ${config.updatedAt || '未知'}`)
   }
 
-  // ── 工作流状态 ──
-  log.step('工作流状态')
+  // ── 协调 session 列表 ──
+  log.step('活跃 session')
 
-  const statePath = join(PROJECT_ROOT, '.dev-agents/shared/.workflow-state')
-  if (existsSync(statePath)) {
-    try {
-      const { execSync } = await import('node:child_process')
-      const output = execSync('bash scripts/harness/workflow-state.sh status', {
-        cwd: PROJECT_ROOT,
-        encoding: 'utf-8',
-        timeout: 5000,
-      })
-      console.log(output)
-    } catch {
-      const content = readFileSync(statePath, 'utf-8')
-      console.log(`    ${content}`)
-    }
+  const coordRoot = join(PROJECT_ROOT, '.orchestration')
+  const sessions = existsSync(coordRoot)
+    ? readdirSync(coordRoot, { withFileTypes: true })
+        .filter(d => d.isDirectory() && !d.name.startsWith('.'))
+        .map(d => d.name)
+    : []
+
+  if (sessions.length === 0) {
+    log.dim('当前无活跃 session（.orchestration/ 下无 session 目录）')
   } else {
-    log.dim('当前无活跃工作流')
+    for (const session of sessions) {
+      log.dim(`  ▸ ${session}`)
+      const sessionDir = join(coordRoot, session)
+      const workers = readdirSync(sessionDir, { withFileTypes: true })
+        .filter(d => d.isDirectory())
+      for (const worker of workers) {
+        const statusFile = join(sessionDir, worker.name, 'status.md')
+        if (!existsSync(statusFile)) continue
+        const raw = readFileSync(statusFile, 'utf-8')
+        const match = raw.match(/^\s*-\s*State:\s*(\S+)/m)
+        log.dim(`      ${worker.name}: ${match ? match[1] : '?'}`)
+      }
+    }
   }
 
   // ── 产物统计 ──
-  log.step('产物统计')
+  log.step('协调产物统计')
 
-  const sharedDir = join(PROJECT_ROOT, '.dev-agents/shared')
-  const counts = {
-    designs: countFiles(join(sharedDir, 'designs'), '.md'),
-    tasks: countFiles(join(sharedDir, 'tasks'), '.md'),
-    reviews: countFiles(join(sharedDir, 'reviews'), '.md'),
+  let handoffs = 0
+  let tasks = 0
+  for (const session of sessions) {
+    const sessionDir = join(coordRoot, session)
+    const workers = readdirSync(sessionDir, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+    for (const worker of workers) {
+      const wd = join(sessionDir, worker.name)
+      if (existsSync(join(wd, 'handoff.md'))) handoffs += 1
+      if (existsSync(join(wd, 'task.md'))) tasks += 1
+    }
   }
-
-  log.dim(`设计文档: ${counts.designs} 个`)
-  log.dim(`实现计划: ${counts.tasks} 个`)
-  log.dim(`审查报告: ${counts.reviews} 个`)
+  log.dim(`session 数: ${sessions.length}`)
+  log.dim(`task.md 数: ${tasks}`)
+  log.dim(`handoff.md 数: ${handoffs}`)
 
   // ── 技能清单 ──
   log.step('已安装技能')
 
-  const workflowDir = join(PROJECT_ROOT, 'skills/max/workflow')
+  const workflowDir = join(PROJECT_ROOT, 'skills/workflow')
   if (existsSync(workflowDir)) {
     const skills = readdirSync(workflowDir).filter(d => {
       return existsSync(join(workflowDir, d, 'SKILL.md'))
@@ -77,13 +89,4 @@ export async function status(ctx) {
   }
 
   console.log('')
-}
-
-function countFiles(dir, ext) {
-  if (!existsSync(dir)) return 0
-  try {
-    return readdirSync(dir).filter(f => f.endsWith(ext)).length
-  } catch {
-    return 0
-  }
 }

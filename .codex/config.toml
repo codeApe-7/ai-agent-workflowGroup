@@ -1,0 +1,93 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# aiGroup — Codex 本地配置
+#
+# 用法：
+# - 拷贝到 ~/.codex/config.toml 作为全局默认
+# - 或保留在项目根 .codex/config.toml 作为项目级配置
+#
+# 文档参考：
+# - https://developers.openai.com/codex/config-reference
+# - https://developers.openai.com/codex/multi-agent
+
+# ---------- Runtime ----------
+# model / model_provider 留空，使用 Codex CLI 当前默认，除非明确要固定版本
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "live"
+
+# ---------- Persistent Instructions ----------
+# 持久指令在每次 prompt 后追加（与 model_instructions_file 替换不同）
+persistent_instructions = """
+Follow project AGENTS.md as the source of truth.
+Load skills by task intent, not by role ownership.
+aiGroup has retired the legacy three-role model (ella/jarvis/kyle) — do not delegate by those names.
+Use the multi-agent roles declared below for exploration, planning, implementation, review, build fixing, and docs research.
+"""
+
+# ---------- MCP Servers ----------
+# aiGroup 项目级精简基线。遵守 docs/rules/performance.md：
+# 单项目启用 MCP < 10，活跃工具 < 80；重型服务器放到用户级配置按需叠加。
+[mcp_servers.github]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+startup_timeout_sec = 30
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp@latest"]
+startup_timeout_sec = 30
+
+[mcp_servers.memory]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-memory"]
+startup_timeout_sec = 30
+
+[mcp_servers.sequential-thinking]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+startup_timeout_sec = 30
+
+# 按需取消注释：
+# [mcp_servers.playwright]
+# command = "npx"
+# args = ["-y", "@playwright/mcp@latest", "--extension"]
+# startup_timeout_sec = 30
+#
+# [mcp_servers.exa]
+# url = "https://mcp.exa.ai/mcp"
+
+# ---------- Features ----------
+[features]
+multi_agent = true
+
+# ---------- Profiles ----------
+# 切换：codex -p <name>
+[profiles.strict]
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+web_search = "cached"
+
+[profiles.yolo]
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+web_search = "live"
+
+# ---------- Codex 原生 Persona ----------
+# 仅保留 Codex 自身需要"切换 persona"的 3 个场景。
+# 其他工作（planning / implementation / build-fixing）由 Codex 主对话 + 加载对应 skill 完成。
+[agents]
+max_threads = 3
+max_depth = 1
+
+[agents.explorer]
+description = "Read-only codebase explorer for gathering evidence before changes are proposed."
+config_file = "agents/explorer.toml"
+
+[agents.reviewer]
+description = "Code, security, and test-gap reviewer. Prioritizes correctness and regressions."
+config_file = "agents/reviewer.toml"
+
+[agents.docs_researcher]
+description = "API, framework, and release-note verification via documentation sources."
+config_file = "agents/docs-researcher.toml"

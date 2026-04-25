@@ -4,7 +4,7 @@
 META:
   type: code-review
   date: YYYY-MM-DD
-  author: Kyle
+  author: code-reviewer
   stage: Stage 1 / Stage 2 / 整体审查
 -->
 
