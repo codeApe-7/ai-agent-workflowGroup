@@ -5,33 +5,31 @@ description: 当有实现计划且任务相互独立时使用。使用 Agent 工
 
 # 子代理驱动开发
 
-使用 **Agent 工具** 按实现计划逐任务派遣新的隔离子代理（Jarvis）执行，每个任务完成后由审查子代理（Kyle）进行两阶段审查。
+按实现计划逐任务派遣独立子代理执行（实现 + 测试），每任务完成后由 `code-reviewer` 执行两阶段审查。
 
 ## 关键概念：真正的子代理 vs 角色切换
 
 ```
 ❌ 错误方式（角色切换）：
-   主会话 在当前对话里"假装变成 Jarvis"然后开始写代码
-   → 共享上下文、无隔离、主会话 的项目管理视角被污染
+   主会话在当前对话里"假装变成实现 agent"然后开始写代码
+   → 共享上下文、无隔离、协调视角被污染
 
 ✅ 正确方式（Agent 工具派遣）：
-   主会话 调用 Agent({subagent_type: "jarvis", ...}) → 创建独立子代理
-   → 子代理有自己的上下文、技能和门控
-   → 子代理完成后返回结果给 主会话 → 主会话 继续协调
+   主会话调用 Agent({ subagent_type: "tdd-guide", ... }) → 创建独立子代理
+   → 子代理有自己的上下文与工具权限
+   → 子代理完成后返回结果 → 主会话继续协调
 ```
 
-**铁律：主会话 自己绝不写代码。所有开发/审查工作必须通过 Agent 工具委派给隔离的子代理（`.claude/agents/{ella,jarvis,kyle}.md`）。**
+**铁律：主会话不亲自写代码 / 做审查 / 跑测试。所有这些工作通过 Agent 工具委派给隔离的子代理（详见 `.claude/agents/`）。**
 
 ## 铁律
 
-```
-1. 使用 Agent 工具派遣，不是角色切换。主会话 不写代码。
+1. 使用 Agent 工具派遣，不是角色切换
 2. 每个任务一个全新子代理，禁止复用上下文
-3. 两阶段审查顺序不可颠倒：先规格符合性，再代码质量
-4. 审查不通过 = 修复 + 重新审查，不得跳过
+3. 两阶段审查顺序不可颠倒：先规格符合性（Stage 1），再代码质量（Stage 2）
+4. 审查不通过 = 修复 + 重审，不得跳过
 5. 禁止并行派遣多个实现子代理（避免冲突）
-6. 不让子代理自己读计划文件，由 主会话 提取任务全文注入 prompt
-```
+6. 不让子代理自己读计划文件，由主会话提取任务全文注入 prompt
 
 ## 流程
 
@@ -40,171 +38,136 @@ description: 当有实现计划且任务相互独立时使用。使用 Agent 工
 
   ┌──────────── 每个任务循环 ────────────┐
   │                                       │
-  │  Agent 工具派遣 Jarvis（含完整任务）   │
+  │  Agent 派遣实现 agent（含完整任务）   │
   │         ↓                             │
-  │  Jarvis 实现、测试、提交、自检         │
+  │  实现 agent：实现 + 测试 + 自检       │
   │         ↓                             │
-  │  Agent 工具派遣 Kyle：规格符合性审查   │
-  │    ├─ 不通过 → Agent 派遣 Jarvis 修复 │
-  │    └─ 通过 ↓                          │
-  │  Agent 工具派遣 Kyle：代码质量审查     │
-  │    ├─ 不通过 → Agent 派遣 Jarvis 修复 │
-  │    └─ 通过 ↓                          │
+  │  Agent 派遣 code-reviewer             │
+  │  （单次响应输出 Stage 1 + Stage 2）   │
+  │    ├─ Stage 1 不通过 → 派遣实现修复  │
+  │    └─ Stage 1 通过 ↓                  │
+  │    ├─ Stage 2 不通过 → 派遣实现修复  │
+  │    └─ Stage 2 通过 ↓                  │
   │  标记任务完成                          │
   │                                       │
   └───────────────────────────────────────┘
 
-所有任务完成 → 推进到 testing 阶段
+所有任务完成 → 进入测试 / 文档更新 phase
 ```
 
-## 派遣 Jarvis 实现子代理 — 具体操作
+## 派遣实现子代理
 
-主会话 必须使用 **Agent 工具** 派遣 Jarvis。以下是具体的调用方式：
+按任务类型选择 agent：
 
-### 步骤 1：准备 prompt
+| 任务类型 | 派遣 |
+|---------|------|
+| TDD 流程（先写失败测试）| `tdd-guide` |
+| 构建 / 类型 / 依赖错误 | `build-error-resolver` |
+| 死代码清理 / 重构 | `refactor-cleaner` |
+| 文档更新 | `doc-updater` |
+| 关键浏览器路径 | `e2e-runner` |
+| 其他实现工作 | 主对话直接做（不需要切 agent） |
 
-Jarvis 子代理已在 `.claude/agents/jarvis.md` 里定义了身份、门控、必读技能和报告规范，prompt 只需注入**任务本身和上下文**：
+### Prompt 模板
+
+agent 身份 / 工具 / 输出格式已在 `.claude/agents/<name>.md` frontmatter 注入，prompt 只写**任务**和**上下文**：
 
 ```
-prompt 模板：
-
 ## 任务
-[此处粘贴从实现计划中提取的完整任务文本，包含：
-- 要修改的文件和路径
-- 完整代码
-- 测试代码
-- 验证命令和预期输出]
+[从实现计划中粘贴该任务全文：要改的文件 / 完整代码 / 测试 / 验证命令]
 
 ## 上下文
 - 该任务在整体计划中的位置：第 N/M 个任务
-- 设计文档路径：.orchestration/<session>/architect/YYYY-MM-DD-xxx-design.md
-- 实现计划路径：.orchestration/<session>/planner/YYYY-MM-DD-xxx-plan.md
+- session：<session 名>
+- 设计文档路径：.orchestration/<session>/architect/handoff.md
+- 实现计划路径：.orchestration/<session>/planner/handoff.md
 
-## 工作规范
-- 遵循 TDD：先写失败测试 → 确认失败 → 写最小实现 → 确认通过 → 提交
-- 参照实现计划中的验收条件逐项确认
+## 验收
+- 测试全绿（命令 + 输出）
+- 改动文件在 handoff 中列出
 ```
 
-### 步骤 2：调用 Agent 工具
+### 处理返回
+
+| 状态 | 主会话动作 |
+|------|-----------|
+| **DONE** | 派 `code-reviewer` 审查 |
+| **DONE_WITH_CONCERNS** | 先评估疑虑再决定 |
+| **NEEDS_CONTEXT** | 补上下文，重新派遣 |
+| **BLOCKED** | 评估阻塞原因（见下） |
+
+**BLOCKED 处理**：
+
+1. 上下文不足 → 补 + 重派
+2. 任务太大 → 拆小再派
+3. 计划本身错 → 回到 `planner` 修计划
+4. **永远不要**忽略阻塞或强推
+
+## 派遣审查子代理
+
+### `code-reviewer`（双阶段一次完成）
+
+agent 在 `.claude/agents/code-reviewer.md` 已规定输出格式包含 Stage 1 + Stage 2，prompt 只写**审查基准**和**对象**：
 
 ```
 Agent({
-  subagent_type: "jarvis",
-  description: "Jarvis: [任务简述]",
-  prompt: "[上面组装好的 prompt]"
+  subagent_type: "code-reviewer",
+  description: "Code review: [功能名]",
+  prompt: `
+## 审查基准（Stage 1 用）
+[粘贴实现计划中该任务的完整规格]
+
+## 审查对象
+- 实现 agent 报告的变更文件清单
+- session：<session 名>
+- 设计文档：.orchestration/<session>/architect/handoff.md
+
+主会话会把你的响应抄进 .orchestration/<session>/code-reviewer/handoff.md。
+按 agent frontmatter 规定的格式输出 Stage 1 + Stage 2 + Verdict。
+  `
 })
 ```
 
-### 步骤 3：处理返回结果
+### 安全敏感时追加 `security-reviewer`
 
-子代理完成后会返回结果给 主会话。主会话 根据状态处理：
-
-| 状态 | 主会话 的处理方式 |
-|------|-------------|
-| **DONE** | 进入审查：Agent 工具派遣 Kyle |
-| **DONE_WITH_CONCERNS** | 先评估疑虑，再决定是否审查 |
-| **NEEDS_CONTEXT** | 补充上下文，重新 Agent 派遣 |
-| **BLOCKED** | 评估阻塞原因（见下文） |
-
-### BLOCKED 处理
-
-1. 上下文问题 → 补充上下文，重新派遣
-2. 任务太大 → 拆分为更小的任务
-3. 计划有问题 → 上报给用户讨论
-4. **永远不要**忽略阻塞或强制重试
-
-## 派遣 Kyle 审查子代理 — 具体操作
-
-Kyle 子代理已在 `.claude/agents/kyle.md` 里定义了身份、门控、两阶段审查流程和报告模板，prompt 只需注入**审查基准和对象**：
-
-### Stage 1：规格符合性审查
+涉及 auth / 支付 / PII / 外部输入 / 加密时，追加：
 
 ```
 Agent({
-  subagent_type: "kyle",
-  description: "Kyle: Stage 1 规格审查 - [功能名]",
-  prompt: "
-## Stage 1：规格符合性审查
-
-审查基准（实现计划规格）：
-[此处粘贴实现计划中该任务的完整规格]
-
-Jarvis 修改的文件：
-[此处列出 Jarvis 报告中的变更文件列表]
-
-设计文档路径：.orchestration/<session>/architect/YYYY-MM-DD-xxx-design.md
-
-### 检查要求
-- 代码是否实现了计划的每条要求？
-- 多做了什么？（未要求的功能 = 需要移除）
-- 少做了什么？（遗漏的需求 = 需要补充）
-
-## 输出
-审查报告保存到 `.orchestration/<session>/code-reviewer/YYYY-MM-DD-xxx-review.md`
-结论：通过 / 不通过（附具体问题清单）
-  "
-})
-```
-
-### Stage 2：代码质量审查（Stage 1 通过后）
-
-```
-Agent({
-  subagent_type: "kyle",
-  description: "Kyle: Stage 2 质量审查 - [功能名]",
-  prompt: "
-## Stage 2：代码质量审查（Stage 1 已通过）
-
-代码变更的 git diff：
-```bash
-git diff HEAD~1
-```
-
-### 检查要求
-- 代码是否干净、可读、可维护？
-- 有无安全隐患？
-- 有无性能问题？
-- 测试是否充分？
-- 命名是否清晰？
-
-## 输出
-在 `.orchestration/<session>/code-reviewer/` 的审查报告中追加 Stage 2 结论
-结论：通过 / 不通过（附问题清单和修复建议）
-  "
+  subagent_type: "security-reviewer",
+  description: "Security review: [功能名]",
+  prompt: "[审查范围 + git diff 引用]"
 })
 ```
 
 ## 审查不通过的修复循环
 
 ```
-Kyle Stage 1 不通过
-  → 主会话 提取问题清单
-  → Agent 派遣新的 Jarvis 子代理修复
-  → Agent 派遣新的 Kyle 重审 Stage 1
+Stage 1 不通过
+  → 主会话提取问题清单
+  → Agent 派遣实现 agent 修复
+  → Agent 派遣新 code-reviewer 重审
 
-Kyle Stage 2 不通过
-  → 主会话 提取问题清单
-  → Agent 派遣新的 Jarvis 子代理修复
-  → Agent 派遣新的 Kyle 重审 Stage 2
+Stage 2 不通过
+  → 同上
 ```
 
-**每次修复和重审都是新的 Agent 调用**，不复用之前的子代理。
+**每次修复和重审都是新的 Agent 调用**——不复用之前的子代理。
 
 ## Red Flags — 停下来
 
 | 信号 | 行动 |
 |------|------|
-| 主会话 自己开始写代码 | 停，使用 Agent 工具派遣 Jarvis |
-| 在当前对话中"变成 Jarvis" | 停，这是角色切换不是子代理 |
-| 在 Stage 1 通过前开始 Stage 2 | 停，先完成规格审查 |
-| 审查发现问题但跳过了 | 停，Jarvis 修复后重审 |
+| 主会话自己开始写代码 | 停，派遣实现 agent |
+| "在当前对话中变成 X agent" | 停，这是角色切换不是子代理 |
+| Stage 1 通过前开始 Stage 2 | 停，按 agent 输出格式顺序 |
+| 审查发现问题但跳过 | 停，修复后重审 |
 | 同时派遣多个实现子代理 | 停，一次只能一个 |
-| Jarvis 报告 BLOCKED 但继续强推 | 停，评估阻塞原因 |
-| 没有实现计划就开始执行 | 停，先完成 writing-plans |
+| 实现 agent 报告 BLOCKED 但继续强推 | 停，评估阻塞原因 |
+| 没有实现计划就开始执行 | 停，先 `planner` 出计划 |
 
-## 关联技能
+## 关联
 
-- **writing-plans** — 产出实现计划（本技能的输入）
-- **testing** — 测试验证阶段（本技能完成后的下一阶段）
-- **verification-before-completion** — Jarvis 每个任务完成时必须验证
-- **systematic-debugging** — Jarvis 遇到 Bug 时使用
+- 输入：`writing-plans` / `planner` 产出的实现计划
+- 之后：测试验证 / 文档更新 phase
+- 横切：`verification-before-completion` / `systematic-debugging`
