@@ -14,6 +14,7 @@
 | [security.md](security.md) | 安全清单、密钥管理、应急响应 |
 | [performance.md](performance.md) | MCP / tool 预算、上下文卫生、长任务拆分 |
 | [hooks.md](hooks.md) | Hooks 使用规则（Claude 自动 / Codex 手动） |
+| [entropy.md](entropy.md) | 熵管理三条 Golden Rule + 沉淀义务 |
 
 ## 语言专项（按栈加载）
 
