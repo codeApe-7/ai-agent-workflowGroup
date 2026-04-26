@@ -133,7 +133,17 @@
       "Bash(echo \"post-edit=$?\" echo \"\" echo \"=== 残留 8 阶段管道 / Cline / Phase 4 / 死引用 ===\" grep -nE \"Phase 4|Cline Memory|memory/active|memory/project|memory/system|backend-engineer|frontend-engineer|test-runner\\\\b|skill-placement|QUALITY_SCORE|tech-debt|steering-loop\" README.md)",
       "Bash(echo \"post-edit=$?\" echo \"\" echo \"=== scaffold 模拟（看语言规则 + commands 都装上）===\" node --input-type=module -e \" import { scaffold } from './cli/utils/scaffold.mjs'; const r = scaffold\\(process.cwd\\(\\), '/tmp/aig-rules-' + Date.now\\(\\), { targets: ['claude','codex'], overwrite: true }\\); for \\(const s of r.sections\\) console.log\\(' •', s.name, ':', s.count\\); console.log\\('总文件:', r.totalCopied\\); \")",
       "Bash(awk '{print $2}')",
-      "Bash(npm version *)"
+      "Bash(npm version *)",
+      "Bash(echo \"stop=$?\" echo \"\" echo \"=== 行数变化 ===\" wc -l skills/subagent-driven-development/SKILL.md skills/writing-plans/SKILL.md skills/finishing-a-development-branch/SKILL.md skills/entropy-management/SKILL.md)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(mkdir -p /tmp/superpowers)",
+      "Bash(git clone *)",
+      "Bash(cp -r /tmp/superpowers/skills/__TRACKED_VAR__ D:/www/ai-agent-workflowGroup/skills/__TRACKED_VAR__)",
+      "Bash(cp /tmp/superpowers/LICENSE D:/www/ai-agent-workflowGroup/skills/SUPERPOWERS-LICENSE)",
+      "Bash(grep -E '^\\(writing-plans|systematic-debugging|verification-before-completion|finishing-a-development-branch|brainstorming|executing-plans|receiving-code-review|requesting-code-review|using-git-worktrees|writing-skills\\)$')",
+      "Bash(grep -E '^\\(brainstorming|executing-plans|finishing-a-development-branch|receiving-code-review|requesting-code-review|systematic-debugging|using-git-worktrees|verification-before-completion|writing-plans|writing-skills\\)$')",
+      "Bash(grep -E '^\\(package\\\\.json|\\\\.npmignore|\\\\.npmrc\\)$')",
+      "Bash(npm config *)"
     ]
   }
 }
