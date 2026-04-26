@@ -1,13 +1,13 @@
 # Rules
 
 > 短小、强制、可勾选的规则集。Skills 告诉你"怎么做"，Rules 告诉你"必须做什么"。
-> 通用规则按领域切分（agents / coding-style / git / testing / security / performance / hooks），语言专项按栈分目录（采用 ECC 规则原版）。
+> 通用规则按领域切分（agents / coding-style / git / testing / security / performance / hooks），语言专项按栈分目录。
 
 ## 通用规则（所有项目）
 
 | 文件 | 主题 |
 |------|------|
-| [agents.md](agents.md) | Agent 派遣规则（采用 ECC zh） |
+| [agents.md](agents.md) | Agent 派遣规则 |
 | [coding-style.md](coding-style.md) | 编码风格、命名、错误处理、中文注释 |
 | [git-workflow.md](git-workflow.md) | Conventional Commits、Git 安全 |
 | [testing.md](testing.md) | TDD、覆盖率、测试结构 |
@@ -15,7 +15,7 @@
 | [performance.md](performance.md) | MCP / tool 预算、上下文卫生、长任务拆分 |
 | [hooks.md](hooks.md) | Hooks 使用规则（Claude 自动 / Codex 手动） |
 
-## 语言专项（按栈加载，采用 ECC 规则原版）
+## 语言专项（按栈加载）
 
 每个语言目录含 5 个标准维度：`coding-style.md` / `patterns.md` / `testing.md` / `security.md` / `hooks.md`。`web` 额外含 `design-quality.md` / `performance.md`。
 

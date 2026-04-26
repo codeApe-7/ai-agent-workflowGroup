@@ -8,7 +8,7 @@ META:
   design: .orchestration/<session>/architect/xxx-design.md
 -->
 
-> **执行方式**：推荐使用 subagent-driven-development 技能按任务派遣子代理执行。
+> **执行方式**：按 `docs/rules/agents.md` 派遣子代理执行（每任务独立上下文，`code-reviewer` 双阶段审查）。
 > 步骤使用 checkbox (`- [ ]`) 语法追踪进度。
 
 **目标**：[一句话描述构建什么]

@@ -5,15 +5,20 @@
     {
       "id": "workflow",
       "kind": "skills",
-      "description": "跨阶段工作流 skill — 需求工程、规划、调试、文档、验证、收尾。",
+      "description": "跨阶段工作流 skill — 需求工程、规划、调试、审查、worktree、文档、验证、收尾。",
       "paths": [
         "skills/requirement-engineering",
+        "skills/brainstorming",
         "skills/writing-plans",
-        "skills/subagent-driven-development",
+        "skills/executing-plans",
+        "skills/using-git-worktrees",
         "skills/systematic-debugging",
+        "skills/requesting-code-review",
+        "skills/receiving-code-review",
         "skills/documentation",
         "skills/verification-before-completion",
         "skills/finishing-a-development-branch",
+        "skills/writing-skills",
         "skills/entropy-management"
       ],
       "targets": [
@@ -178,7 +183,7 @@
     {
       "id": "agents-core",
       "kind": "agents",
-      "description": "核心 agent — 对齐 ECC 派遣规则（docs/rules/agents.md）。",
+      "description": "核心 agent — 对齐 docs/rules/agents.md 派遣规则。",
       "agents": [
         "planner",
         "architect",

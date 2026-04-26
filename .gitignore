@@ -12,5 +12,5 @@
 # ── Orchestration 协调产物 ──
 # 日志：所有事件日志
 .orchestration/.logs/events-*.jsonl
-# ECC 参考仓库（克隆作为对照参考，不入库）
+# 外部参考仓库克隆，不入库
 everything-claude-code/

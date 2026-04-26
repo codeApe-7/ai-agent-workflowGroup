@@ -83,7 +83,7 @@ agent 体系**两端共享一份**——单一 manifest 驱动的源池 + 选装
 | `init-architect` | 项目专属（`/init-project` 用） |
 | `get-current-datetime` | 工具 agent |
 
-> 派遣规则采用 ECC 风格 `docs/rules/agents.md`。详细 handoff 内容、并行场景、反模式见 `docs/rules/agents.md`。
+> 详细 handoff 内容、并行场景、反模式见 `docs/rules/agents.md`。
 
 ### 可选扩展模块（按需装）
 
@@ -267,11 +267,9 @@ aiGroup/
 └── .codex-plugin/plugin.json
 ```
 
-## Harness Engineering
+## Agent 架构
 
-```
-Agent = Model + Harness
-```
+Agent 行为由四层机制约束：行动前的提示引导、行动中的确定性检查、行动后的 AI 审查，以及防止长期漂移的熵管理。
 
 | 层级 | 机制 | 实现 |
 |------|------|------|

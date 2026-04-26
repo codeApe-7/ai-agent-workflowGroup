@@ -29,25 +29,29 @@ argument-hint: <任务名>
 - **worker 目录**：`.orchestration/<session>/<worker>/`
 - **产物**：主会话把 agent 响应写入 `handoff.md`，然后 `session.cjs set-status <session> <worker> completed`
 
-| # | Phase | 负责 agent / skill | worker 目录 |
-|---|-------|--------------------|-------------|
-| 1 | 需求收集 | 主会话 + `skills/requirement-engineering` | `.orchestration/<session>/architect/` (requirements.md) |
-| 2 | 需求验证 | 主会话 + `skills/requirement-engineering` | 同上，追加验证结论 |
-| 3 | 方案设计 | `architect` | `.orchestration/<session>/architect/handoff.md` |
-| 4 | 任务拆解 | `planner` | `.orchestration/<session>/planner/handoff.md` |
-| 5 | 实施开发（TDD） | `tdd-guide` | `.orchestration/<session>/tdd-guide/handoff.md` |
-| 6 | 测试验证 | `code-reviewer`（安全敏感加 `security-reviewer`、`e2e-runner` 或 `rust-reviewer` 等） | `.orchestration/<session>/code-reviewer/handoff.md` |
-| 7 | 文档更新 | 主会话（必要时派实现 agent 协助） | 直接改 docs/；在 session README 留笔记 |
-| 8 | 分支收尾 | 主会话 + `skills/finishing-a-development-branch` | 在 session README 总结 |
+| # | Phase | 主导 skill | 负责 agent | worker 目录 |
+|---|-------|-----------|-----------|-------------|
+| 1 | 需求收集 | `brainstorming`（前段） | 主会话 | `.orchestration/<session>/architect/requirements.md` |
+| 2 | 需求验证 | `brainstorming`（中段） | 主会话 | 同上，追加验证结论 |
+| 3 | 方案设计 | `brainstorming`（终段） | `architect` | `.orchestration/<session>/architect/handoff.md` |
+| 4 | 任务拆解 | `writing-plans` | `planner` | `.orchestration/<session>/planner/handoff.md` |
+| 4→5 桥 | 隔离工作区 | `using-git-worktrees` | 主会话执行 git | session `README.md` 记录 worktree 路径 |
+| 5 | 实施开发 | subagent 派遣（推荐）/ `executing-plans` | `tdd-guide` 或语言专项 reviewer | `.orchestration/<session>/<agent>/handoff.md` |
+| 6a | 审查发起 | `requesting-code-review` | `code-reviewer`（敏感场景加 `security-reviewer` / `e2e-runner` / 语言专项 reviewer） | `.orchestration/<session>/code-reviewer/request.md` |
+| 6b | 审查反馈处理 | `receiving-code-review` | 主会话逐条决议 | `.orchestration/<session>/code-reviewer/handoff.md` |
+| 7 | 文档更新 | （无强制 skill） | `doc-updater` 或主会话 | 直接改 docs/；在 session README 留笔记 |
+| 8 | 分支收尾 | `finishing-a-development-branch` | 主会话 | 在 session README 总结 |
+
+> **人工 checkpoint**：phase 4 末（计划批准）、phase 5 起点（实施模式选择）、phase 8（集成方式 4 选 1 / discard 确认）、phase 6b 审查分歧——orchestrator 暂停等用户决策。详见 `docs/workflow-pipeline.md`。
 
 ## 裁剪示例
 
 | 任务类型 | 建议 phases |
 |---------|------------|
-| 纯 bugfix | 4 → 5 → 6 |
-| 小功能增补 | 3 → 4 → 5 → 6 |
-| 新模块 / 架构决策 | 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 |
-| 重构 | 3 → 4 → 5 → 6 |
+| 纯 bugfix | 4 → 5 → 6a → 6b |
+| 小功能增补 | 3 → 4 → (4→5 桥) → 5 → 6a → 6b |
+| 新模块 / 架构决策 | 1 → 2 → 3 → 4 → (4→5 桥) → 5 → 6a → 6b → 7 → 8 |
+| 重构 | 3 → 4 → (4→5 桥) → 5 → 6a → 6b |
 | 纯文档 | 7（直接做，不用走 session） |
 
 ## 状态真相源
@@ -57,7 +61,7 @@ argument-hint: <任务名>
 ## 横切 skill（任何 phase 可触发）
 
 - `skills/systematic-debugging`（调试时）
-- `skills/verification-before-completion`（声称完成前）
+- `skills/verification-before-completion`（强制触发：phase 5 末 / 6b 末 / 8 入前）
 - `skills/entropy-management`（感知到漂移时）
 
 ## 不启动 session 的情况

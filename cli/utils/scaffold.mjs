@@ -27,7 +27,7 @@ export const BASE_FILES = [
   'manifests/install-modules.json',
 ]
 
-/** 语言专项规则目录（采用 ECC 原版，按需复制整个目录） */
+/** 语言专项规则目录（按需复制整个目录） */
 export const RULES_LANGUAGE_DIRS = [
   'docs/rules/cpp',
   'docs/rules/csharp',

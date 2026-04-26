@@ -117,7 +117,7 @@ export async function init(ctx) {
   log.step('安装清单')
   log.dim('基础组件（必装）:')
   log.dim('  • CLAUDE.md + AGENTS.md（双端入口）')
-  log.dim('  • docs/（rules/agents（ECC 派遣）+ rules/<lang>（13 语言）+ workflow-pipeline + red-flags）')
+  log.dim('  • docs/（rules/agents（派遣规则）+ rules/<lang>（13 语言）+ workflow-pipeline + red-flags）')
   log.dim('  • scripts/hooks/（dispatcher + checks）+ scripts/orchestration/（session.cjs）')
   log.dim('  • manifests/install-modules.json（跨端清单）')
   log.dim('  • .orchestration/<session>/（产物工作区）')

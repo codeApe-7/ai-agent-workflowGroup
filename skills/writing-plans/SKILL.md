@@ -1,78 +1,76 @@
 ---
 name: writing-plans
-description: 当你有了设计方案或需求规格，在动手写代码之前使用。将设计转化为可执行的分步实现计划。
+description: Use when you have a spec or requirements for a multi-step task, before touching code
 ---
 
-# 编写实现计划
+# Writing Plans
 
-## 概述
+## Overview
 
-编写详尽的实现计划，假设执行者对代码库零上下文、品味可疑、测试能力薄弱。
-记录他们需要知道的一切：每个任务要动哪些文件、完整代码、测试方法、可能需要查阅的文档、如何验证。
-把整个计划拆成小口的任务。DRY、YAGNI、TDD、频繁提交。
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
 
-假设执行者是有能力的开发者，但对项目的工具链和问题域几乎一无所知，测试设计能力不强。
+Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
-**上下文**：此技能在需求工程 / 方案设计完成后调用，由 `planner` agent 或主会话使用。
+**Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
-**产物**：主会话把 planner 响应写入 `.orchestration/<session>/planner/handoff.md`。
+**Context:** This should be run in a dedicated worktree (created by brainstorming skill).
 
-## 范围检查
+**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
+- (User preferences for plan location override this default)
 
-如果设计方案覆盖了多个独立子系统，应该在需求工程阶段就拆分为子项目。
-如果没有拆分，建议分成独立的计划——每个子系统一个。每个计划应能独立产出可工作、可测试的软件。
+## Scope Check
 
-## 文件结构
+If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
 
-在定义任务之前，先列出将创建或修改的文件，以及每个文件的职责。这是锁定分解决策的地方。
+## File Structure
 
-- 设计边界清晰、接口定义良好的单元，每个文件有一个明确职责
-- 优先选择小而聚焦的文件，而非做太多事情的大文件
-- 一起变更的文件应放在一起。按职责拆分，而非按技术层拆分
-- 在现有代码库中遵循已有模式
+Before defining tasks, map out which files will be created or modified and what each one is responsible for. This is where decomposition decisions get locked in.
 
-## 任务粒度
+- Design units with clear boundaries and well-defined interfaces. Each file should have one clear responsibility.
+- You reason best about code you can hold in context at once, and your edits are more reliable when files are focused. Prefer smaller, focused files over large ones that do too much.
+- Files that change together should live together. Split by responsibility, not by technical layer.
+- In existing codebases, follow established patterns. If the codebase uses large files, don't unilaterally restructure - but if a file you're modifying has grown unwieldy, including a split in the plan is reasonable.
 
-**每一步是一个动作（2-5 分钟）：**
+This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
 
-- "编写失败测试" — 一步
-- "运行测试确认失败" — 一步
-- "编写最小代码使测试通过" — 一步
-- "运行测试确认通过" — 一步
-- "提交" — 一步
+## Bite-Sized Task Granularity
 
-## 计划文档头
+**Each step is one action (2-5 minutes):**
+- "Write the failing test" - step
+- "Run it to make sure it fails" - step
+- "Implement the minimal code to make the test pass" - step
+- "Run the tests and make sure they pass" - step
+- "Commit" - step
 
-**每个计划必须以此头部开始：**
+## Plan Document Header
+
+**Every plan MUST start with this header:**
 
 ```markdown
-# [功能名] 实现计划
+# [Feature Name] Implementation Plan
 
-> **执行方式**：推荐使用 subagent-driven-development 技能按任务派遣子代理执行。
-> 步骤使用 checkbox (`- [ ]`) 语法追踪进度。
+> **For agentic workers:** Dispatch subagents per the rules in `docs/rules/agents.md` (recommended), or use the `executing-plans` skill for inline batch execution. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**目标**：[一句话描述构建什么]
+**Goal:** [One sentence describing what this builds]
 
-**架构**：[2-3 句话描述方案]
+**Architecture:** [2-3 sentences about approach]
 
-**技术栈**：[关键技术/库]
-
-**设计文档**：`.orchestration/<session>/architect/handoff.md`
+**Tech Stack:** [Key technologies/libraries]
 
 ---
 ```
 
-## 任务结构
+## Task Structure
 
 ````markdown
-### 任务 N：[组件名]
+### Task N: [Component Name]
 
-**文件：**
-- 新建：`exact/path/to/file.py`
-- 修改：`exact/path/to/existing.py:123-145`
-- 测试：`tests/exact/path/to/test.py`
+**Files:**
+- Create: `exact/path/to/file.py`
+- Modify: `exact/path/to/existing.py:123-145`
+- Test: `tests/exact/path/to/test.py`
 
-- [ ] **步骤 1：编写失败测试**
+- [ ] **Step 1: Write the failing test**
 
 ```python
 def test_specific_behavior():
@@ -80,87 +78,74 @@ def test_specific_behavior():
     assert result == expected
 ```
 
-- [ ] **步骤 2：运行测试确认失败**
+- [ ] **Step 2: Run test to verify it fails**
 
-运行：`pytest tests/path/test.py::test_name -v`
-预期：失败，提示 "function not defined"
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: FAIL with "function not defined"
 
-- [ ] **步骤 3：编写最小实现**
+- [ ] **Step 3: Write minimal implementation**
 
 ```python
 def function(input):
     return expected
 ```
 
-- [ ] **步骤 4：运行测试确认通过**
+- [ ] **Step 4: Run test to verify it passes**
 
-运行：`pytest tests/path/test.py::test_name -v`
-预期：通过
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: PASS
 
-- [ ] **步骤 5：提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add tests/path/test.py src/path/file.py
-git commit -m "feat: 添加某功能"
+git commit -m "feat: add specific feature"
 ```
 ````
 
-## 禁止占位符
+## No Placeholders
 
-每一步必须包含工程师需要的实际内容。以下是**计划失败**——永远不要写：
+Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:
+- "TBD", "TODO", "implement later", "fill in details"
+- "Add appropriate error handling" / "add validation" / "handle edge cases"
+- "Write tests for the above" (without actual test code)
+- "Similar to Task N" (repeat the code — the engineer may be reading tasks out of order)
+- Steps that describe what to do without showing how (code blocks required for code steps)
+- References to types, functions, or methods not defined in any task
 
-- "待定"、"TODO"、"之后实现"、"后续补充"
-- "添加适当的错误处理" / "添加验证" / "处理边界情况"
-- "为以上内容写测试"（没有实际测试代码）
-- "类似任务 N"（重复代码——执行者可能不按顺序读任务）
-- 描述做什么但不展示怎么做的步骤（代码步骤必须有代码块）
-- 引用了任何任务中未定义的类型、函数或方法
+## Remember
+- Exact file paths always
+- Complete code in every step — if a step changes code, show the code
+- Exact commands with expected output
+- DRY, YAGNI, TDD, frequent commits
 
-## 铁律
+## Self-Review
 
-```
-无占位符。无模糊步骤。无假设执行者会自行补全的内容。
-每一步必须有：精确文件路径、完整代码、精确命令和预期输出。
-```
+After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.
 
-## 自检
+**1. Spec coverage:** Skim each section/requirement in the spec. Can you point to a task that implements it? List any gaps.
 
-写完完整计划后，用新鲜的眼光对照设计方案检查：
+**2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
 
-1. **设计覆盖度**：逐条过设计方案中的需求/功能点。每条都能指向一个实现任务吗？列出任何遗漏
-2. **占位符扫描**：搜索上面"禁止占位符"中的模式。修正它们
-3. **类型一致性**：后续任务中使用的类型、方法签名、属性名是否与前面任务中的定义一致？
+**3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
 
-发现问题直接修正。如果发现设计需求没有对应任务，补上任务。
+If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
-## 执行交接
+## Execution Handoff
 
-保存计划后，向用户提供执行选项：
+After saving the plan, offer execution choice:
 
-> "计划已保存到 `.orchestration/<session>/planner/handoff.md`。推荐执行方式：
->
-> **子代理驱动（推荐）** — 主会话按任务派遣实现 agent（如 `tdd-guide`）执行，每任务独立上下文，`code-reviewer` 双阶段审查
->
-> 确认后开始执行？"
+**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**
 
-**如果选择子代理驱动：**
-- 加载 `subagent-driven-development` 技能
-- 每任务派遣新的实现 agent + `code-reviewer` 双阶段审查
+**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
 
-## Red Flags — 停下来
+**2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
 
-| 信号 | 行动 |
-|------|------|
-| 没有设计方案就开始写计划 | 停下来，先完成需求工程 / architect 设计 |
-| 任务步骤没有代码块 | 不合格，补上完整代码 |
-| 出现"待定""TODO"等占位符 | 不合格，现在就确定内容 |
-| 计划没有引用设计文档 | 在计划头补上设计文档链接 |
-| 单个任务超过 10 分钟 | 任务太大，继续拆分 |
-| 步骤只描述不展示 | 不合格，补上代码和命令 |
+**Which approach?"**
 
-## 关联技能
+**If Subagent-Driven chosen:**
+- Dispatch subagents per `docs/rules/agents.md` (fresh subagent per task + two-stage review by `code-reviewer`)
 
-- **requirement-engineering** — 产出需求文档（本技能的输入）
-- **architecture-designer** — 方案 / ADR（本技能的另一输入）
-- **subagent-driven-development** — 执行本计划（本技能的输出）
-- **verification-before-completion** — 每个任务完成时验证
+**If Inline Execution chosen:**
+- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
+- Batch execution with checkpoints for review

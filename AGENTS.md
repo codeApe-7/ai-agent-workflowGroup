@@ -30,7 +30,7 @@ aiGroup is a **dual-harness AI team collaboration framework**. The main agent de
 
 | 模块 | 默认 | 数量 | 说明 |
 |------|------|------|------|
-| `agents-core` | ✅ | 12 | ECC 派遣规则的 10 个 + init-architect / get-current-datetime |
+| `agents-core` | ✅ | 12 | 派遣规则定义的 10 个 + init-architect / get-current-datetime |
 | `agents-quality` | ⏤ | 9 | 代码质量分析 |
 | `agents-language` | ⏤ | 16 | 各语言 reviewer / build-resolver |
 | `agents-ops` | ⏤ | 8 | 运维与工作流操作 |

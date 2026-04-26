@@ -1,112 +1,200 @@
 ---
 name: finishing-a-development-branch
-description: 当所有实现任务完成并通过审查后使用。验证测试、选择集成方式、清理工作环境。
+description: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup
 ---
 
-# 开发分支收尾
+# Finishing a Development Branch
 
-## 概述
+## Overview
 
-实现完成后的标准收尾流程：确保测试通过、选择集成方式、清理工作环境。
+Guide completion of development work by presenting clear options and handling chosen workflow.
 
-**核心原则**：有序收尾，不留烂尾分支。
+**Core principle:** Verify tests → Present options → Execute choice → Clean up.
 
-## 铁律
+**Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
-```
-测试未全部通过，不得进入集成选项。
-用户未确认集成方式，不得执行合并操作。
-```
+## The Process
 
-## 前置条件
+### Step 1: Verify Tests
 
-在使用本技能之前，必须满足：
-- 所有实现任务已完成
-- `code-reviewer` 双阶段审查（Stage 1 规格 + Stage 2 代码质量）已通过
-- 最终整体审查已通过
+**Before presenting options, verify tests pass:**
 
-## 流程
-
-### 第一步：运行全量测试
-
-运行项目的完整测试套件，确认所有测试通过。
-
-```
-运行：[项目测试命令]
-预期：所有测试通过，0 失败
-```
-
-**如果有测试失败**：
-- 不进入集成选项
-- 分析失败原因
-- 修复问题
-- 重新运行全量测试
-- 全部通过后才能继续
-
-### 第二步：展示变更摘要
-
-向用户展示：
-- 本次开发涉及的文件数量和主要变更
-- 测试覆盖情况
-- 关键技术决策摘要
-- 未解决的问题或已知限制（如有）
-
-### 第三步：提供集成选项
-
-向用户展示固定的四个选项：
-
-> **开发分支收尾，请选择集成方式：**
->
-> 1. **本地合并** — 合并到主分支（适合个人项目或小改动）
-> 2. **推送 PR** — 推送分支并创建 Pull Request（适合团队协作）
-> 3. **保留分支** — 暂不合并，保留分支供后续使用
-> 4. **丢弃分支** — 放弃本次开发（需输入 `discard` 确认）
-
-**等待用户选择。不替用户做决定。**
-
-### 第四步：执行用户选择
-
-**选项 1 — 本地合并：**
 ```bash
-git checkout main
+# Run project's test suite
+npm test / cargo test / pytest / go test ./...
+```
+
+**If tests fail:**
+```
+Tests failing (<N> failures). Must fix before completing:
+
+[Show failures]
+
+Cannot proceed with merge/PR until tests pass.
+```
+
+Stop. Don't proceed to Step 2.
+
+**If tests pass:** Continue to Step 2.
+
+### Step 2: Determine Base Branch
+
+```bash
+# Try common base branches
+git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
+```
+
+Or ask: "This branch split from main - is that correct?"
+
+### Step 3: Present Options
+
+Present exactly these 4 options:
+
+```
+Implementation complete. What would you like to do?
+
+1. Merge back to <base-branch> locally
+2. Push and create a Pull Request
+3. Keep the branch as-is (I'll handle it later)
+4. Discard this work
+
+Which option?
+```
+
+**Don't add explanation** - keep options concise.
+
+### Step 4: Execute Choice
+
+#### Option 1: Merge Locally
+
+```bash
+# Switch to base branch
+git checkout <base-branch>
+
+# Pull latest
+git pull
+
+# Merge feature branch
 git merge <feature-branch>
-```
-- 合并后确认无冲突
-- 合并后运行测试确认通过
 
-**选项 2 — 推送 PR：**
+# Verify tests on merged result
+<test command>
+
+# If tests pass
+git branch -d <feature-branch>
+```
+
+Then: Cleanup worktree (Step 5)
+
+#### Option 2: Push and Create PR
+
 ```bash
+# Push branch
 git push -u origin <feature-branch>
+
+# Create PR
+gh pr create --title "<title>" --body "$(cat <<'EOF'
+## Summary
+<2-3 bullets of what changed>
+
+## Test Plan
+- [ ] <verification steps>
+EOF
+)"
 ```
-- 创建 PR 并填写摘要
-- PR 描述包含：变更摘要、测试说明、关联的设计文档
 
-**选项 3 — 保留分支：**
-- 确认分支已推送到远程（如需要）
-- 告知用户分支名称和当前状态
+Then: Cleanup worktree (Step 5)
 
-**选项 4 — 丢弃分支：**
-- 要求用户输入 `discard` 确认
-- 未确认则不执行
-- 确认后删除分支和清理 worktree（如使用了 worktree）
+#### Option 3: Keep As-Is
 
-### 第五步：清理
+Report: "Keeping branch <name>. Worktree preserved at <path>."
 
-- 如果使用了 git worktree，执行 `git worktree remove`
-- 清理临时文件
-- 更新任务状态为已完成
+**Don't cleanup worktree.**
 
-## Red Flags — 停下来
+#### Option 4: Discard
 
-| 信号 | 行动 |
-|------|------|
-| 测试没全通过就要合并 | 停，先修复测试 |
-| 没有审查报告就要收尾 | 停，先完成两阶段审查 |
-| 替用户选了集成方式 | 停，展示选项让用户选 |
-| 丢弃分支没要求确认 | 停，必须输入 `discard` |
-| 合并后没跑测试 | 停，合并后必须验证 |
+**Confirm first:**
+```
+This will permanently delete:
+- Branch <name>
+- All commits: <commit-list>
+- Worktree at <path>
 
-## 关联技能
+Type 'discard' to confirm.
+```
 
-- **subagent-driven-development** — 本技能的前序（所有任务完成后调用）
-- **verification-before-completion** — 收尾过程中的每次验证
+Wait for exact confirmation.
+
+If confirmed:
+```bash
+git checkout <base-branch>
+git branch -D <feature-branch>
+```
+
+Then: Cleanup worktree (Step 5)
+
+### Step 5: Cleanup Worktree
+
+**For Options 1, 2, 4:**
+
+Check if in worktree:
+```bash
+git worktree list | grep $(git branch --show-current)
+```
+
+If yes:
+```bash
+git worktree remove <worktree-path>
+```
+
+**For Option 3:** Keep worktree.
+
+## Quick Reference
+
+| Option | Merge | Push | Keep Worktree | Cleanup Branch |
+|--------|-------|------|---------------|----------------|
+| 1. Merge locally | ✓ | - | - | ✓ |
+| 2. Create PR | - | ✓ | ✓ | - |
+| 3. Keep as-is | - | - | ✓ | - |
+| 4. Discard | - | - | - | ✓ (force) |
+
+## Common Mistakes
+
+**Skipping test verification**
+- **Problem:** Merge broken code, create failing PR
+- **Fix:** Always verify tests before offering options
+
+**Open-ended questions**
+- **Problem:** "What should I do next?" → ambiguous
+- **Fix:** Present exactly 4 structured options
+
+**Automatic worktree cleanup**
+- **Problem:** Remove worktree when might need it (Option 2, 3)
+- **Fix:** Only cleanup for Options 1 and 4
+
+**No confirmation for discard**
+- **Problem:** Accidentally delete work
+- **Fix:** Require typed "discard" confirmation
+
+## Red Flags
+
+**Never:**
+- Proceed with failing tests
+- Merge without verifying tests on result
+- Delete work without confirmation
+- Force-push without explicit request
+
+**Always:**
+- Verify tests before offering options
+- Present exactly 4 options
+- Get typed confirmation for Option 4
+- Clean up worktree for Options 1 & 4 only
+
+## Integration
+
+**Called by:**
+- Subagent dispatch flow per `docs/rules/agents.md` - After all tasks complete
+- **executing-plans** (Step 5) - After all batches complete
+
+**Pairs with:**
+- **using-git-worktrees** - Cleans up worktree created by that skill
