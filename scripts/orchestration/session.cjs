@@ -11,11 +11,12 @@ const {
   createWorker,
   updateStatus,
   appendHandoff,
+  completeHandoff,
   slugify,
   relPosix
 } = require('./lib/orchestrator.cjs');
 
-const COMMANDS = ['init', 'add-worker', 'status', 'set-status', 'append', 'list', 'help'];
+const COMMANDS = ['init', 'add-worker', 'status', 'set-status', 'append', 'complete', 'list', 'help'];
 
 function usage() {
   console.log([
@@ -25,6 +26,9 @@ function usage() {
     '                                                       [--context <line>]... [--deliverable <line>]... [--lightweight]',
     '  node scripts/orchestration/session.js set-status <session> <worker> <state> [--details <text>]',
     '  node scripts/orchestration/session.js append <session> <worker> <section> --content <text>',
+    '  node scripts/orchestration/session.cjs complete <session> <worker>',
+    '                                                       [--summary <md>] [--files <md>]',
+    '                                                       [--validation <md>] [--follow-ups <md>]',
     '  node scripts/orchestration/session.js status <session>',
     '  node scripts/orchestration/session.js list',
     '',
@@ -110,6 +114,22 @@ function cmdAppend(session, worker, section, flags) {
   console.log(relPosix(file));
 }
 
+function cmdComplete(session, worker, flags) {
+  if (!session || !worker) throw new Error('session and worker names are required');
+  const fields = {
+    summary: flags.summary,
+    files: flags.files,
+    validation: flags.validation,
+    followUps: flags['follow-ups']
+  };
+  const provided = Object.values(fields).some(v => v !== undefined && v !== null);
+  if (!provided) {
+    throw new Error('at least one of --summary | --files | --validation | --follow-ups is required');
+  }
+  const file = completeHandoff(session, worker, fields);
+  console.log(relPosix(file));
+}
+
 function cmdStatus(session) {
   if (!session) throw new Error('session-name is required');
   const dir = sessionDir(session);
@@ -160,6 +180,9 @@ function main() {
         break;
       case 'append':
         cmdAppend(positional[0], positional[1], positional[2], flags);
+        break;
+      case 'complete':
+        cmdComplete(positional[0], positional[1], flags);
         break;
       case 'status':
         cmdStatus(positional[0]);

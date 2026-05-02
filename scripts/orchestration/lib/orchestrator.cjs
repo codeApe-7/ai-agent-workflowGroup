@@ -164,6 +164,39 @@ function appendHandoff(sessionName, workerName, sectionTitle, content) {
   return artifacts.handoff;
 }
 
+const STANDARD_SECTIONS = ['Summary', 'Files Changed', 'Validation', 'Follow-ups'];
+
+function replaceStandardSection(body, title, content) {
+  const trimmed = (content || '').trim() || '- _未提供_';
+  const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(^|\\n)## ${escaped}\\n[\\s\\S]*?(?=\\n## |$)`);
+  const replacement = `$1## ${title}\n${trimmed}\n`;
+  if (re.test(body)) return body.replace(re, replacement);
+  return body.replace(/\s+$/, '') + `\n\n## ${title}\n${trimmed}\n`;
+}
+
+function completeHandoff(sessionName, workerName, fields = {}) {
+  const artifacts = workerArtifacts(sessionName, workerName);
+  let body = fs.existsSync(artifacts.handoff)
+    ? fs.readFileSync(artifacts.handoff, 'utf8')
+    : buildHandoffFile({ workerName });
+  const map = {
+    Summary: fields.summary,
+    'Files Changed': fields.files,
+    Validation: fields.validation,
+    'Follow-ups': fields.followUps
+  };
+  for (const title of STANDARD_SECTIONS) {
+    if (map[title] !== undefined && map[title] !== null) {
+      body = replaceStandardSection(body, title, map[title]);
+    }
+  }
+  const stamp = `\n<!-- finalized: ${timestamp()} -->\n`;
+  body = body.replace(/\n<!-- finalized: [^>]+ -->\n?/g, '');
+  writeFile(artifacts.handoff, body.replace(/\s+$/, '') + stamp);
+  return artifacts.handoff;
+}
+
 module.exports = {
   COORDINATION_ROOT,
   ROOT,
@@ -173,6 +206,7 @@ module.exports = {
   createWorker,
   updateStatus,
   appendHandoff,
+  completeHandoff,
   isLightweight,
   slugify,
   timestamp,

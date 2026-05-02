@@ -2,6 +2,7 @@
 
 > 8 个 phase 是**完整路径上限**，不是强制路径——主会话按任务复杂度和风险**裁剪**。
 > 状态真相源：`.orchestration/<session>/<worker>/status.md`。
+> **完结契约**：worker 转 `completed` 前必须调用 `session.cjs complete` 回写 handoff 标准四节（`Summary` / `Files Changed` / `Validation` / `Follow-ups`），否则视作"未真正完成"。`append` 仅记录过程（设计草稿/需求笔记），不替代 `complete`。
 
 ## 完整路径
 

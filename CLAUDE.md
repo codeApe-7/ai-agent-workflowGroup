@@ -20,9 +20,6 @@ aiGroup is a **dual-harness AI team collaboration framework** (Claude Code + Cod
 
 | 需要了解 | 查阅 |
 |---------|------|
-| Agent 派遣规则（什么时候派谁、并行、多视角） | `docs/rules/agents.md` |
-| 通用强制规则（编码 / Git / 测试 / 安全 / 性能 / Hooks） | `docs/rules/` |
-| 各语言专项规则（cpp / golang / java / python / rust / typescript / web 等） | `docs/rules/<lang>/` |
 | 项目架构、目录结构 | `docs/ARCHITECTURE.md` |
 | 工作流 phase 心智模型 | `docs/workflow-pipeline.md` |
 | 危险信号与阻止行动 | `docs/red-flags.md` |

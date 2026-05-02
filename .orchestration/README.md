@@ -46,9 +46,15 @@ node scripts/orchestration/session.cjs set-status <session> <worker> <state> \
   [--details "<markdown>"]
 # state: not_started | running | blocked | completed | failed
 
-# 追加 handoff 段
+# 追加 handoff 段（记录中间过程，不替换标准四节）
 node scripts/orchestration/session.cjs append <session> <worker> <section-title> \
   --content "<markdown>"
+
+# 收尾 handoff（回写标准四节：Summary / Files Changed / Validation / Follow-ups）
+# phase 末必须调用一次，否则四节永远停留在 "Pending"
+node scripts/orchestration/session.cjs complete <session> <worker> \
+  [--summary "<md>"] [--files "<md>"] \
+  [--validation "<md>"] [--follow-ups "<md>"]
 
 # 查询
 node scripts/orchestration/session.cjs status <session>
@@ -60,6 +66,7 @@ node scripts/orchestration/session.cjs list
 1. worker prompt 中写明 **不再向下派遣 subagent**；worker 只产生最终响应文本。
 2. worker **不自己写 handoff / status 文件**；主会话负责把 worker 响应抄进 `handoff.md`、更新 `status.md`。
 3. 每个 worker 目录三件套必须齐全（`task.md` + `handoff.md` + `status.md`），由 `session.cjs add-worker` 一次创建。
+4. **phase 完结契约**：worker 进入 `completed` 前，主会话必须调用 `session.cjs complete` 至少回写 `--summary` 与 `--files`；`append` 仅用于过程记录（设计草稿、调研、需求笔记），不能替代 `complete`。lightweight worker 同样适用。
 4. 跨 session 的知识持久化分流到：
    - **项目级团队记忆**（git-tracked）→ `docs/PROJECT_CONTEXT.md` / `docs/ARCHITECTURE.md` / `docs/rules/`
    - **用户级当前活跃状态**（不入库）→ Claude Code 原生 memory（`~/.claude/projects/<slug>/memory/`，自动加载）
