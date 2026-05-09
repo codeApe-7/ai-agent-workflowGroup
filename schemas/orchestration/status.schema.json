@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://aigroup.dev/schemas/orchestration/status.schema.json",
+  "title": "Worker Status",
+  "description": "Per-worker state truth source. Written by main session as worker progresses.",
+  "type": "object",
+  "required": ["schemaVersion", "session", "worker", "state", "updatedAt"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0" },
+    "session": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "worker": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "state": {
+      "type": "string",
+      "enum": ["not_started", "running", "blocked", "completed", "failed"]
+    },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "lightweight": {
+      "type": "boolean",
+      "default": false
+    },
+    "details": {
+      "type": ["string", "null"],
+      "description": "Optional context for the latest state transition (why blocked, error summary, etc.)."
+    },
+    "history": {
+      "type": "array",
+      "description": "Append-only log of state transitions.",
+      "items": {
+        "type": "object",
+        "required": ["state", "at"],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": ["not_started", "running", "blocked", "completed", "failed"]
+          },
+          "at": { "type": "string", "format": "date-time" },
+          "details": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      },
+      "default": []
+    }
+  }
+}

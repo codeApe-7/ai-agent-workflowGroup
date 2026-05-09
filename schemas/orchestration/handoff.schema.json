@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://aigroup.dev/schemas/orchestration/handoff.schema.json",
+  "title": "Worker Handoff",
+  "description": "Worker → main session result. Written by main session AFTER receiving the subagent's response.",
+  "type": "object",
+  "required": ["schemaVersion", "session", "worker"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0" },
+    "session": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "worker": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "summary": {
+      "type": ["string", "null"],
+      "description": "1-3 sentence outcome description. Required by phase-completion contract."
+    },
+    "filesChanged": {
+      "type": "array",
+      "description": "Files touched. Either path strings or {path, action} objects.",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string" },
+              "action": {
+                "type": "string",
+                "enum": ["added", "modified", "deleted", "renamed"]
+              },
+              "note": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "default": []
+    },
+    "validation": {
+      "type": ["string", "null"],
+      "description": "Evidence the deliverable works (test output, typecheck, manual check)."
+    },
+    "followUps": {
+      "type": "array",
+      "description": "Open items / known gaps for next phase.",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "stages": {
+      "type": "object",
+      "description": "Code-reviewer specific: mandatory two-stage report (规格符合性 + 代码质量).",
+      "properties": {
+        "spec": {
+          "type": "string",
+          "description": "Stage 1: 规格符合性 — does the change match the spec/intent?"
+        },
+        "quality": {
+          "type": "string",
+          "description": "Stage 2: 代码质量 — readability, safety, performance, tests."
+        }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "array",
+      "description": "Append-only process records (research, drafts, intermediate findings). Not the final summary.",
+      "items": {
+        "type": "object",
+        "required": ["section", "content", "addedAt"],
+        "properties": {
+          "section": { "type": "string" },
+          "content": { "type": "string" },
+          "addedAt": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "finalizedAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Set by `session.cjs complete`. Presence means the standard fields are no longer Pending."
+    }
+  }
+}

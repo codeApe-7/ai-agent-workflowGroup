@@ -5,8 +5,14 @@ const path = require('path');
 const { createReport, ROOT, relPosix, dirExists } = require('../lib/runner.cjs');
 
 const COORD_ROOT = path.join(ROOT, '.orchestration');
-const STAGE1_RE = /(stage.?1|阶段.?1|规格符合)/i;
-const STAGE2_RE = /(stage.?2|阶段.?2|代码质量)/i;
+
+function readJsonSafe(filePath) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (_error) {
+    return null;
+  }
+}
 
 function run() {
   const report = createReport();
@@ -22,37 +28,36 @@ function run() {
 
     for (const worker of workers) {
       const workerDir = path.join(sessionDir, worker.name);
-      const statusFile = path.join(workerDir, 'status.md');
+      const statusFile = path.join(workerDir, 'status.json');
+      const handoffFile = path.join(workerDir, 'handoff.json');
+      const taskFile = path.join(workerDir, 'task.json');
 
-      // 轻量 worker：只要求 handoff + status，跳过 task.md
-      let lightweight = false;
-      try {
-        const raw = fs.readFileSync(statusFile, 'utf8');
-        lightweight = /^\s*-\s*Lightweight:\s*true/m.test(raw);
-      } catch (_error) { /* fall through */ }
+      // JSON 化后所有 worker 三件套统一：task + handoff + status 都必须存在。
+      // 轻量与否通过 task.lightweight / status.lightweight 字段区分，不再靠文件缺失。
+      const required = [
+        ['task.json', taskFile],
+        ['handoff.json', handoffFile],
+        ['status.json', statusFile]
+      ];
 
-      const required = lightweight
-        ? ['handoff.md', 'status.md']
-        : ['task.md', 'handoff.md', 'status.md'];
-
-      for (const file of required) {
-        const full = path.join(workerDir, file);
+      for (const [name, full] of required) {
         if (!fs.existsSync(full)) {
           report.fail(
-            `${relPosix(workerDir)}/ 缺失 ${file}${lightweight ? '（轻量 worker）' : ''}`,
-            '用 node scripts/orchestration/session.cjs add-worker 创建（轻量加 --lightweight）'
+            `${relPosix(workerDir)}/ 缺失 ${name}`,
+            '用 `node scripts/orchestration/session.cjs add-worker` 创建（轻量加 --lightweight）'
           );
         }
       }
 
+      // code-reviewer 强制双阶段产物
       if (worker.name === 'code-reviewer') {
-        const handoff = path.join(workerDir, 'handoff.md');
-        if (fs.existsSync(handoff)) {
-          const content = fs.readFileSync(handoff, 'utf8');
-          if (!STAGE1_RE.test(content) && !STAGE2_RE.test(content)) {
+        const handoff = readJsonSafe(handoffFile);
+        if (handoff && handoff.finalizedAt) {
+          const stages = handoff.stages || {};
+          if (!stages.spec || !stages.quality) {
             report.fail(
-              `${relPosix(handoff)} 缺少阶段标识`,
-              '审查报告必须含 Stage 1 (规格符合性) 和 Stage 2 (代码质量)'
+              `${relPosix(handoffFile)} 缺少双阶段产物`,
+              '审查报告必须填 handoff.stages.spec (Stage 1 规格符合性) + handoff.stages.quality (Stage 2 代码质量)；用 `--stage-spec`/`--stage-quality` 传给 complete 命令'
             );
           }
         }

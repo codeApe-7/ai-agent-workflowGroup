@@ -1,8 +1,9 @@
 # 工作流 Phase 心智模型
 
 > 8 个 phase 是**完整路径上限**，不是强制路径——主会话按任务复杂度和风险**裁剪**。
-> 状态真相源：`.orchestration/<session>/<worker>/status.md`。
-> **完结契约**：worker 转 `completed` 前必须调用 `session.cjs complete` 回写 handoff 标准四节（`Summary` / `Files Changed` / `Validation` / `Follow-ups`），否则视作"未真正完成"。`append` 仅记录过程（设计草稿/需求笔记），不替代 `complete`。
+> 状态真相源：`.orchestration/<session>/<worker>/status.json`（`state` 字段）。
+> **完结契约**：worker 转 `completed` 前必须调用 `session.cjs complete` 回写 handoff 标准字段（`summary` / `filesChanged` / `validation` / `followUps`，写入 `finalizedAt` 时间戳），否则视作"未真正完成"。`append` 仅追加过程记录（设计草稿/需求笔记 → `handoff.notes[]`），不替代 `complete`。
+> 产物全部以 JSON 为唯一格式，shape 由 `schemas/orchestration/*.schema.json` 约束；用 `session.cjs validate <session>` 校验。
 
 ## 完整路径
 
@@ -23,12 +24,12 @@
 |---|-------|-----------|--------|---------------------------|---------|
 | 1 | 需求收集 | `brainstorming`（前段） | 主会话 | `architect/requirements.md` | 需求文档包含目标 / 用户场景 / 成功标准 |
 | 2 | 需求验证 | `brainstorming`（中段：challenge） | 主会话 | 在 requirements.md 追加验证结论 | 无歧义、无矛盾、用户确认 |
-| 3 | 方案设计 | `brainstorming`（终段：spec 锁定） | `architect` | `architect/handoff.md`（ADR 格式） | 至少 2 个候选方案 + 推荐理由 |
-| 4 | 任务拆解 | `writing-plans` | `planner` | `planner/handoff.md` | 3–7 个阶段，每个含 agent / 验证命令 |
+| 3 | 方案设计 | `brainstorming`（终段：spec 锁定） | `architect` | `architect/handoff.json`（ADR 格式） | 至少 2 个候选方案 + 推荐理由 |
+| 4 | 任务拆解 | `writing-plans` | `planner` | `planner/handoff.json` | 3–7 个阶段，每个含 agent / 验证命令 |
 | 4→5 桥 | 隔离工作区 | `using-git-worktrees` | 主会话执行 git | session `README.md` 记录 worktree 路径 | worktree 创建、依赖装好、测试基线通过 |
-| 5 | 实施开发 | subagent 派遣（推荐）/ `executing-plans` | `tdd-guide`（TDD 路径）/ 语言专项 reviewer | `<agent>/handoff.md` 或直接改代码 | 改动文件清单 + 验证证据（typecheck / test） |
+| 5 | 实施开发 | subagent 派遣（推荐）/ `executing-plans` | `tdd-guide`（TDD 路径）/ 语言专项 reviewer | `<agent>/handoff.json` 或直接改代码 | 改动文件清单 + 验证证据（typecheck / test） |
 | 6a | 审查发起 | `requesting-code-review` | 主会话向 `code-reviewer` 派遣（敏感场景加 `security-reviewer`、关键路径加 `e2e-runner`、按栈加语言专项 reviewer） | `code-reviewer/request.md` | 审查范围 / 验收点 / 关注项清单完整 |
-| 6b | 审查反馈处理 | `receiving-code-review` | 主会话逐条决议 | `code-reviewer/handoff.md`（含决议） | 每条反馈有"采纳/反驳/记录"决议且证据闭环（Stage 1 规格 ✓ Stage 2 代码质量 ✓） |
+| 6b | 审查反馈处理 | `receiving-code-review` | 主会话逐条决议 | `code-reviewer/handoff.json`（含决议） | 每条反馈有"采纳/反驳/记录"决议且证据闭环（`handoff.stages.spec` ✓ `handoff.stages.quality` ✓） |
 | 7 | 文档更新 | （无强制 skill） | `doc-updater` 或主会话直接改 | 直接改 `docs/`；session `README.md` 留笔记 | docs/ARCHITECTURE / docs/PROJECT_CONTEXT / API 文档已同步 |
 | 8 | 分支收尾 | `finishing-a-development-branch` | 主会话 | session `README.md` 总结 | 集成 / PR / 归档 |
 
@@ -69,7 +70,7 @@
 | Discard 确认 | phase 8 选项 4 | 删除分支 + worktree 不可恢复 | 必须用户键入 `discard` 字面量；其他输入一律视为放弃 |
 | 审查反馈分歧 | phase 6b（`receiving-code-review` 中） | reviewer 与实施 agent 对同一问题给出冲突结论时 | 暂停，把分歧摘要呈给用户决议 |
 
-**自动决策**（不打断用户）：phase 间流转、handoff 文件生成、`status.md` 推进、worktree 路径分配、`session.cjs` 状态写入、phase 内的子 agent 派遣。
+**自动决策**（不打断用户）：phase 间流转、handoff 文件生成、`status.json` 推进、worktree 路径分配、`session.cjs` 状态写入、phase 内的子 agent 派遣。
 
 ## Session 存在条件
 

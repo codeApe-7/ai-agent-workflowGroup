@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://aigroup.dev/schemas/orchestration/task.schema.json",
+  "title": "Worker Task",
+  "description": "Per-worker task definition written by main session BEFORE dispatching the subagent.",
+  "type": "object",
+  "required": ["schemaVersion", "session", "worker", "agent", "objective", "createdAt"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0" },
+    "session": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Owning session slug."
+    },
+    "worker": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Worker slug (usually = agent name)."
+    },
+    "agent": {
+      "type": "string",
+      "description": "Subagent type to dispatch (e.g. planner, code-reviewer)."
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "objective": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Single-paragraph statement of what this worker must accomplish."
+    },
+    "context": {
+      "type": "array",
+      "description": "Bullet-point context lines (file paths, prior decisions, constraints).",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "deliverables": {
+      "type": "array",
+      "description": "Concrete outputs expected (e.g. 'Updated docs/auth.md', 'Passing pytest -k auth').",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "dependsOn": {
+      "type": "array",
+      "description": "Worker slugs that must reach completed state before this one starts.",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "lightweight": {
+      "type": "boolean",
+      "default": false,
+      "description": "Lightweight worker: skips formal task spec; only handoff + status are required."
+    },
+    "completionRules": {
+      "type": "array",
+      "description": "Constraints the worker must honor before declaring completed.",
+      "items": { "type": "string" },
+      "default": [
+        "不再向下派遣 subagent，结果写进最终响应",
+        "主会话负责把响应写进 handoff.json",
+        "主会话负责更新 status.json"
+      ]
+    }
+  }
+}

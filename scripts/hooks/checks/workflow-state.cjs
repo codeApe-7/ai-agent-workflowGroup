@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { createReport, ROOT, relPosix, dirExists } = require('../lib/runner.cjs');
 
-// 真相源：.orchestration/<session>/<worker>/status.md
+// 真相源：.orchestration/<session>/<worker>/status.json (state 字段)
 // 在 Stop 事件中：若任一 worker state=running，说明主会话要停但 worker 没走到终态。
 // 终态：completed | failed | blocked （完成、失败、主动阻塞都允许 Stop）
 
@@ -12,9 +12,8 @@ const TERMINAL_STATES = new Set(['completed', 'failed', 'blocked']);
 
 function readState(statusFile) {
   try {
-    const content = fs.readFileSync(statusFile, 'utf8');
-    const match = content.match(/^\s*-\s*State:\s*(\S+)/m);
-    return match ? match[1].toLowerCase() : null;
+    const data = JSON.parse(fs.readFileSync(statusFile, 'utf8'));
+    return typeof data.state === 'string' ? data.state.toLowerCase() : null;
   } catch (_error) {
     return null;
   }
@@ -35,7 +34,7 @@ function run() {
       .filter(entry => entry.isDirectory());
 
     for (const worker of workers) {
-      const statusFile = path.join(sessionDir, worker.name, 'status.md');
+      const statusFile = path.join(sessionDir, worker.name, 'status.json');
       const state = readState(statusFile);
       if (state === 'running') {
         stuck.push(relPosix(statusFile));
